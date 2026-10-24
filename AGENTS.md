@@ -5,7 +5,7 @@ Forensic code logic and invariant auditing repository. Houses the `code-logic-au
 ## Quick Navigation
 - System Design & Architectural Invariants: See [ARCHITECTURE.md](ARCHITECTURE.md)
 - APM Installation, Upgrades & Deployment: See [INSTALL.md](INSTALL.md)
-- Primary Skill Router: See [skills/code-logic-auditor/SKILL.md](skills/code-logic-auditor/SKILL.md)
+- Primary Skill Router: See [.apm/skills/code-logic-auditor/SKILL.md](.apm/skills/code-logic-auditor/SKILL.md)
 - Issue Tracking & Finding Logs: See [issues/](issues/)
 
 ## Core Operational Invariants
@@ -20,14 +20,14 @@ Forensic code logic and invariant auditing repository. Houses the `code-logic-au
 ### Skill Authoring & Quality Audit
 ```bash
 # Audit skill against authoring standards (both source and installed modes)
-python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" skills/code-logic-auditor --mode source
-python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" skills/code-logic-auditor --mode installed
+python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" .apm/skills/code-logic-auditor --mode source
+python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" "$HOME/.gemini/antigravity-cli/skills/code-logic-auditor" --mode installed
 ```
 
 ### Static Rule Verification
 ```bash
 # Test Semgrep AST logic rules against annotated test fixtures
-semgrep --test skills/code-logic-auditor/references/rules/semgrep
+semgrep --test .apm/skills/code-logic-auditor/references/rules/semgrep
 ```
 
 ### Context Bundling

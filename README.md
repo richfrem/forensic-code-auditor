@@ -35,9 +35,7 @@ crow-raven-analysis/
 ├── apm.yml                                    # APM package manifest
 ├── README.md                                  # Repository overview and quick start
 ├── .apm/
-│   └── skills/code-logic-auditor/             # APM skill distribution link
-├── skills/                                    # Root skills directory
-│   └── code-logic-auditor/                    # Primary authoring source & test suites
+│   └── skills/code-logic-auditor/             # Primary authoring source, test suites & APM distribution root
 ├── issues/                                    # Issue tracking and logged vulnerability reports
 ├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
 └── repos/                                     # Isolated target codebases under audit (crow, raven)

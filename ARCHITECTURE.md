@@ -53,35 +53,34 @@ crow-raven-analysis/
 ├── apm.yml                                    # APM package manifest
 ├── README.md                                  # Repository overview and quick start
 ├── .apm/
-│   └── skills/code-logic-auditor/             # APM skill distribution link
-├── skills/                                    # Root skills directory
-│   └── code-logic-auditor/                    # Canonical skill source tree
-│       ├── SKILL.md                           # Authoring-standard router (<= 80 lines)
-│       ├── instructions.md                    # Full 7-step procedure, evidence levels & schemas
-│       ├── code-logic-auditor-flow.mmd        # State machine execution diagram
-│       ├── agents/                            # Agent persona definitions
-│       │   └── forensic_systems_analyst.md    # Generalized first-principles directive
-│       ├── references/
-│       │   ├── logic_invariants_taxonomy.md   # 13 non-syntactic invariant domains
-│       │   ├── game_simulation_rl_auditing.md # MCTS & RL reward matrix
-│       │   ├── semgrep_logic_rules.md         # Tested Semgrep AST patterns catalog
-│       │   ├── codeql_taint_recipes.md        # Modern CodeQL taint recipes guide
-│       │   ├── rules/
-│       │   │   ├── semgrep/                   # 9 tested YAML files (15 rule IDs) with paired test code
-│       │   │   └── codeql/                    # 2 compilable CodeQL packs (python, javascript)
-│       │   └── prompts/                       # 7 domain-specific inspection prompts
-│       │       ├── state_machine_audit.md     # FSM transitions & terminal state locks
-│       │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
-│       │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
-│       │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
-│       │       ├── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
-│       │       ├── legacy_forms_authorization_audit.md # Oracle Forms & PL/SQL authorization
-│       │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
-│       └── evals/
-│           ├── evals.json                     # 28 routing test cases (positive + negative)
-│           ├── task-success.json              # 4 behavioral task-success evaluation cases
-│           ├── rule_tests.tsv                 # Empirical CLI execution evidence log (17 static logic rules)
-│           └── fixtures/                      # Code fixtures with planted concurrency bugs
+│   └── skills/
+│       └── code-logic-auditor/                # Primary skill source tree & APM distribution root
+│           ├── SKILL.md                       # Authoring-standard router (<= 80 lines)
+│           ├── instructions.md                # Step 0 + Seven Steps, evidence levels & schemas
+│           ├── code-logic-auditor-flow.mmd    # State machine execution diagram
+│           ├── agents/                        # Agent persona definitions
+│           │   └── forensic_systems_analyst.md # Generalized first-principles directive
+│           ├── references/
+│           │   ├── logic_invariants_taxonomy.md # 13 non-syntactic invariant domains
+│           │   ├── game_simulation_rl_auditing.md # MCTS & RL reward matrix
+│           │   ├── semgrep_logic_rules.md     # Tested Semgrep AST patterns catalog
+│           │   ├── codeql_taint_recipes.md    # Modern CodeQL taint recipes guide
+│           │   ├── rules/
+│           │   │   ├── semgrep/               # 9 tested YAML files (15 rule IDs) with paired test code
+│           │   │   └── codeql/                # 2 compilable CodeQL packs (python, javascript)
+│           │   └── prompts/                   # 7 domain-specific inspection prompts
+│           │       ├── state_machine_audit.md # FSM transitions & terminal state locks
+│           │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
+│           │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
+│           │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
+│           │       ├── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
+│           │       ├── legacy_forms_authorization_audit.md # Oracle Forms & PL/SQL authorization
+│           │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
+│           └── evals/
+│               ├── evals.json                 # 28 routing test cases (positive + negative)
+│               ├── task-success.json          # 4 behavioral task-success evaluation cases
+│               ├── rule_tests.tsv             # Empirical CLI execution evidence log (17 static logic rules)
+│               └── fixtures/                  # Code fixtures with planted concurrency bugs
 ├── issues/                                    # Issue tracking templates & findings
 ├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
 └── repos/                                     # Target working trees under audit (crow, raven)
@@ -150,7 +149,7 @@ The package rejects uncompiled pseudo-code rules:
 ## Adversarial Game Simulation & MCTS Concurrency
 
 Rather than relying on passive pattern matching, the engine models the audited codebase as an adversarial game:
-- The auditor agent is scored by the explicit **Epistemic Evaluation Matrix** defined in [`instructions.md §6`](skills/code-logic-auditor/instructions.md) and [`references/game_simulation_rl_auditing.md`](skills/code-logic-auditor/references/game_simulation_rl_auditing.md) (+100 for CONFIRMED with reproducer, +50 for REFUTED with verified defense, +30 for NON LIQUET with telemetry spec, -100 for unproven CONFIRMED claims, -50 for un-sourced claims, -30 for syntactic false positives).
+- The auditor agent is scored by the explicit **Epistemic Evaluation Matrix** defined in [`instructions.md §6`](.apm/skills/code-logic-auditor/instructions.md) and [`references/game_simulation_rl_auditing.md`](.apm/skills/code-logic-auditor/references/game_simulation_rl_auditing.md) (+100 for CONFIRMED with reproducer, +50 for REFUTED with verified defense, +30 for NON LIQUET with telemetry spec, -100 for unproven CONFIRMED claims, -50 for un-sourced claims, -30 for syntactic false positives).
 - Concurrency race windows are analyzed via **Monte Carlo Tree Search (MCTS)** over execution interleavings between check and act steps.
 
 ---
@@ -158,5 +157,5 @@ Rather than relying on passive pattern matching, the engine models the audited c
 ## APM Package Distribution Architecture
 
 `crow-raven-analysis` is structured as a native APM package:
-- [`apm.yml`](apm.yml) defines package metadata, targets (`antigravity`, `claude`, `codex`, `copilot`), and auto-inclusion of `.apm/skills/`.
+- [`apm.yml`](apm.yml) defines package metadata, targets (`antigravity`, `claude`, `codex`, `copilot`), and explicit allowlist inclusion of `.apm/skills/code-logic-auditor`.
 - Deployed globally via `apm install <path-or-url> --global`, materializing directly into user-level runtime skill directories without repo pollution.

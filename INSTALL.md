@@ -166,7 +166,7 @@ The repository incorporates automated quality gates to guarantee strict complian
 Test the canonical skill source tree:
 ```bash
 python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" \
-  skills/code-logic-auditor \
+  .apm/skills/code-logic-auditor \
   --mode source
 ```
 *Expected Result:* `PASS` with 0 errors and 0 warnings.
@@ -180,7 +180,7 @@ python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/sk
 *Expected Result:* `PASS` with 0 errors and 0 warnings.
 
 ### 2. APM Package Manifest Validation
-Verify the top-level package manifest and distribution symlinks:
+Verify the top-level package manifest and distribution layout:
 ```bash
 python3 "$HOME/.gemini/antigravity-cli/skills/packaging-with-apm/scripts/validate_apm_package.py" --path .
 ```
