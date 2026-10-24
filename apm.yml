@@ -1,0 +1,16 @@
+name: code-logic-auditor
+version: 3.0.0
+description: Forensic code logic and invariant auditor for business-logic flaws, FSM transition bypasses, TOCTOU races, multi-tenant isolation leaks, and perimeter authorization collapse across enterprise legacy and modern stacks.
+author: Richard Fremmerlid
+repository: https://github.com/richfrem/crow-raven-analysis
+license: MIT
+targets:
+  - antigravity
+  - claude
+  - codex
+  - copilot
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}
