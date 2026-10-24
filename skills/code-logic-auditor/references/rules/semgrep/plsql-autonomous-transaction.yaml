@@ -1,0 +1,29 @@
+rules:
+  # Autonomous transactions are legitimate for audit/error logging. The logic risk is
+  # business DML (UPDATE/DELETE/MERGE) committed independently of the caller's transaction.
+  - id: plsql-autonomous-transaction-business-dml
+    languages: [generic]
+    severity: WARNING
+    message: >-
+      PRAGMA AUTONOMOUS_TRANSACTION unit performs UPDATE/DELETE/MERGE and COMMITs on its own.
+      If the caller rolls back, this change stays committed (partial state). Confirm the target
+      is a log/audit table; otherwise move the DML into the caller's transaction.
+    metadata:
+      classification: TRANSACTION-DEMARCATION
+      confidence: MEDIUM
+    # Heuristic: bounded to one CREATE unit. Package bodies with several procedures need manual review.
+    pattern-regex: (?is)CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION|TRIGGER)\b(?:(?!\bCREATE\s).)*?PRAGMA\s+AUTONOMOUS_TRANSACTION\s*;(?:(?!\bCREATE\s).)*?\b(?:UPDATE|DELETE|MERGE)\b(?:(?!\bCREATE\s).)*?\bCOMMIT\b
+
+  # Autonomous transaction inside a trigger is the classic way to dodge ORA-04091
+  # (mutating table). It reads/writes data the triggering statement has not committed.
+  - id: plsql-autonomous-transaction-in-trigger
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Trigger declares PRAGMA AUTONOMOUS_TRANSACTION. Usually used to suppress ORA-04091;
+      the trigger cannot see the triggering row's uncommitted changes and its own writes
+      survive a rollback of the triggering statement.
+    metadata:
+      classification: TRANSACTION-DEMARCATION
+      confidence: HIGH
+    pattern-regex: (?is)CREATE\s+(OR\s+REPLACE\s+)?TRIGGER\b(?:(?!\bCREATE\s).)*?PRAGMA\s+AUTONOMOUS_TRANSACTION

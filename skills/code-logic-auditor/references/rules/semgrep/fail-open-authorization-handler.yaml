@@ -1,0 +1,27 @@
+rules:
+  - id: fail-open-authorization-handler
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      Authorization check catch-block returns 'true' or an allow verdict on exception,
+      causing a fail-open access control vulnerability when the database or auth service fails.
+    metadata:
+      classification: FAIL-OPEN-AUTH
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: |
+              catch ($E) {
+                ...
+                return true;
+              }
+          - pattern: |
+              catch {
+                ...
+                return true;
+              }
+      - pattern-inside: |
+          function $CHECK(...) { ... }
+      - metavariable-regex:
+          metavariable: $CHECK
+          regex: '(?i)(auth|check|perm|role|access|can|isallowed|hasprivilege)\w*'

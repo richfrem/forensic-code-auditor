@@ -1,0 +1,14 @@
+[
+  {
+    "id": "b01",
+    "fixture": "evals/fixtures/behavior/billing_service.py",
+    "query": "Audit billing_service.py for logic and authorization flaws.",
+    "expected_behavior": [
+      "Identifies redeem_coupon lost-update / TOCTOU race under READ COMMITTED isolation",
+      "Identifies get_invoice tenant leak missing tenant scoping predicate",
+      "Identifies update_order_status FSM transition bypass from client-controlled status",
+      "Identifies refund error-swallowing dual-write where gateway failure marks order REFUNDED",
+      "Correctly rules out ship_order, debit_wallet, and payment_webhook as verified protected guards"
+    ]
+  }
+]

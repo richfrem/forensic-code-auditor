@@ -1,0 +1,31 @@
+stateDiagram-v2
+    [*] --> ScopeTriage: Step 0 Rank Entry Points by Blast Radius
+    ScopeTriage --> PickCandidate: Select Entry Point or Rule Hit
+
+    state AuditProcedure {
+        [*] --> Facts: Step 1 Observed Facts (file:line, AST, CFG)
+        Facts --> Boundaries: Step 2 Transaction, Locks & Async Scopes
+        Boundaries --> Reconstruct: Step 3 Intended vs Adversarial Paths
+        Reconstruct --> Degradation: Step 4 Swallows, Defaults & Floating Tasks
+        Degradation --> Trust: Step 5 Ingress Caller-Controlled State
+        Trust --> FailurePoint: Step 6 Map Invariant Breach & Classify
+    }
+
+    PickCandidate --> AuditProcedure
+    AuditProcedure --> EvidenceGate: Evaluate Trace Against Evidence Levels
+
+    EvidenceGate --> ConfirmedProof: Provable Invariant Breach
+    EvidenceGate --> NonLiquet: Indeterminate Path (Telemetry Gap)
+    EvidenceGate --> RuledOut: Verified Guard Prevents Path
+
+    ConfirmedProof --> FindingArtifact: Step 7 Reproducer & Emit [FINDING-XXX]
+    NonLiquet --> TelemetrySpec: Emit [NON-LIQUET-XXX] Telemetry Spec
+    RuledOut --> CoverageNote: Record Verified Guard under Coverage
+
+    FindingArtifact --> LoopCheck
+    TelemetrySpec --> LoopCheck
+    CoverageNote --> LoopCheck
+
+    LoopCheck --> PickCandidate: More Entry Points in Scope
+    LoopCheck --> ReportDeliverable: Scope Completed or Stop Condition
+    ReportDeliverable --> [*]

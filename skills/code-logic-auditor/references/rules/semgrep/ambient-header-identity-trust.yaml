@@ -1,0 +1,26 @@
+rules:
+  - id: ambient-header-identity-trust
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >-
+      User identity or tenant ID is extracted directly from an ambient proxy header ('x-forwarded-user', 'sm_user', 'x-user-id')
+      without verifying cryptographic signature or gateway mTLS context.
+    metadata:
+      classification: PERIMETER-BYPASS
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: $REQ.headers['x-forwarded-user']
+          - pattern: $REQ.headers['sm_user']
+          - pattern: $REQ.headers['x-user-id']
+          - pattern: $REQ.headers.get('x-forwarded-user')
+          - pattern: $REQ.headers.get('sm_user')
+          - pattern: $REQ.headers.get('x-user-id')
+      - pattern-not-inside: |
+          ...
+          verifySignature(...)
+          ...
+      - pattern-not-inside: |
+          ...
+          verifyGatewayToken(...)
+          ...

@@ -1,0 +1,29 @@
+rules:
+  # Tenant-scoping heuristic, not a SQL-injection rule (leave SQLi to standard SAST).
+  # Flags SQL that selects/updates/deletes by primary key with no tenant discriminator in
+  # the statement text. Expect noise on single-tenant tables; triage, don't auto-report.
+  - id: php-sql-by-id-without-tenant-predicate
+    languages: [php]
+    severity: INFO
+    message: >-
+      Query looks up a row by id with no tenant/org predicate. If the id comes from the
+      request, any authenticated user can address another tenant's row (IDOR) unless the
+      table is single-tenant or scoping happens elsewhere (VPD/RLS, view). Verify.
+    metadata:
+      classification: TENANT-LEAK
+      confidence: LOW
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern: $DB->$METHOD($Q, ...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(query|prepare|exec|execute|get_row|get_results|fetchAll|fetchRow)$
+          - patterns:
+              - pattern: $FN($CONN, $Q, ...)
+              - metavariable-regex:
+                  metavariable: $FN
+                  regex: ^(mysqli_query|pg_query|pg_query_params|oci_parse)$
+      - metavariable-regex:
+          metavariable: $Q
+          regex: (?is)^(?!.*\b(tenant|org|organization|company|client|customer|account)_?id\b).*\b(select|update|delete)\b.*\bwhere\b.*\bid\s*=

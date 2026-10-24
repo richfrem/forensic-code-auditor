@@ -4,6 +4,8 @@ Forensic code logic and invariant auditor engineered to detect business-logic fl
 
 Built and validated for the BC Gov NR Sector modernization ecosystem ([`bcgov/crow`](https://github.com/bcgov/crow) and [`bcgov/raven`](https://github.com/bcgov/raven)).
 
+For comprehensive installation, registry, update, and rollback documentation, see [INSTALL.md](INSTALL.md). For system architecture and mathematical foundations, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ---
 
 ## Global Installation with APM
@@ -30,8 +32,8 @@ crow-raven-analysis/
 ├── README.md                                  # Repository overview and APM installation guide
 ├── .apm/
 │   └── skills/code-logic-auditor/             # APM skill distribution link
-├── .agents/
-│   └── skills/code-logic-auditor/             # Primary authoring source & test suites
+├── skills/
+│   └── code-logic-auditor/             # Primary authoring source & test suites
 ├── issues/                                    # Issue tracking and logged vulnerability reports
 ├── reviews/                                   # Multi-model review consensus & synthesis roadmap
 └── repos/                                     # Isolated target codebases under audit (crow, raven)

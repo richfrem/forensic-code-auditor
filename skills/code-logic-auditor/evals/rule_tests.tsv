@@ -1,0 +1,6 @@
+date	tool	version	target	result	notes
+2026-10-24	semgrep	1.182.1	references/rules/semgrep (v3)	8/8 rules pass --test	fixtures include ruleid and ok cases for each rule
+2026-10-24	semgrep	1.182.1	v2 semgrep_logic_rules.md	2 of 5 rules failed to load	php rule: pattern parse error; ts rule: invalid rule schema
+2026-10-24	codeql	2.27.3	v2 codeql_taint_recipes.md	0 of 2 queries compile	removed Configuration API; bad source; no select
+2026-10-24	codeql	2.27.3	python/UnscopedTenantLookup.ql	compiles; 2 expected hits, 0 false positives	evals/fixtures/codeql-py/app/views.py lines 6 and 11
+2026-10-24	codeql	2.27.3	javascript/UnguardedStateTransition.ql	compiles; 2 expected hits, 0 false positives	evals/fixtures/codeql-js/routes.js lines 6 and 12; guarded (if and throw forms) and constant writes not flagged
