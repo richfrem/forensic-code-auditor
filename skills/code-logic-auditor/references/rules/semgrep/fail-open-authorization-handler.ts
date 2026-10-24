@@ -25,6 +25,25 @@ class AccessController {
       return "ALLOW";
     }
   }
+
+  isAuthorized(user, perm) {
+    try {
+      return verifyPerm(user, perm);
+    } catch (err) {
+      // ruleid: fail-open-authorization-handler
+      return "authorized";
+    }
+  }
+}
+
+function authMiddlewareGuard(req, res, next) {
+  try {
+    verifySessionToken(req);
+    next();
+  } catch (err) {
+    // ruleid: fail-open-authorization-handler
+    next();
+  }
 }
 
 function checkUserAccessSafe(req, resourceId) {
@@ -33,5 +52,15 @@ function checkUserAccessSafe(req, resourceId) {
   } catch (err) {
     // ok: fail-open-authorization-handler
     return false;
+  }
+}
+
+function authMiddlewareGuardSafe(req, res, next) {
+  try {
+    verifySessionToken(req);
+    next();
+  } catch (err) {
+    // ok: fail-open-authorization-handler
+    next(new Error("Unauthorized"));
   }
 }

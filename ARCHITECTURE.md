@@ -67,7 +67,7 @@ crow-raven-analysis/
 │       │   ├── semgrep_logic_rules.md         # Tested Semgrep AST patterns catalog
 │       │   ├── codeql_taint_recipes.md        # Modern CodeQL taint recipes guide
 │       │   ├── rules/
-│       │   │   ├── semgrep/                   # 9 tested YAML files (13 rule IDs) with paired test code
+│       │   │   ├── semgrep/                   # 9 tested YAML files (15 rule IDs) with paired test code
 │       │   │   └── codeql/                    # 2 compilable CodeQL packs (python, javascript)
 │       │   └── prompts/                       # 7 domain-specific inspection prompts
 │       │       ├── state_machine_audit.md     # FSM transitions & terminal state locks
@@ -78,9 +78,9 @@ crow-raven-analysis/
 │       │       ├── legacy_forms_authorization_audit.md # Oracle Forms & PL/SQL authorization
 │       │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
 │       └── evals/
-│           ├── evals.json                     # 20 routing test cases (positive + negative)
-│           ├── task-success.json              # Behavioral task-success evaluation cases
-│           ├── rule_tests.tsv                 # Empirical CLI execution evidence log
+│           ├── evals.json                     # 28 routing test cases (positive + negative)
+│           ├── task-success.json              # 4 behavioral task-success evaluation cases
+│           ├── rule_tests.tsv                 # Empirical CLI execution evidence log (17 static logic rules)
 │           └── fixtures/                      # Code fixtures with planted concurrency bugs
 ├── issues/                                    # Issue tracking templates & findings
 ├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
@@ -141,9 +141,9 @@ The auditor operates across an unambiguous **Step 0 + Seven-Step Forensic Proced
 ## Empirical Static Verification Architecture
 
 The package rejects uncompiled pseudo-code rules:
-- **Semgrep Suite**: 9 standalone YAML files holding 13 rule IDs in `references/rules/semgrep/`, each paired with a test fixture annotated with `ruleid:` and `ok:` test assertions. Verified via `semgrep --test`.
+- **Semgrep Suite**: 9 standalone YAML files holding 15 rule IDs in `references/rules/semgrep/`, each paired with a test fixture annotated with `ruleid:` and `ok:` test assertions. Verified via `semgrep --test`.
 - **CodeQL Packs**: 2 compilable packs in `references/rules/codeql/` for Python and JavaScript, implementing modern `DataFlow::ConfigSig` and `TaintTracking::Global` modules (2 query files: `UnscopedTenantLookup.ql`, `UnguardedStateTransition.ql`). Verified against CodeQL CLI 2.27.3.
-- **Total Static Logic Rules**: 15 rules across 11 files (13 Semgrep rule IDs + 2 CodeQL queries).
+- **Total Static Logic Rules**: 17 rules across 11 files (15 Semgrep rule IDs + 2 CodeQL queries).
 
 ---
 

@@ -26,10 +26,30 @@ class TransitionGuard extends DataFlow::CallNode {
 }
 
 /**
- * Holds if `guard` validates variable `stateVar` specifically against `checkedEntity`
- * (e.g., `canTransition(orderA.status, next)`).
+ * Holds if `e1` and `e2` refer to demonstrably different entities (local variables or property paths like this.order / req.order).
  */
-predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Variable stateVar) {
+predicate entitiesDiffer(Expr e1, Expr e2) {
+  // Case 1: Distinct local variables
+  exists(VarAccess v1, VarAccess v2 | v1 = e1 and v2 = e2 |
+    v1.getVariable() != v2.getVariable()
+  )
+  or
+  // Case 2: Distinct properties (e.g. req.orderA vs req.orderB, or this.orderA vs this.orderB)
+  exists(PropAccess p1, PropAccess p2 | p1 = e1 and p2 = e2 |
+    p1.getPropertyName() != p2.getPropertyName() or
+    entitiesDiffer(p1.getBase(), p2.getBase())
+  )
+  or
+  // Case 3: Mixed access types (local variable vs property access)
+  (e1 instanceof VarAccess and e2 instanceof PropAccess) or
+  (e1 instanceof PropAccess and e2 instanceof VarAccess)
+}
+
+/**
+ * Holds if `guard` validates variable `stateVar` specifically against `checkedEntity`
+ * (e.g., `canTransition(orderA.status, next)` or `canTransition(req.orderA.status, next)`).
+ */
+predicate guardChecksEntityExpr(TransitionGuard guard, Expr checkedEntity, Variable stateVar) {
   exists(VarAccess stateAccess |
     stateAccess = guard.getAnArgument().asExpr() and
     stateVar = stateAccess.getVariable()
@@ -45,12 +65,12 @@ predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Vari
  * validated `stateVar` against a DIFFERENT entity `checkedEntity`.
  */
 predicate isWrongObjectBypass(DataFlow::PropWrite w) {
-  exists(TransitionGuard g, VarAccess checkedEntity, VarAccess targetEntity, VarAccess writtenAccess, Variable stateVar |
+  exists(TransitionGuard g, Expr checkedEntity, Expr targetEntity, VarAccess writtenAccess, Variable stateVar |
     writtenAccess = w.getRhs().asExpr() and
     stateVar = writtenAccess.getVariable() and
-    guardChecksEntity(g, checkedEntity, stateVar) and
+    guardChecksEntityExpr(g, checkedEntity, stateVar) and
     targetEntity = w.getBase().asExpr() and
-    checkedEntity.getVariable() != targetEntity.getVariable()
+    entitiesDiffer(checkedEntity, targetEntity)
   )
 }
 

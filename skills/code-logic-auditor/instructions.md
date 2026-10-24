@@ -58,6 +58,9 @@ Pinpoint the exact AST node, source line, or transaction boundary where state de
 ### Step 7: Discriminating Tests & Proof
 Formulate a discriminating test: it must fail on current vulnerable code and pass after remediation. For concurrency races, use barriers, isolated database connections, or simulated check-then-act latency. If verification depends on runtime facts not visible in source code, formally declare `NON LIQUET` and emit a Telemetry Specification.
 
+> [!CAUTION]
+> **Strict Reproducer Safety Boundary**: Reproducers and race simulations MUST NEVER be executed against production, shared staging, or live enterprise databases. They must run exclusively against isolated local containers, disposable schemas, mock servers, or test transactions configured with deterministic rollbacks.
+
 ---
 
 ## 3. Four Evidence Levels
@@ -90,7 +93,7 @@ Keep evidence status strictly separated from impact severity:
 #### 3×3 Severity Evaluation Matrix
 $$\text{Severity} = \text{Impact} \times \text{Reachability}$$
 
-| Impact \ Reachability | **High Reachability**<br>(Public unauthenticated API, ingress webhook, ambient proxy header) | **Medium Reachability**<br>(Authenticated low-privilege tenant, standard multi-tenant route) | **Low Reachability**<br>(Admin role required, internal network only, or microsecond race window) |
+| Impact \ Reachability | **High Reachability**<br>(Public API, ingress webhook, ambient header, or race window exploitable via automated bursts / HTTP/2 multiplexing) | **Medium Reachability**<br>(Authenticated low-privilege tenant, standard multi-tenant route) | **Low Reachability**<br>(Admin role required, physical hardware access, internal air-gapped network only) |
 | :--- | :--- | :--- | :--- |
 | **High Impact**<br>(Balance drain, cross-tenant leak, arbitrary lifecycle override) | **Critical** | **High** | **Medium** |
 | **Medium Impact**<br>(Single-tenant corruption, recoverable resource leak, un-audited state) | **High** | **Medium** | **Low** |
@@ -119,8 +122,10 @@ $$\text{Severity} = \text{Impact} \times \text{Reachability}$$
 5. **Coverage & Scope**: Entry points audited, entry points skipped, rules executed, and confirmed defenses.
 
 ### Stop Conditions & Execution Precedence
-- **Interactive Mode**: If an active user is present and an unverified runtime condition (e.g., target database engine, DBMS isolation level, RLS activation) alters the verdict, pause and request clarification.
-- **Autonomous / Batch Mode**: Do NOT halt. Proceed by classifying the finding as `SUSPECTED` with explicit labeled assumptions (`MULTI-ASSUMPTION`) documenting the assumed runtime configuration.
+- **Interactive Mode**: If an active user is present and an unverified runtime condition alters the verdict, pause and request clarification.
+- **Autonomous / Batch Mode**: Do NOT halt. Apply the following decision rule:
+  - **`SUSPECTED`**: Applies when the code path and failure mechanism are proven, and only a deployment/runtime configuration value (e.g. database isolation level `READ COMMITTED` vs `SERIALIZABLE`, or reverse proxy TLS header stripping) is unverified. Classify the finding as `SUSPECTED` with explicit labeled assumptions (`MULTI-ASSUMPTION`).
+  - **`NON LIQUET (RUNTIME-CONFIG)`**: Applies when the code execution path itself cannot be determined without runtime telemetry (e.g. dynamic feature flags, conditional runtime reflection, or opaque external plugin dispatch). Emit a formal `[NON-LIQUET-XXX]` with a telemetry specification.
 - **Scope Ceilings**: When the audit target exceeds single-pass capacity, triage entry points by blast radius (Step 0) and explicitly record un-audited boundaries in the Coverage section.
 
 ---
@@ -129,8 +134,8 @@ $$\text{Severity} = \text{Impact} \times \text{Reachability}$$
 
 To prevent passive pattern-matching and reward rigorous verification, the auditor operates under the epistemic scoring matrix detailed in [references/game_simulation_rl_auditing.md](./references/game_simulation_rl_auditing.md):
 - **+100 pts (`CONFIRMED`)**: Sourced invariant cited; reachable path proven; runnable reproducer generated.
-- **+50 pts (`REFUTED`)**: Plausible defect identified, alternative defense (e.g., DB constraint, RLS, atomic conditional `UPDATE`) verified, and invariant proven safe. *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent gaming.)*
-- **+30 pts (`NON LIQUET`)**: Indeterminate runtime boundary identified and paired with a concrete Required Telemetry Specification. *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent flooding.)*
+- **+50 pts (`REFUTED`)**: Plausible defect identified, alternative defense (e.g., DB constraint, RLS, atomic conditional `UPDATE`) verified, and invariant proven safe. *(Scored only when resolving an automated rule hit or ranked entry point; capped at max 3 findings / +150 pts per audit pass.)*
+- **+30 pts (`NON LIQUET`)**: Indeterminate runtime boundary identified and paired with a concrete Required Telemetry Specification. *(Scored only when resolving an automated rule hit or ranked entry point; capped at max 3 findings / +90 pts per audit pass.)*
 - **+10 pts (Coverage)**: Systematic mapping of un-audited entry points, triggers, or MCP tool handlers.
 - **-10 pts**: Out-of-scope cosmetic syntax/linter noise.
 - **-30 pts**: Syntactic heuristic false positive (flagging missing keywords when an alternative mechanism secures the state).

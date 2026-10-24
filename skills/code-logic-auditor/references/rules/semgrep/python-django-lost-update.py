@@ -15,8 +15,8 @@ def redeem_atomic_only(user_id, amount):
     with transaction.atomic():
         # ruleid: python-django-read-modify-write
         acct = Account.objects.get(user_id=user_id)
-        acct.balance = acct.balance - amount
-        acct.save(update_fields=["balance"])
+        acct.account_balance = acct.account_balance - amount
+        acct.save(update_fields=["account_balance"])
 
 
 def redeem_locked(user_id, amount):

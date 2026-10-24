@@ -34,4 +34,4 @@ rules:
               $O.save(...)
       - metavariable-regex:
           metavariable: $F
-          regex: (?i)(balance|credit|stock|quantity|qty|remaining|available|count|points|uses|seats)
+          regex: '(?i).*(balance|credit|stock|quantity|qty|remaining|available|count|points|uses|seats).*'

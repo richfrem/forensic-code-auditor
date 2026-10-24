@@ -22,6 +22,9 @@ class OrderService {
   @Transactional
   public void placeOrder(Order o) { repo.save(o); stock.decrement(o); }
 
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void auditRecord(Order o) { auditRepo.save(o); }
+
   public void checkout(Order o) {
     validate(o);
     // ruleid: java-transactional-self-invocation
@@ -33,9 +36,14 @@ class OrderService {
     placeOrder(o);
   }
 
+  public void logAuditDirect(Order o) {
+    // ruleid: java-transactional-self-invocation
+    this.auditRecord(o);
+  }
+
   @Transactional
   public void batch(Order o) {
-    // ok: java-transactional-self-invocation
+    // ok: java-transactional-self-invocation (callee uses Propagation.REQUIRED and caller has active @Transactional)
     placeOrder(o);
   }
 

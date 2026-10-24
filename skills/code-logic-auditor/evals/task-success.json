@@ -36,5 +36,17 @@
       "Correctly verifies invoice_scoped_kw restricts lookup by authenticated request.user.tenant_id",
       "Correctly verifies invoice_scoped_relation traverses relation anchored to authenticated user tenant"
     ]
+  },
+  {
+    "id": "b04",
+    "fixture": "evals/fixtures/behavior/pkg_security_auth.sql",
+    "query": "Audit pkg_security_auth.sql for enterprise PL/SQL authorization, VPD policy, and scoping flaws.",
+    "expected_behavior": [
+      "Identifies check_document_access fail-open flaw returning TRUE inside WHEN OTHERS exception handler",
+      "Identifies vpd_document_scoping policy returning NULL on missing session context, disabling row-level security for all documents",
+      "Identifies query_permits_unscoped tenant leak where (p_org_id IS NULL OR organization_id = p_org_id) expands query across all organizations",
+      "Correctly verifies verify_admin_status safe decoy fails closed on error (returns FALSE)",
+      "Correctly verifies vpd_permit_scoping safe decoy returns restrictive '1=0' predicate when context is missing"
+    ]
   }
 ]

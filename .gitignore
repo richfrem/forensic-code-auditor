@@ -5,3 +5,11 @@ repos/*
 research/*
 !research/README.md
 .vscode/
+
+# APM Deployed Harness Artifacts
+.agents/
+.claude/
+.codex/
+.github/skills/
+context/
+apm_modules/

@@ -2,7 +2,7 @@
 
 Forensic code logic and invariant auditor engineered to detect business-logic flaws, FSM transition bypasses, TOCTOU race windows, multi-tenant context leaks, and perimeter authorization collapse across enterprise legacy and modern distributed systems.
 
-Built and validated for the BC Gov NR Sector modernization ecosystem ([`bcgov/crow`](https://github.com/bcgov/crow) and [`bcgov/raven`](https://github.com/bcgov/raven)).
+`crow-raven-analysis` is an independent, open-source forensic engineering and invariant research repository developed under the MIT License, providing audit tooling and reference evaluations for modern and enterprise legacy codebases (including BC Gov NR Sector reference architectures [`bcgov/crow`](https://github.com/bcgov/crow) and [`bcgov/raven`](https://github.com/bcgov/raven)).
 
 For comprehensive installation, registry, update, and rollback documentation, see [INSTALL.md](INSTALL.md). For system architecture and mathematical foundations, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -47,4 +47,4 @@ crow-raven-analysis/
 
 - **Skill Quality**: Passed `audit_skill.py` with 0 errors and 0 warnings.
 - **APM Package Compliance**: Passed `validate_apm_package.py`.
-- **Empirical Rule Tests**: 9 tested Semgrep YAML files (13 rule IDs) and 2 compilable CodeQL packs (15 static logic rules total).
+- **Empirical Rule Tests**: 9 tested Semgrep YAML files (15 rule IDs) and 2 compilable CodeQL packs (17 static logic rules total).

@@ -18,7 +18,7 @@ Operational skill for identifying architectural and semantic vulnerabilities, br
 
 ## Constraints
 
-1. **Epistemological Stance & Anti-Fallacy Guardrails**: Reject appeals to authority (SOC2, vendor certifications, passing SAST), popularity ("industry standard pattern"), or tradition ("has run in production for 15 years"). Treat software strictly as deterministic state machines bounded by physical, resource, and informational limits.
+1. **Epistemological Stance & Anti-Fallacy Guardrails**: Reject appeals to authority (SOC2, vendor certifications, passing SAST), popularity ("industry standard pattern"), or tradition ("has run in production for 15 years"). Treat software strictly as deterministic state machines bounded by physical, resource, and informational limits. (Official platform specifications and DBMS locking manuals are admissible evidence of mechanical semantics.)
 2. **Invariant Sourcing Requirement**: Verify the explicit source of an invariant (business rule, schema constraint, API contract, or labeled assumption) before reporting a violation. Do not flag the absence of a preferred design pattern if an alternative verified mechanism enforces the property.
 3. **Four Evidence Levels**: Maintain strict separation between evidence status (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`) and impact severity (`Critical`, `High`, `Medium`, `Low`).
 4. **Beyond Syntactic Linters (Negative Bounds)**: Do NOT use this skill for syntax bugs, formatting/linting, pure third-party CVE dependency scans, or generic code walkthroughs. This skill strictly targets non-syntactic business logic flaws, state desynchronization, FSM transition bypasses, and trust-boundary confusion.
@@ -28,7 +28,7 @@ Operational skill for identifying architectural and semantic vulnerabilities, br
 1. **Inspection**: Load prompt under [`references/prompts/`](./references/prompts/) matching the domain.
 2. **Taxonomy**: Consult [`references/logic_invariants_taxonomy.md`](./references/logic_invariants_taxonomy.md) to classify breaches.
 3. **Triage Rules**: Run standalone Semgrep ([`references/rules/semgrep/`](./references/rules/semgrep/)) or CodeQL ([`references/rules/codeql/`](./references/rules/codeql/)).
-4. **Proof & Report**: Follow 7-step doctrine in [`instructions.md`](./instructions.md) to formulate discriminating proof.
+4. **Proof & Report**: Follow Step 0 + Seven-step doctrine in [`instructions.md`](./instructions.md) to formulate discriminating proof.
 
 ## Quick start
 

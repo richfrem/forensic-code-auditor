@@ -99,7 +99,7 @@ Ensure the consuming project's `.gitignore` excludes deployed runtime harness di
 .agents/
 .claude/skills/
 .codex/
-.github/agents/
+.github/skills/
 apm_modules/
 ```
 
@@ -114,7 +114,7 @@ When installed globally or locally, APM automatically unpacks and materializes `
 | **Google Antigravity (`agy`)** | `~/.gemini/antigravity-cli/skills/code-logic-auditor/` | `.agents/skills/code-logic-auditor/` |
 | **Claude Code (`claude`)** | `~/.claude/skills/code-logic-auditor/` | `.claude/skills/code-logic-auditor/` |
 | **OpenAI Codex CLI (`codex`)** | `~/.agents/skills/code-logic-auditor/` | `.agents/skills/code-logic-auditor/` |
-| **GitHub Copilot CLI (`copilot`)** | `~/.agents/skills/code-logic-auditor/` | `.github/agents/skills/code-logic-auditor/` |
+| **GitHub Copilot CLI (`copilot`)** | `~/.agents/skills/code-logic-auditor/` | `.github/skills/code-logic-auditor/` |
 | **APM Cache & Registry** | `~/.apm/` (manifest: `apm.yml`, lockfile: `apm.lock.yaml`) | `apm_modules/`, `apm.lock.yaml` |
 
 ---

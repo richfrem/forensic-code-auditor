@@ -23,6 +23,9 @@ Execute this inspection when auditing shared resources, balance updates, token r
 
 To prove a real database-level TOCTOU or lost-update race condition across transactions, threads must NOT share an in-memory ORM instance or single test transaction. Use `TransactionTestCase` and explicitly cycle or isolate database connections per worker thread:
 
+> [!WARNING]
+> **Database Engine Warning**: SQLite uses database-level locks and serializes all write operations, artificially masking race windows and producing false `REFUTED` outcomes. Dynamic concurrency tests and barriers MUST run against client-server database engines with multi-connection concurrency (e.g. PostgreSQL, Oracle, MySQL).
+
 ```python
 import threading
 from django.test import TransactionTestCase

@@ -10,7 +10,7 @@ Forensic code logic and invariant auditing repository. Houses the `code-logic-au
 
 ## Core Operational Invariants
 1. **First-Principles Epistemic Stance**: Agents MUST evaluate code as deterministic state machines bounded by physical, resource, and informational limits.
-2. **Rejection of Authority as Proof**: Agents MUST NEVER accept vendor claims, compliance badges (SOC2/ISO), or passing SAST/SonarQube scans as proof of invariant safety.
+2. **Rejection of Authority as Proof**: Agents MUST NEVER accept vendor claims, compliance badges (SOC2/ISO), or passing SAST scans as proof of safety (though official platform specifications and DBMS locking manuals are admissible evidence of mechanical semantics).
 3. **Four Evidence Levels**: Findings MUST explicitly declare evidence status (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`), strictly separating evidence from severity.
 4. **Invariant Sourcing Requirement**: Agents MUST cite the explicit source of an invariant (business rule, schema constraint, or API contract) before claiming a breach.
 5. **Target & Research Isolation**: External target repositories (`repos/`) and security research labs (`research/`) MUST remain gitignored to prevent submodule pollution.
