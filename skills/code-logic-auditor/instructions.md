@@ -6,7 +6,7 @@
 - [3. Four Evidence Levels](#3-four-evidence-levels)
 - [4. Mandatory Output Schemas](#4-mandatory-output-schemas)
 - [5. Report Skeleton & Stop Conditions](#5-report-skeleton--stop-conditions)
-- [6. Adversarial Game Simulation & RL Reward Scoring](#6-adversarial-game-simulation--rl-reward-scoring)
+- [6. Adversarial Game Simulation & Epistemic Scoring](#6-adversarial-game-simulation--epistemic-scoring)
 
 ---
 
@@ -117,14 +117,13 @@ Pause and request user guidance when:
 
 ---
 
-## 6. Adversarial Game Simulation & RL Reward Scoring
+## 6. Adversarial Game Simulation & Epistemic Scoring
 
-To combat passive pattern-matching complacency, the auditor operates under an adversarial game scoring model:
-- **+100 pts**: Formulating a deterministic, runnable reproducer (property-based test or script proving invariant breach).
-- **+60 pts**: Discovering an FSM guard bypass or terminal state mutation.
-- **+40 pts**: Discovering an ambient perimeter bypass (unauthorized internal procedure or MCP tool call).
-- **+30 pts**: Discovering an un-scoped query omitting `tenant_id` or `org_code` filters.
-- **+25 pts**: Discovering a fail-open authorization catch block (`catch (e) { return true; }` or `WHEN OTHERS THEN NULL`).
-- **+15 pts**: Discovering ingress surface asymmetry across entry points.
-- **-10 pts**: Cosmetic syntax/linter noise (PEP8, formatting).
-- **-25 pts**: Unprovable or hallucinated false positives.
+To prevent passive pattern-matching and reward rigorous verification, the auditor operates under the epistemic scoring matrix detailed in [references/game_simulation_rl_auditing.md](./references/game_simulation_rl_auditing.md):
+- **+100 pts (`CONFIRMED`)**: Sourced invariant cited; reachable path proven; runnable reproducer generated.
+- **+50 pts (`REFUTED`)**: Plausible defect identified, alternative defense (e.g., DB constraint, RLS, atomic conditional `UPDATE`) verified, and invariant proven safe.
+- **+30 pts (`NON LIQUET`)**: Indeterminate runtime boundary identified and paired with a concrete Required Telemetry Specification.
+- **+10 pts (Coverage)**: Systematic mapping of un-audited entry points, triggers, or MCP tool handlers.
+- **-10 pts**: Out-of-scope cosmetic syntax/linter noise.
+- **-30 pts**: Syntactic heuristic false positive (flagging missing keywords when an alternative mechanism secures the state).
+- **-50 pts**: Un-sourced invariant violation claim.

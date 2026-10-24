@@ -1,19 +1,9 @@
 /**
  * @name Remote input written to a lifecycle state field without a transition guard
  * @description A request value is written to a status/state/stage property (directly or in an
- *              ORM update payload) without first passing through a transition validator.
- *              A client can jump the entity to any state, e.g. PENDING -> FULFILLED.
- *              
- *              Modeling Assumption:
- *              This query models transition sanitization heuristically on the true-branch of
- *              recognized validator predicates.
- *              Caveats & Limitations:
- *              1. Entity Disconnect: Does not verify that the entity inspected in the guard is
- *                 the identical instance being written (e.g. wrong-object bypass).
- *              2. Concurrency: Does not verify transactional or lock boundaries between check
- *                 and persistence (TOCTOU race window).
- *              3. Completeness: Taint suppression alone does not constitute proof of verified
- *                 state-machine safety.
+ *              ORM update payload) without first passing through a transition validator, or where
+ *              the transition validator inspected a different entity (wrong-object bypass).
+ *              A client can jump the entity to an unauthorized state.
  * @kind path-problem
  * @problem.severity warning
  * @precision medium
@@ -35,6 +25,30 @@ class TransitionGuard extends DataFlow::CallNode {
   }
 }
 
+/**
+ * Holds if `guard` validates `stateExpr` specifically against `checkedEntity`
+ * (e.g., `canTransition(orderA.status, next)`).
+ */
+predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Expr stateExpr) {
+  stateExpr = guard.getAnArgument().asExpr() and
+  exists(PropAccess pa |
+    pa = guard.getAnArgument().asExpr() and
+    checkedEntity = pa.getBase()
+  )
+}
+
+/**
+ * Holds if `w` writes `rhs` to `targetEntity.status`, where an enclosing `TransitionGuard`
+ * validated `rhs` against a DIFFERENT entity `checkedEntity`.
+ */
+predicate isWrongObjectBypass(DataFlow::PropWrite w) {
+  exists(TransitionGuard g, VarAccess checkedEntity, VarAccess targetEntity |
+    guardChecksEntity(g, checkedEntity, w.getRhs().asExpr()) and
+    targetEntity = w.getBase().asExpr() and
+    checkedEntity.getVariable() != targetEntity.getVariable()
+  )
+}
+
 module StateTransitionConfig implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node n) { n instanceof RemoteFlowSource }
 
@@ -46,7 +60,8 @@ module StateTransitionConfig implements DataFlow::ConfigSig {
   }
 
   predicate isBarrier(DataFlow::Node n) {
-    n = DataFlow::MakeBarrierGuard<TransitionGuard>::getABarrierNode()
+    n = DataFlow::MakeBarrierGuard<TransitionGuard>::getABarrierNode() and
+    not exists(DataFlow::PropWrite w | isWrongObjectBypass(w) and n = w.getRhs())
   }
 }
 
@@ -57,4 +72,4 @@ import StateTransitionFlow::PathGraph
 from StateTransitionFlow::PathNode source, StateTransitionFlow::PathNode sink
 where StateTransitionFlow::flowPath(source, sink)
 select sink.getNode(), source, sink,
-  "Lifecycle state is set from $@ without a verified transition guard.", source.getNode(), "remote input"
+  "Lifecycle state is set from $@ without a valid entity transition guard.", source.getNode(), "remote input"

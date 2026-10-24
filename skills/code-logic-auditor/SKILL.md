@@ -40,6 +40,7 @@ cat references/prompts/state_machine_audit.md             # FSM Transitions
 cat references/prompts/multi_tenant_context_audit.md      # Multi-Tenant
 cat references/prompts/idempotency_replay_audit.md        # Idempotency
 cat references/prompts/authorization_perimeter_audit.md   # Perimeter & Auth
+cat references/prompts/agentic_tool_boundary_audit.md     # Agentic & MCP
 semgrep --test references/rules/semgrep                  # Test triage rules
 ```
 

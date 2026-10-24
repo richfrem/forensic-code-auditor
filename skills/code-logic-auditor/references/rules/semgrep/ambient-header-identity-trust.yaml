@@ -20,7 +20,13 @@ rules:
           if (!verifySignature($REQ, ...)) { ... return ...; }
           ...
       - pattern-not-inside: |
+          if (!verifySignature($REQ, ...)) { ... throw ...; }
+          ...
+      - pattern-not-inside: |
           if (!verifyGatewayToken($REQ, ...)) { ... return ...; }
+          ...
+      - pattern-not-inside: |
+          if (!verifyGatewayToken($REQ, ...)) { ... throw ...; }
           ...
       - pattern-not-inside: |
           if (verifySignature($REQ, ...)) {
