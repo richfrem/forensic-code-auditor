@@ -91,12 +91,12 @@ Concurrency bugs (TOCTOU, double-spend, distributed lock gaps) are inherently se
 
 ## 4. Operational Application
 
-When auditing target repositories:
+When auditing target repositories across diverse operational domains:
 
-1. **Multi-MCP Gateways (`raven`)**:
-   - *Adversarial Goal*: Attempt to trigger a privileged MCP tool (e.g. repository mutation or database migration) using an unauthenticated caller or forged header context.
+1. **Autonomous Tool Boundaries & Multi-MCP Gateways**:
+   - *Adversarial Goal*: Attempt to trigger a privileged tool (e.g. database migration, VCS mutation, external API dispatch) using an unauthenticated caller or forged header context.
    - *Verification*: Verify whether the tool handler independently checks authorization or implicitly trusts ambient orchestrator context.
 
-2. **Legacy Enterprise Modernization (`crow`)**:
-   - *Adversarial Goal*: Attempt to bypass legacy validation triggers (e.g. Oracle Forms `WHEN-VALIDATE-RECORD`) by invoking lower-level package procedures or modern API wrappers directly.
-   - *Verification*: Verify whether business invariants are locked in database constraints or reside solely in legacy client UI logic.
+2. **Legacy Enterprise Modernization (Oracle Forms & PL/SQL)**:
+   - *Adversarial Goal*: Attempt to bypass legacy client validation triggers (e.g. Oracle Forms `WHEN-VALIDATE-RECORD`) by invoking lower-level package procedures, batch jobs, or modern REST API wrappers directly.
+   - *Verification*: Verify whether business invariants are enforced in database constraints/triggers or reside solely in legacy client UI logic.

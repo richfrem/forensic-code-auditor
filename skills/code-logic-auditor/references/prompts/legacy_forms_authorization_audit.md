@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Governing Doctrine**: All inspections are governed by `instructions.md` (First-Principles Epistemology, Invariant Sourcing, and Four Evidence Levels). Reject appeals to tradition ("this Form has run safely in production for 15 years"). Verify whether authorization invariants reside strictly in client UI triggers or are enforced at the database storage engine.
 
-Execute this inspection when auditing enterprise legacy Oracle Forms (FMB/XML), Oracle Reports, PL/SQL package procedures, and database triggers (e.g. BC Gov NR Sector JUSTIN / CROW modernization).
+Execute this inspection when auditing enterprise legacy Oracle Forms (FMB/XML), Oracle Reports, PL/SQL package procedures, and database triggers undergoing modern API exposure, re-platforming, microservice extraction, or invariant auditing.
 
 ## 1. Oracle Forms Source Extraction & Pipeline
 Binary `.fmb` / `.mmb` files cannot be inspected directly by static analysis. Convert binary forms to XML using the Oracle Forms Translation Tool:

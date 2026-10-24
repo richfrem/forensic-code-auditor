@@ -5,7 +5,7 @@ Execute this inspection to evaluate Model Context Protocol (MCP) server endpoint
 ## 1. Tool Dispatch & Invocation Lifecycle
 - Trace how agent tool calls enter the runtime (e.g. JSON-RPC over `stdio`, `sse`, or HTTP POST).
 - Verify whether the executing identity is authenticated per tool call or if the tool relies on ambient daemon/process permissions.
-- Check whether destructive tool parameters (file paths, SQL filters, Jira issue IDs, shell commands) are strictly validated against an immutable allowlist or if raw LLM generation is passed directly to system APIs.
+- Check whether destructive tool parameters (file paths, SQL filters, entity/ticket IDs, shell commands) are strictly validated against an immutable allowlist or if raw LLM generation is passed directly to system APIs.
 - Trace downstream propagation: when Tool A returns data (e.g., ticket comments, git commit logs), is it returned to the agent context as untrusted data or does it bypass policy boundaries in Tool B?
 
 ## 2. Invariant Checklist

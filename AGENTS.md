@@ -33,5 +33,5 @@ semgrep --test skills/code-logic-auditor/references/rules/semgrep
 ### Context Bundling
 ```bash
 # Recompile single-file Markdown context bundle for LLM reviews
-python3 "$HOME/.gemini/antigravity-cli/skills/bundling-context/scripts/bundle.py" --manifest temp/bundles/code-logic-auditor-manifest.json --bundle temp/bundles/code-logic-auditor-v3.3.md
+python3 "$HOME/.gemini/antigravity-cli/skills/bundling-context/scripts/bundle.py" --manifest temp/bundles/code-logic-auditor-manifest.json --bundle temp/bundles/code-logic-auditor-v3.4.md
 ```

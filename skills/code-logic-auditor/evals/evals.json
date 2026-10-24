@@ -12,7 +12,7 @@
   {"id": "r11", "should_trigger": true, "query": "Can an attacker spoof the SiteMinder header SM_USER in this internal PHP controller to bypass authentication?"},
   {"id": "r12", "should_trigger": true, "query": "Review our new MCP tool handler for database migrations to see if any untrusted agentic client can trigger destructive DDL."},
   {"id": "r13", "should_trigger": true, "query": "Check if this Oracle Forms authorization package fails open when an unhandled exception triggers WHEN OTHERS RETURN TRUE."},
-  {"id": "r14", "should_trigger": true, "query": "Our legacy JUSTIN PL/SQL authorization function uses (:P_ORG IS NULL OR org_id = :P_ORG); does a null bind expand permission to all orgs?"},
+  {"id": "r14", "should_trigger": true, "query": "Our legacy enterprise PL/SQL authorization function uses (:P_ORG IS NULL OR org_id = :P_ORG); does a null bind expand permission to all orgs?"},
 
   {"id": "n01", "should_trigger": false, "query": "How do I fix this SonarQube warning about cognitive complexity in my helper method?"},
   {"id": "n02", "should_trigger": false, "query": "Run npm audit and tell me which lodash CVE needs patching."},

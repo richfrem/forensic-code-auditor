@@ -36,7 +36,7 @@ Execute this inspection when auditing authentication handoffs, microservice boun
     - Path A: Public / Standard REST API route.
     - Path B: Administrative / Batch route.
     - Path C: Async worker / Celery task / Event subscriber.
-    - Path D: MCP tool handler (e.g. Raven tools exposing Bitbucket/Jira/DB mutations).
+    - Path D: MCP tool handler (e.g. tools exposing VCS, issue tracker, or database mutations).
 - **Check Ingress Parity**:
   - Assert that all paths enforce identical authorization checks, tenancy predicates, and business rule validations.
   - Flag any alternate path (e.g., an internal MCP tool or background task) that bypasses checks enforced on the primary API.

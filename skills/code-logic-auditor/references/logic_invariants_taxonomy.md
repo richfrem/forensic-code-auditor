@@ -101,7 +101,7 @@ Comprehensive taxonomy of non-syntactic logic invariants across polyglot cloud s
 ## 11. Perimeter Inversion & Ambient Trust (PERIMETER-BYPASS)
 - **The "Default-Allow" Perimeter Illusion**:
   - Enterprise systems (PHP, Java EE, Oracle Forms) historically assumed an upstream reverse proxy (SiteMinder SSO, WebLogic gateway, VPN) guaranteed authentication. Internal procedures assume arrival equals authorization.
-  - **Modern Failure Mode**: Exposing internal endpoints to modern APIs, microservices, or AI MCP tools (like Raven) bypasses the perimeter proxy, exposing un-guarded operations.
+  - **Modern Failure Mode**: Exposing internal endpoints to modern APIs, microservices, or AI MCP tools bypasses the perimeter proxy, exposing un-guarded operations.
 - **Ambient Header Trust**:
   - Reading `SM_USER`, `X-Forwarded-User`, or `X-User-Id` directly without cryptographic origin attestation (mTLS, signed JWT with audience verification, or gateway HMAC).
 - **Ingress Surface Asymmetry**:
@@ -120,6 +120,6 @@ Comprehensive taxonomy of non-syntactic logic invariants across polyglot cloud s
 
 ## 13. Agentic Tool-Call & LLM Boundaries (AGENTIC-TOOL-LEAK)
 - **Autonomous Tool Authority**:
-  - LLM-orchestrated MCP tools (such as Raven tools mutating Bitbucket, Jira, or Jenkins) executing privileged operations without verifying that the human or service invoking the agent holds the requisite capability.
+  - LLM-orchestrated MCP tools (such as tools mutating VCS repositories, issue trackers, CI pipelines, or databases) executing privileged operations without verifying that the human or service invoking the agent holds the requisite capability.
 - **Prompt-to-State Pollution**:
   - Unvalidated tool output or untrusted content fed back into agent execution loops triggering state-mutating actions without secondary confirmation gates.
