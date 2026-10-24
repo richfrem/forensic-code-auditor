@@ -10,5 +10,28 @@
       "Identifies refund error-swallowing dual-write where gateway failure marks order REFUNDED",
       "Correctly rules out ship_order, debit_wallet, and payment_webhook as verified protected guards"
     ]
+  },
+  {
+    "id": "b02",
+    "fixture": "evals/fixtures/codeql-js/routes.js",
+    "query": "Audit Express and Prisma order routes in routes.js for state machine bypasses.",
+    "expected_behavior": [
+      "Identifies direct assignment of client-controlled status to order.status on line 6 without transition validator",
+      "Identifies Prisma order update with unvalidated req.body.status on line 12",
+      "Correctly confirms status-guarded endpoint (canTransition guard) is safely protected",
+      "Correctly confirms status-throw endpoint (isValidTransition guard) is safely protected",
+      "Correctly rules out cancel endpoint as safe constant assignment"
+    ]
+  },
+  {
+    "id": "b03",
+    "fixture": "evals/fixtures/codeql-py/app/views.py",
+    "query": "Review Django invoice views for cross-tenant isolation and authorization leaks.",
+    "expected_behavior": [
+      "Identifies invoice_unscoped looking up Invoice by pk without tenant filter",
+      "Identifies invoice_query_param filtering by unvalidated GET parameter without tenant constraint",
+      "Correctly verifies invoice_scoped_kw restricts lookup by request.user.tenant_id",
+      "Correctly verifies invoice_scoped_relation traverses relation anchored to authenticated user tenant"
+    ]
   }
 ]

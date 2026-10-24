@@ -21,7 +21,7 @@ Operational skill for identifying architectural and semantic vulnerabilities, br
 1. **Epistemological Stance & Anti-Fallacy Guardrails**: Reject appeals to authority (SOC2, vendor certifications, passing SAST), popularity ("industry standard pattern"), or tradition ("has run in production for 15 years"). Treat software strictly as deterministic state machines bounded by physical, resource, and informational limits.
 2. **Invariant Sourcing Requirement**: Verify the explicit source of an invariant (business rule, schema constraint, API contract, or labeled assumption) before reporting a violation. Do not flag the absence of a preferred design pattern if an alternative verified mechanism enforces the property.
 3. **Four Evidence Levels**: Maintain strict separation between evidence status (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`) and impact severity (`Critical`, `High`, `Medium`, `Low`).
-4. **Beyond Syntactic Linters**: Standard SAST catches syntax typos and known CVEs; this skill strictly targets non-syntactic business logic flaws, state desynchronization, and trust-boundary confusion.
+4. **Beyond Syntactic Linters (Negative Bounds)**: Do NOT use this skill for syntax bugs, formatting/linting, pure third-party CVE dependency scans, or generic code walkthroughs. This skill strictly targets non-syntactic business logic flaws, state desynchronization, FSM transition bypasses, and trust-boundary confusion.
 5. **Polyglot & Legacy Scope**: Supports modern async runtimes alongside enterprise legacy environments (Oracle Forms/PL/SQL, Java EE EJB, .NET 4.x WCF/ADO.NET, PHP).
 
 ## Progressive Disclosure
@@ -68,10 +68,5 @@ python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/sk
 - Game Simulation & RL Auditing: [references/game_simulation_rl_auditing.md](./references/game_simulation_rl_auditing.md)
 - Tested Semgrep Rules Index: [references/semgrep_logic_rules.md](./references/semgrep_logic_rules.md)
 - Tested CodeQL Query Packs: [references/codeql_taint_recipes.md](./references/codeql_taint_recipes.md)
-- Inspection Prompts:
-  - FSM & Lifecycle: [references/prompts/state_machine_audit.md](./references/prompts/state_machine_audit.md)
-  - Multi-Tenant Isolation: [references/prompts/multi_tenant_context_audit.md](./references/prompts/multi_tenant_context_audit.md)
-  - Concurrency & TOCTOU: [references/prompts/concurrency_toctou_audit.md](./references/prompts/concurrency_toctou_audit.md)
-  - Idempotency & Replay: [references/prompts/idempotency_replay_audit.md](./references/prompts/idempotency_replay_audit.md)
-  - Perimeter & Data-Driven Auth: [references/prompts/authorization_perimeter_audit.md](./references/prompts/authorization_perimeter_audit.md)
-- Persona Standard: [agents/forensic_systems_analyst.md](./agents/forensic_systems_analyst.md)
+- Inspection Prompts: [FSM](references/prompts/state_machine_audit.md) • [Multi-Tenant](references/prompts/multi_tenant_context_audit.md) • [TOCTOU](references/prompts/concurrency_toctou_audit.md) • [Idempotency](references/prompts/idempotency_replay_audit.md) • [Perimeter & Auth](references/prompts/authorization_perimeter_audit.md) • [Agentic & MCP](references/prompts/agentic_tool_boundary_audit.md)
+- Persona Standard: [agents/forensic_systems_analyst.md](agents/forensic_systems_analyst.md)
