@@ -1,43 +1,57 @@
-# Reinforcement Learning & Game-Theoretic Simulation in Logic Auditing
+# Adversarial Mental Models & Game Simulation Heuristics
+
+## Contents
+- [Executive Summary](#executive-summary)
+- [1. The Codebase as an Adversarial Game Environment](#1-the-codebase-as-an-adversarial-game-environment)
+- [2. Reward Shaping & Scoring Matrix](#2-reward-shaping--scoring-matrix)
+- [3. Monte Carlo Tree Search (MCTS) Interleaving Heuristic](#3-monte-carlo-tree-search-mcts-interleaving-heuristic)
+- [4. Operational Application](#4-operational-application)
+
+---
 
 ## Executive Summary
-This document formalizes the integration of **reinforcement learning (RL) reward shaping**, **game simulation mechanics**, and **adversarial state-space exploration** into the `code-logic-auditor` doctrine.
+This document outlines an **adversarial search heuristic and mental model** for forensic auditors. Complex business logic flaws (TOCTOU race windows, FSM transition bypasses, multi-tenant leaks) rarely appear as static syntax defects; they emerge from dynamic execution sequences and unexpected call interleavings. 
 
-Traditional linters use passive pattern matching over static ASTs. In contrast, complex business logic flaws (TOCTOU races, FSM jump exploits, authorization perimeter collapse) emerge only through dynamic execution sequences. By framing the codebase as an adversarial game environment—where an agent is rewarded for discovering illegal state reachability, invariant breaches, and authorization asymmetries—we turn vulnerability discovery into an active, objective-driven search.
+By modeling code auditing as an adversarial game against a state machine—where the auditor systematically searches for illegal state reachability bounded by formal invariants—agents avoid shallow linter pattern matching.
+
+> [!NOTE]
+> This framework is an **investigative mental model and reasoning heuristic** for guiding LLM hypothesis generation and verification. It is not an executable reinforcement learning runtime or compiled training loop.
 
 ---
 
 ## 1. The Codebase as an Adversarial Game Environment
 
-In game simulation (e.g., AlphaGo, MuZero, or coverage-guided RL fuzzers like Neuzz):
+In game-theoretic state exploration:
 - **Environment**: The target system's finite state machine (FSM), database transactions, and call graph.
-- **Agent Action Space**: Legal input vectors, API route invocations, MCP tool calls, parameter mutations, and concurrent operation interleavings.
-- **State Space**: The combined state of DB entities, session contexts, tenant discriminators, and in-memory caches.
-- **Winning Condition**: Driving the system into an **Invalid Invariant State** (e.g., negative balance, cross-tenant record leakage, unauthenticated execution of a restricted procedure).
+- **Auditor Action Space**: Valid input vectors, API route invocations, MCP tool dispatches, parameter mutations, and concurrent operation interleavings.
+- **State Space**: The combined state of database entities, session contexts, tenant discriminators, and in-memory caches.
+- **Winning Condition**: Driving the system into an **Invalid Invariant State** (e.g. negative balance, cross-tenant record leakage, unauthorized state transition) while respecting known preconditions.
 
 ```
 +-------------------------------------------------------------------------+
-|                        Game Environment (Target App)                    |
+|                        Game Environment (Target System)                 |
 |                                                                         |
 |  [Entry Points / Actions]  ---> [State Transitions] ---> [Entity State] |
 |   - API Routes                   - Guards                 - Invariants  |
 |   - MCP Tools                    - DB Triggers            - Tenancy     |
-|   - Batch Queues                 - Isolation Scopes       - Balances    |
+|   - Worker Queues                - Transaction Scopes     - Balances    |
 +-------------------------------------------------------------------------+
                                     ^
                                     | Actions (Interleavings / Payloads)
                                     |
-                           [Auditor RL Agent]
+                           [Auditor Reasoning Model]
                                     |
-                                    v Reward Signal
+                                    v Reward / Penalty Feedback
 +-------------------------------------------------------------------------+
-|                           Scoring Engine                                |
+|                  Epistemic Evaluation Matrix                            |
 |                                                                         |
-|  +10 pts: Surface Parity Gap (Route A has guard, Route B missing)       |
-|  +25 pts: Fail-Open Exception Swallow                                   |
-|  +50 pts: Ambient Header / Perimeter Bypass Path                        |
-|  +100 pts: Provable TOCTOU Race or Terminal State Mutate                |
-|  -20 pts: False Positive / Unreachable Dead Code                        |
+|  +100 pts: Confirmed Invariant Breach with Discriminating Reproducer     |
+|  +50 pts: Valid Refutation (Proving alternative defense secures state)  |
+|  +30 pts: High-Value NON LIQUET with Concrete Telemetry Specification   |
+|  +10 pts: State-Space Coverage Expansion                                |
+|  -50 pts: Un-sourced Invariant Violation Claim                          |
+|  -30 pts: Syntactic Heuristic False Positive (AST pattern != bug)       |
+|  -10 pts: Trivial Syntax / Formatting Noise                             |
 +-------------------------------------------------------------------------+
 ```
 
@@ -45,41 +59,39 @@ In game simulation (e.g., AlphaGo, MuZero, or coverage-guided RL fuzzers like Ne
 
 ## 2. Reward Shaping & Scoring Matrix
 
-To prevent the agent from getting stuck in trivial syntax warnings, the reward function $R(s, a)$ strictly rewards non-syntactic semantic divergence:
+To align the auditor with the **Four Evidence Levels** and **First-Principles Epistemology**, scoring strictly penalizes premature pattern-matching while rewarding rigorous verification and honest refutation:
 
-| Objective / Action | Points | Invariant Verified |
+| Objective / Action | Points | Invariant & Evidence Criteria |
 | :--- | :--- | :--- |
-| **New Call-Graph Transition Discovered** | `+5` | Coverage expansion across un-audited internal procedures. |
-| **Ingress Path Asymmetry** | `+15` | Identifying that an entity can be modified via an un-guarded alternate vector (e.g. MCP tool or Celery task). |
-| **Fail-Open Catch Block Discovered** | `+25` | Pinpointing exception handlers returning `true`/`allow` on DB error. |
-| **Un-Scoped Data Query Located** | `+30` | Finding SQL/ORM calls missing `tenant_id` or `org_code` predicates. |
-| **Ambient Perimeter Reliance Identified** | `+40` | Proving that an internal procedure executes without localized capability verification. |
-| **FSM Transition Guard Bypass** | `+60` | Reaching a terminal or illegal state without passing through intermediate validation. |
-| **Deterministic Discriminating Reproducer** | `+100` | Generating a runnable property-based test or script proving the state breach. |
-| **Trivial Syntax / Linter Noise** | `-10` | Penalizing the agent for reporting cosmetic style issues (PEP8, formatting). |
-| **Unprovable / Hallucinated Exploit** | `-25` | Penalizing false positives that fail compilation or execution. |
+| **Confirmed Invariant Breach** | `+100` | Sourced invariant cited; exact state reachability path proven; reproducible property test or dynamic exploit vector generated (`CONFIRMED`). |
+| **Rigorous Refutation of Plausible Defect** | `+50` | Identifying an apparent vulnerability, rigorously inspecting alternative defenses (e.g. DB check constraints, Postgres RLS, or serializable locks), and proving the invariant is preserved (`REFUTED`). |
+| **High-Value Uncertainty Resolution** | `+30` | Identifying ambiguous boundary conditions, issuing `NON LIQUET`, and formulating an actionable telemetry specification or logging hook to resolve it. |
+| **Coverage Expansion** | `+10` | Systematic mapping of previously un-audited state transitions, background worker handlers, or MCP tool dispatchers. |
+| **Trivial Syntax / Linter Noise** | `-10` | Reporting cosmetic style issues, formatting, or linting warnings out of scope for logic auditing. |
+| **Syntactic False Positive** | `-30` | Flagging code as vulnerable purely because a keyword is missing, without verifying whether alternative mechanisms protect the state. |
+| **Un-Sourced Breach Claim** | `-50` | Claiming a security or logic flaw without citing an explicit business specification, schema constraint, or contract rule. |
 
 ---
 
-## 3. Monte Carlo Tree Search (MCTS) over Call Interleavings
+## 3. Monte Carlo Tree Search (MCTS) Interleaving Heuristic
 
-Concurrency bugs (TOCTOU, double-spend, distributed lock gaps) are inherently sequential games. An RL/MCTS loop explores the tree of possible execution interleavings:
+Concurrency bugs (TOCTOU, double-spend, distributed lock gaps) are inherently sequential games. Auditors use an MCTS-style interleaving search heuristic to evaluate candidate race windows:
 
-1. **Selection**: Select two concurrent threads/tasks modifying the same resource balance.
-2. **Expansion**: Expand interleaving points (e.g., between `GetBalance()` and `DeductBalance()`, or between `SELECT` and `UPDATE`).
-3. **Simulation**: Simulate latency injection, thread preemption, or network pauses at the check-then-act gap.
-4. **Backpropagation**: If the simulated interleaving results in a double-spend or duplicate permit generation, backpropagate a high positive reward to that sequence.
+1. **Selection**: Identify two concurrent operations modifying the same resource balance or state machine entity.
+2. **Expansion**: Map candidate preemption points (e.g. between check and act, between ORM read and update, or across asynchronous `await` boundaries).
+3. **Simulation**: Evaluate hypothetical thread preemption or network pauses at the identified gap. Verify whether database isolation or row locks prevent interleaving.
+4. **Verification**: If an interleaving produces an illegal state, formulate a synchronized test vector (`threading.Barrier`) to confirm whether the race is physically realizable.
 
 ---
 
-## 4. Application to `bcgov/raven` & `bcgov/crow`
+## 4. Operational Application
 
-This game-theoretic model directly solves our two biggest challenges:
+When auditing target repositories:
 
-1. **Harden Raven's Multi-MCP Gateway**:
-   - *Game Objective*: Attempt to trigger a Bitbucket merge, Jira issue mutation, or Server Monitor command using an unprivileged or forged context.
-   - *Reward*: Points awarded if an MCP tool executes an action without verifying local authorization claims against SiteMinder/gateway assertions.
+1. **Multi-MCP Gateways (`raven`)**:
+   - *Adversarial Goal*: Attempt to trigger a privileged MCP tool (e.g. repository mutation or database migration) using an unauthenticated caller or forged header context.
+   - *Verification*: Verify whether the tool handler independently checks authorization or implicitly trusts ambient orchestrator context.
 
-2. **Harden Legacy Systems via Crow**:
-   - *Game Objective*: Attempt to bypass Oracle Forms `WHEN-VALIDATE-RECORD` rules by invoking lower-level package procedures directly.
-   - *Reward*: Points awarded if a PL/SQL package procedure modifies a table without triggering the validation logic normally enforced in the user interface.
+2. **Legacy Enterprise Modernization (`crow`)**:
+   - *Adversarial Goal*: Attempt to bypass legacy validation triggers (e.g. Oracle Forms `WHEN-VALIDATE-RECORD`) by invoking lower-level package procedures or modern API wrappers directly.
+   - *Verification*: Verify whether business invariants are locked in database constraints or reside solely in legacy client UI logic.

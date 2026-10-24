@@ -47,4 +47,4 @@ crow-raven-analysis/
 
 - **Skill Quality**: Passed `audit_skill.py` with 0 errors and 0 warnings.
 - **APM Package Compliance**: Passed `validate_apm_package.py`.
-- **Empirical Rule Tests**: 10 tested Semgrep rules and 2 compilable CodeQL packs.
+- **Empirical Rule Tests**: 8 tested Semgrep AST rules and 2 compilable CodeQL packs (10 static logic rules total).

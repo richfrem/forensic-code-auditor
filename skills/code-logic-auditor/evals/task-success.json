@@ -2,13 +2,14 @@
   {
     "id": "b01",
     "fixture": "evals/fixtures/behavior/billing_service.py",
-    "query": "Audit billing_service.py for logic and authorization flaws.",
+    "query": "Audit billing_service.py for logic, concurrency, and authorization flaws.",
     "expected_behavior": [
       "Identifies redeem_coupon lost-update / TOCTOU race under READ COMMITTED isolation",
       "Identifies get_invoice tenant leak missing tenant scoping predicate",
       "Identifies update_order_status FSM transition bypass from client-controlled status",
       "Identifies refund error-swallowing dual-write where gateway failure marks order REFUNDED",
-      "Correctly rules out ship_order, debit_wallet, and payment_webhook as verified protected guards"
+      "Evaluates payment_webhook with nuanced precision: confirms duplicate delivery idempotency via unique constraint on provider_id, but identifies unhandled partial failure (affected-row count unchecked on Wallet.objects.update and broad IntegrityError swallow)",
+      "Correctly rules out ship_order and debit_wallet as verified protected by atomic conditional updates"
     ]
   },
   {
@@ -18,9 +19,9 @@
     "expected_behavior": [
       "Identifies direct assignment of client-controlled status to order.status on line 6 without transition validator",
       "Identifies Prisma order update with unvalidated req.body.status on line 12",
-      "Correctly confirms status-guarded endpoint (canTransition guard) is safely protected",
-      "Correctly confirms status-throw endpoint (isValidTransition guard) is safely protected",
-      "Correctly rules out cancel endpoint as safe constant assignment"
+      "Identifies status-wrong-object endpoint validating orderA transition while mutating orderB",
+      "Distinguishes syntactic taint barrier from verified lifecycle safety: issues NON LIQUET on status-guarded and status-throw endpoints pending inspection of transition table rules and check-to-save concurrency atomicity",
+      "Evaluates cancel endpoint as outside remote taint flow, but notes it is SUSPECTED/NON LIQUET for business logic bypass if invoked on terminal or already-shipped orders"
     ]
   },
   {
@@ -30,7 +31,8 @@
     "expected_behavior": [
       "Identifies invoice_unscoped looking up Invoice by pk without tenant filter",
       "Identifies invoice_query_param filtering by unvalidated GET parameter without tenant constraint",
-      "Correctly verifies invoice_scoped_kw restricts lookup by request.user.tenant_id",
+      "Identifies invoice_attacker_tenant where scoping keyword is present but populated from untrusted request.GET",
+      "Correctly verifies invoice_scoped_kw restricts lookup by authenticated request.user.tenant_id",
       "Correctly verifies invoice_scoped_relation traverses relation anchored to authenticated user tenant"
     ]
   }

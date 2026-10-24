@@ -67,14 +67,15 @@ crow-raven-analysis/
 │       │   ├── semgrep_logic_rules.md         # Tested Semgrep AST patterns catalog
 │       │   ├── codeql_taint_recipes.md        # Modern CodeQL taint recipes guide
 │       │   ├── rules/
-│       │   │   ├── semgrep/                   # 10 tested rules with paired test code
+│       │   │   ├── semgrep/                   # 8 tested AST rules with paired test code
 │       │   │   └── codeql/                    # Compilable CodeQL packs (python, javascript)
-│       │   └── prompts/                       # 5 domain-specific inspection prompts
+│       │   └── prompts/                       # 6 domain-specific inspection prompts
 │       │       ├── state_machine_audit.md     # FSM transitions & terminal state locks
 │       │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
 │       │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
 │       │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
-│       │       └── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
+│       │       ├── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
+│       │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
 │       └── evals/
 │           ├── evals.json                     # 20 routing test cases (positive + negative)
 │           ├── task-success.json              # Behavioral task-success evaluation cases

@@ -1,10 +1,12 @@
 /**
- * @name Request-controlled id reaches an unscoped ORM lookup
- * @description A value from the request is used to look up a row through the model's
- *              root manager (Model.objects) with no tenant/org/owner keyword in the same call.
- *              Any authenticated user can then address another tenant's row (IDOR).
- *              Scoped access (request.tenant.invoices.get(...), a tenant-filtered
- *              custom manager, Postgres RLS) is not flagged.
+ * @name Request-controlled value reaches an unscoped or attacker-controlled ORM lookup
+ * @description A value from the request is used in an ORM lookup through the model's
+ *              root manager (Model.objects) where either:
+ *              1. No tenant/org/owner keyword predicate is provided in the call, OR
+ *              2. The tenant scoping keyword argument itself receives untrusted remote input.
+ *              Caveat: Syntactic queries cannot verify database-level PostgreSQL Row-Level
+ *              Security (RLS) policies or schema-per-tenant isolation; flagged sites represent
+ *              candidate lookups requiring architecture and runtime verification.
  * @kind path-problem
  * @problem.severity warning
  * @precision medium
@@ -17,25 +19,39 @@ import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.dataflow.new.RemoteFlowSources
 
-/** Keyword names that indicate the lookup is already scoped to a tenant or owner. */
+/** Keyword names that indicate candidate tenant or organizational scoping. */
 bindingset[k]
 predicate isScopingKeyword(string k) {
   k.regexpMatch("(?i).*(tenant|org|organi[sz]ation|company|account|owner|workspace).*")
 }
 
 /** A call like `Model.objects.get(...)` / `.filter(...)` with no scoping keyword. */
-predicate unscopedLookup(DataFlow::MethodCallNode call) {
+predicate lookupMissingScopeKeyword(DataFlow::MethodCallNode call) {
   call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create"] and
   call.getObject().(DataFlow::AttrRead).getAttributeName() = "objects" and
   not exists(string k | exists(call.getArgByName(k)) and isScopingKeyword(k))
+}
+
+/** A call like `Model.objects.get(...)` where a scoping keyword is present. */
+predicate lookupWithScopeKeyword(DataFlow::MethodCallNode call, string k) {
+  call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create"] and
+  call.getObject().(DataFlow::AttrRead).getAttributeName() = "objects" and
+  isScopingKeyword(k) and
+  exists(call.getArgByName(k))
 }
 
 module UnscopedLookupConfig implements DataFlow::ConfigSig {
   predicate isSource(DataFlow::Node n) { n instanceof RemoteFlowSource }
 
   predicate isSink(DataFlow::Node n) {
-    exists(DataFlow::MethodCallNode c | unscopedLookup(c) |
+    // Case 1: Call lacks any scoping keyword; lookup arguments are sinks
+    exists(DataFlow::MethodCallNode c | lookupMissingScopeKeyword(c) |
       n = c.getArgByName(_) or n = c.getArg(_)
+    )
+    or
+    // Case 2: Scoping keyword is present, but its argument value is tainted by untrusted input
+    exists(DataFlow::MethodCallNode c, string k | lookupWithScopeKeyword(c, k) |
+      n = c.getArgByName(k)
     )
   }
 }
@@ -47,5 +63,5 @@ import UnscopedLookupFlow::PathGraph
 from UnscopedLookupFlow::PathNode source, UnscopedLookupFlow::PathNode sink
 where UnscopedLookupFlow::flowPath(source, sink)
 select sink.getNode(), source, sink,
-  "Request-controlled $@ reaches an ORM lookup with no tenant/owner predicate.", source.getNode(),
+  "Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping.", source.getNode(),
   "value"
