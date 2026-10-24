@@ -3,11 +3,11 @@ rules:
     languages: [typescript, javascript]
     severity: ERROR
     message: >-
-      Authorization check catch-block returns 'true' or an allow verdict on exception,
+      Authorization check catch-block returns 'true', 'ALLOW', or an allow verdict on exception,
       causing a fail-open access control vulnerability when the database or auth service fails.
     metadata:
       classification: FAIL-OPEN-AUTH
-      confidence: HIGH
+      confidence: MEDIUM
     patterns:
       - pattern-either:
           - pattern: |
@@ -20,8 +20,37 @@ rules:
                 ...
                 return true;
               }
-      - pattern-inside: |
-          function $CHECK(...) { ... }
+          - pattern: |
+              catch ($E) {
+                ...
+                return { ..., allowed: true, ... };
+              }
+          - pattern: |
+              catch {
+                ...
+                return { ..., allowed: true, ... };
+              }
+          - pattern: |
+              catch ($E) {
+                ...
+                return "ALLOW";
+              }
+          - pattern: |
+              catch {
+                ...
+                return "ALLOW";
+              }
+      - pattern-either:
+          - pattern-inside: |
+              function $CHECK(...) { ... }
+          - pattern-inside: |
+              const $CHECK = (...) => { ... }
+          - pattern-inside: |
+              class $C {
+                ...
+                $CHECK(...) { ... }
+                ...
+              }
       - metavariable-regex:
           metavariable: $CHECK
           regex: '(?i)(auth|check|perm|role|access|can|isallowed|hasprivilege)\w*'

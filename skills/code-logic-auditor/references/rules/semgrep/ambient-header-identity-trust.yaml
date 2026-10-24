@@ -16,6 +16,18 @@ rules:
           - pattern: $REQ.headers.get('x-forwarded-user')
           - pattern: $REQ.headers.get('sm_user')
           - pattern: $REQ.headers.get('x-user-id')
+          - pattern: $REQ.header('x-forwarded-user')
+          - pattern: $REQ.header('sm_user')
+          - pattern: $REQ.header('x-user-id')
+          - pattern: $REQ.get('x-forwarded-user')
+          - pattern: $REQ.get('sm_user')
+          - pattern: $REQ.get('x-user-id')
+          - pattern: |
+              const { ..., 'x-forwarded-user': $U, ... } = $REQ.headers
+          - pattern: |
+              const { ..., 'sm_user': $U, ... } = $REQ.headers
+          - pattern: |
+              const { ..., 'x-user-id': $U, ... } = $REQ.headers
       - pattern-not-inside: |
           if (!verifySignature($REQ, ...)) { ... return ...; }
           ...

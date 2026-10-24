@@ -26,11 +26,14 @@ class TransitionGuard extends DataFlow::CallNode {
 }
 
 /**
- * Holds if `guard` validates `stateExpr` specifically against `checkedEntity`
+ * Holds if `guard` validates variable `stateVar` specifically against `checkedEntity`
  * (e.g., `canTransition(orderA.status, next)`).
  */
-predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Expr stateExpr) {
-  stateExpr = guard.getAnArgument().asExpr() and
+predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Variable stateVar) {
+  exists(VarAccess stateAccess |
+    stateAccess = guard.getAnArgument().asExpr() and
+    stateVar = stateAccess.getVariable()
+  ) and
   exists(PropAccess pa |
     pa = guard.getAnArgument().asExpr() and
     checkedEntity = pa.getBase()
@@ -38,12 +41,14 @@ predicate guardChecksEntity(TransitionGuard guard, VarAccess checkedEntity, Expr
 }
 
 /**
- * Holds if `w` writes `rhs` to `targetEntity.status`, where an enclosing `TransitionGuard`
- * validated `rhs` against a DIFFERENT entity `checkedEntity`.
+ * Holds if `w` writes a variable `stateVar` to `targetEntity.status`, where an enclosing `TransitionGuard`
+ * validated `stateVar` against a DIFFERENT entity `checkedEntity`.
  */
 predicate isWrongObjectBypass(DataFlow::PropWrite w) {
-  exists(TransitionGuard g, VarAccess checkedEntity, VarAccess targetEntity |
-    guardChecksEntity(g, checkedEntity, w.getRhs().asExpr()) and
+  exists(TransitionGuard g, VarAccess checkedEntity, VarAccess targetEntity, VarAccess writtenAccess, Variable stateVar |
+    writtenAccess = w.getRhs().asExpr() and
+    stateVar = writtenAccess.getVariable() and
+    guardChecksEntity(g, checkedEntity, stateVar) and
     targetEntity = w.getBase().asExpr() and
     checkedEntity.getVariable() != targetEntity.getVariable()
   )

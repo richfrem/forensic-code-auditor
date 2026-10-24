@@ -13,8 +13,9 @@ class Wallet
         if (bal >= amt) { repo.Withdraw(id, amt); }
     }
 
-    void DefaultScopeStillRacy(int id, decimal amt)
+    void MultiConnectionScopeRacy(int id, decimal amt)
     {
+        // svc.GetBalance queries an external microservice or independent DB connection outside transaction lock
         using (var tx = new TransactionScope())
         {
             // ruleid: csharp-check-then-act-balance

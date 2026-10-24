@@ -1,0 +1,36 @@
+rules:
+  # Oracle PL/SQL & Forms: Auth check function fails open on unhandled error
+  - id: plsql-auth-function-when-others-allow
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Authorization or permission-check function returns TRUE or 'Y' inside a WHEN OTHERS exception handler.
+      When underlying tables or LDAP lookups fail, access is granted by default (fail-open access control).
+    metadata:
+      classification: FAIL-OPEN-AUTH
+      confidence: HIGH
+    pattern-regex: (?is)FUNCTION\s+(?:\w+\.)?(?:can_|has_|chk_|is_auth|check_perm|auth_)\w*.*?WHEN\s+OTHERS\s+THEN\s*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;|ROLLBACK\s*;)\s*)*RETURN\s+(?:TRUE|'Y'|'TRUE'|1)\s*;
+
+  # Virtual Private Database (VPD / DBMS_RLS) policy function returns empty predicate
+  - id: plsql-vpd-policy-empty-predicate
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Oracle VPD / FGAC policy function returns NULL or empty string (''), disabling row-level security
+      filtering and exposing all table rows to the query.
+    metadata:
+      classification: PERIMETER-BYPASS
+      confidence: MEDIUM
+    pattern-regex: (?is)FUNCTION\s+\w+\s*\([^)]*\)\s*RETURN\s+VARCHAR2.*?WHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN\s*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;)\s*)*RETURN\s+(?:NULL|''|'1=1')\s*;
+
+  # Perimeter-bypass query: NULL parameter disables the filter condition entirely
+  - id: plsql-null-expands-scope-filter
+    languages: [generic]
+    severity: WARNING
+    message: >-
+      SQL filter uses '(:PARAM IS NULL OR col = :PARAM)'. In multi-tenant or authorization queries,
+      passing a NULL parameter bypasses the scoping predicate and matches all records across organizations.
+    metadata:
+      classification: TENANT-LEAK
+      confidence: MEDIUM
+    pattern-regex: (?i):\w+\s+IS\s+NULL\s+OR\s+\w+\s*=\s*:\w+

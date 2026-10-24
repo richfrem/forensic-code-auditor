@@ -2,7 +2,7 @@
 
 ## Contents
 - [1. Epistemological Stance & Anti-Fallacy Safeguards](#1-epistemological-stance--anti-fallacy-safeguards)
-- [2. The Seven-Step Forensic Audit Procedure](#2-the-seven-step-forensic-audit-procedure)
+- [2. Step 0 + Seven-Step Forensic Audit Procedure](#2-step-0--seven-step-forensic-audit-procedure)
 - [3. Four Evidence Levels](#3-four-evidence-levels)
 - [4. Mandatory Output Schemas](#4-mandatory-output-schemas)
 - [5. Report Skeleton & Stop Conditions](#5-report-skeleton--stop-conditions)
@@ -15,7 +15,7 @@
 - **First-Principles Determinism:**
   Treat codebases and operational architectures as deterministic state machines governed by hard physical, resource, and informational limits (latency ceilings, memory consistency, transaction isolation, concurrency limits).
 - **Universal Scrutiny & Rejection of Authority, Popularity, and Tradition:**
-  - *Appeal to Authority (`ad verecundiam`):* Institutional consensus, official narratives, vendor security certifications (SOC2/ISO), framework "safe-by-default" claims, and passing SAST/SonarQube scans carry zero evidential weight on their own.
+  - *Appeal to Authority (`ad verecundiam`):* Institutional consensus, official narratives, vendor security certifications (SOC2/ISO), framework "safe-by-default" claims, and passing SAST/SonarQube scans carry zero evidential weight on their own. (Note: Official platform and language runtime specifications—e.g., ANSI SQL standards, DBMS engine locking manuals, HTTP RFCs—are admissible evidence of underlying mechanical semantics, but never proof that a specific application is secure.)
   - *Appeal to Popularity (`ad populum`):* Industry-wide adoption of a design pattern, library, or architecture does not validate its mechanical soundness or invariant safety.
   - *Appeal to Tradition (`ad antiquitatem`):* Legacy longevity ("this code has run in production for 15 years") is not proof of correctness; it often masks silent state corruption, unlogged race conditions, or perimeter-dependent assumptions.
 - **Taphonomic & Observational Calibration:**
@@ -30,7 +30,7 @@
 
 ---
 
-## 2. The Seven-Step Forensic Audit Procedure
+## 2. Step 0 + Seven-Step Forensic Audit Procedure
 
 ### Step 0: Scope and Triage
 List entry points (HTTP routes, message consumers, scheduled jobs, DB triggers, Forms triggers, stored procedures, MCP tool handlers). Rank by blast radius:
@@ -66,9 +66,9 @@ Keep evidence status strictly separated from impact severity:
 
 | Level | Definition | Report Treatment |
 | :--- | :--- | :--- |
-| **`CONFIRMED`** | Concrete reachable violation established through proof-of-concept test, execution trace, or complete static call chain. | Emitted as a formal `[FINDING-XXX]`. |
-| **`SUSPECTED`** | Specific failure mechanism identified; exactly one material prerequisite remains unverified (e.g. database isolation level assumption). | Emitted as a formal `[FINDING-XXX]`, explicitly naming the unverified assumption. |
-| **`NON LIQUET`** | Available code and telemetry cannot resolve the execution behavior (obscured by reflection, dynamic dispatch, or external RPC). | Emitted as a formal `[NON-LIQUET-XXX]` with a Required Telemetry Specification. |
+| **`CONFIRMED`** | Concrete reachable violation established through proof-of-concept test, execution trace, or complete verified static call chain. | Emitted as a formal `[FINDING-XXX]`. |
+| **`SUSPECTED`** | Specific failure mechanism identified; one or more material prerequisites remain unverified (e.g. database isolation level, deployment runtime config). Clearly enumerate each labeled assumption (`MULTI-ASSUMPTION` supported). | Emitted as a formal `[FINDING-XXX]`, explicitly naming each unverified assumption. |
+| **`NON LIQUET`** | Available code and telemetry cannot resolve the execution behavior (obscured by reflection, dynamic dispatch, opaque RPC, or unknown runtime configuration). | Emitted as a formal `[NON-LIQUET-XXX]` with a Required Telemetry Specification. |
 | **`REFUTED`** | Rigorous inspection discovered an existing verified defense that defeats the hypothesized failure path. | Documented in Coverage notes, citing the defense's `file:line`. |
 
 ---
@@ -77,8 +77,8 @@ Keep evidence status strictly separated from impact severity:
 
 ### [FINDING-XXX] <Descriptive Title of Invariant Violation>
 - **Classification**: `FSM-BYPASS` | `TOCTOU-RACE` | `LOST-UPDATE` | `TENANT-LEAK` | `AUTHZ-BYPASS` | `BALANCE-VIOLATION` | `TRANSACTION-DEMARCATION` | `REPLAY-IDEMPOTENCY` | `DUAL-WRITE` | `INPUT-DOMAIN` | `RESOURCE-LEAK` | `ERROR-SWALLOW` | `PERIMETER-BYPASS` | `FAIL-OPEN-AUTH` | `AGENTIC-TOOL-LEAK`
-- **Severity**: `Critical` | `High` | `Medium` | `Low` (Calculated as $\text{Impact} \times \text{Reachability}$; state explicit justification)
-- **Evidence**: `CONFIRMED` | `SUSPECTED` (State unverified assumption if suspected)
+- **Severity**: `Critical` | `High` | `Medium` | `Low` (Calculated using the 3×3 matrix below; cite explicit justification)
+- **Evidence**: `CONFIRMED` | `SUSPECTED` (List all explicitly labeled assumptions if suspected)
 - **Location**: `path/file.ext:line` (Ingress entry point) $\rightarrow$ `path/file.ext:line` (Failure point)
 - **Invariant & Source**: The exact mathematical/state condition required, citing the source (business rule, schema constraint, API contract, or labeled assumption).
 - **Preconditions**: Required attacker or caller capabilities (e.g., authenticated tenant, concurrent session, retry window).
@@ -87,10 +87,19 @@ Keep evidence status strictly separated from impact severity:
 - **Discriminating Test / Reproducer**: Concrete test code demonstrating failure on current code and success on fixed code.
 - **Remediation by Construction**: The structural change that makes the invalid state unrepresentable (e.g., conditional atomic `UPDATE ... WHERE`, database constraint, typestate design).
 
+#### 3×3 Severity Evaluation Matrix
+$$\text{Severity} = \text{Impact} \times \text{Reachability}$$
+
+| Impact \ Reachability | **High Reachability**<br>(Public unauthenticated API, ingress webhook, ambient proxy header) | **Medium Reachability**<br>(Authenticated low-privilege tenant, standard multi-tenant route) | **Low Reachability**<br>(Admin role required, internal network only, or microsecond race window) |
+| :--- | :--- | :--- | :--- |
+| **High Impact**<br>(Balance drain, cross-tenant leak, arbitrary lifecycle override) | **Critical** | **High** | **Medium** |
+| **Medium Impact**<br>(Single-tenant corruption, recoverable resource leak, un-audited state) | **High** | **Medium** | **Low** |
+| **Low Impact**<br>(Unlogged exception swallow, transient performance degradation) | **Medium** | **Low** | **Low** |
+
 ---
 
 ### [NON-LIQUET-XXX] <Indeterminate Execution Path Title>
-- **Obstruction Mechanism**: `DYNAMIC-DISPATCH` | `EXTERNAL-RPC-OPAQUE` | `REFLECTION` | `UNTRACKED-TRIGGER` | `MISSING-SCHEMA`
+- **Obstruction Mechanism**: `RUNTIME-CONFIG` | `DYNAMIC-DISPATCH` | `EXTERNAL-RPC-OPAQUE` | `REFLECTION` | `UNTRACKED-TRIGGER` | `MISSING-SCHEMA`
 - **Location**: `path/file.ext:line`
 - **Candidate Models**:
   - *Model A (Safe)*: Condition under which invariant holds.
@@ -109,11 +118,10 @@ Keep evidence status strictly separated from impact severity:
 4. **Non Liquet Specifications**: Required telemetry for unresolved paths.
 5. **Coverage & Scope**: Entry points audited, entry points skipped, rules executed, and confirmed defenses.
 
-### Stop Conditions
-Pause and request user guidance when:
-- The target database engine or isolation level alters the verdict and cannot be determined from code.
-- Intended business rules are ambiguous (e.g., whether negative balances or cross-org administrative overrides are permitted).
-- Audit target exceeds single-pass capacity and prioritization of entry points is required.
+### Stop Conditions & Execution Precedence
+- **Interactive Mode**: If an active user is present and an unverified runtime condition (e.g., target database engine, DBMS isolation level, RLS activation) alters the verdict, pause and request clarification.
+- **Autonomous / Batch Mode**: Do NOT halt. Proceed by classifying the finding as `SUSPECTED` with explicit labeled assumptions (`MULTI-ASSUMPTION`) documenting the assumed runtime configuration.
+- **Scope Ceilings**: When the audit target exceeds single-pass capacity, triage entry points by blast radius (Step 0) and explicitly record un-audited boundaries in the Coverage section.
 
 ---
 
@@ -121,9 +129,13 @@ Pause and request user guidance when:
 
 To prevent passive pattern-matching and reward rigorous verification, the auditor operates under the epistemic scoring matrix detailed in [references/game_simulation_rl_auditing.md](./references/game_simulation_rl_auditing.md):
 - **+100 pts (`CONFIRMED`)**: Sourced invariant cited; reachable path proven; runnable reproducer generated.
-- **+50 pts (`REFUTED`)**: Plausible defect identified, alternative defense (e.g., DB constraint, RLS, atomic conditional `UPDATE`) verified, and invariant proven safe.
-- **+30 pts (`NON LIQUET`)**: Indeterminate runtime boundary identified and paired with a concrete Required Telemetry Specification.
+- **+50 pts (`REFUTED`)**: Plausible defect identified, alternative defense (e.g., DB constraint, RLS, atomic conditional `UPDATE`) verified, and invariant proven safe. *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent gaming.)*
+- **+30 pts (`NON LIQUET`)**: Indeterminate runtime boundary identified and paired with a concrete Required Telemetry Specification. *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent flooding.)*
 - **+10 pts (Coverage)**: Systematic mapping of un-audited entry points, triggers, or MCP tool handlers.
 - **-10 pts**: Out-of-scope cosmetic syntax/linter noise.
 - **-30 pts**: Syntactic heuristic false positive (flagging missing keywords when an alternative mechanism secures the state).
 - **-50 pts**: Un-sourced invariant violation claim.
+- **-100 pts**: Claiming `CONFIRMED` without an executed test reproducer or complete verified static call chain.
+
+> [!NOTE]
+> **False-Negative Evaluation Check**: While missed findings incur 0 points in static reward tallying, coverage and false-negative suppression are rigorously penalized and gated via the behavioral test suite ([`evals/task-success.json`](./evals/task-success.json)).

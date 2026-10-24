@@ -41,10 +41,14 @@ Installing globally makes `code-logic-auditor` instantly available across all yo
 
 #### Option A: Install from Local Repository Clone
 > [!IMPORTANT]
-> **APM Absolute Path Invariant**: When installing a local package directory globally (`--global`), APM requires a full absolute filesystem path. Do not use relative paths like `./skills` or `.`
+> **APM Absolute Path Invariant**: When installing a local package directory globally (`--global`), APM requires a full absolute filesystem path. Using `"$(pwd)"` inside the repository directory automatically expands to the absolute path.
 
 ```bash
-apm install /Users/richardfremmerlid/Projects/crow-raven-analysis --global
+# From within the repository root:
+apm install "$(pwd)" --global
+
+# Or pass the explicit absolute path:
+apm install /path/to/crow-raven-analysis --global
 ```
 
 #### Option B: Install Directly from Remote GitHub
@@ -123,7 +127,7 @@ To update an existing global deployment after code changes or upstream releases:
 
 ```bash
 # From local repository clone (re-runs materialization across all targets)
-apm install /Users/richardfremmerlid/Projects/crow-raven-analysis --global
+apm install "$(pwd)" --global
 
 # From remote repository (fetches newest commits on target ref)
 apm update code-logic-auditor --global

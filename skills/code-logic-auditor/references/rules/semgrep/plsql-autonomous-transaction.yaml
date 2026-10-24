@@ -1,18 +1,18 @@
 rules:
   # Autonomous transactions are legitimate for audit/error logging. The logic risk is
-  # business DML (UPDATE/DELETE/MERGE) committed independently of the caller's transaction.
+  # business DML (UPDATE/DELETE/MERGE, or non-audit INSERT) committed independently of the caller's transaction.
   - id: plsql-autonomous-transaction-business-dml
     languages: [generic]
     severity: WARNING
     message: >-
-      PRAGMA AUTONOMOUS_TRANSACTION unit performs UPDATE/DELETE/MERGE and COMMITs on its own.
-      If the caller rolls back, this change stays committed (partial state). Confirm the target
-      is a log/audit table; otherwise move the DML into the caller's transaction.
+      PRAGMA AUTONOMOUS_TRANSACTION unit performs business DML (UPDATE, DELETE, MERGE, or non-audit INSERT)
+      and COMMITs on its own. If the caller rolls back, this change stays committed (partial state).
+      Exempt tables matching *_log, *_audit, *_hist; otherwise move the DML into the caller's transaction.
     metadata:
       classification: TRANSACTION-DEMARCATION
       confidence: MEDIUM
-    # Heuristic: bounded to one CREATE unit. Package bodies with several procedures need manual review.
-    pattern-regex: (?is)CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION|TRIGGER)\b(?:(?!\bCREATE\s).)*?PRAGMA\s+AUTONOMOUS_TRANSACTION\s*;(?:(?!\bCREATE\s).)*?\b(?:UPDATE|DELETE|MERGE)\b(?:(?!\bCREATE\s).)*?\bCOMMIT\b
+    # Heuristic: bounded to one CREATE unit. Flags UPDATE/DELETE/MERGE or INSERT into non-log tables.
+    pattern-regex: (?is)CREATE\s+(?:OR\s+REPLACE\s+)?(?:PROCEDURE|FUNCTION|TRIGGER)\b(?:(?!\bCREATE\s).)*?PRAGMA\s+AUTONOMOUS_TRANSACTION\s*;(?:(?!\bCREATE\s).)*?\b(?:UPDATE\b|DELETE\b|MERGE\b|INSERT\s+INTO\s+(?!\w*(?:log|audit|hist|trace)\b)\w+)(?:(?!\bCREATE\s).)*?\bCOMMIT\b
 
   # Autonomous transaction inside a trigger is the classic way to dodge ORA-04091
   # (mutating table). It reads/writes data the triggering statement has not committed.

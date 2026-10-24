@@ -9,6 +9,15 @@ END;
 /
 
 // ruleid: plsql-autonomous-transaction-business-dml
+CREATE OR REPLACE PROCEDURE insert_payment(p_id NUMBER, p_amt NUMBER) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  INSERT INTO payment_ledger(id, amount) VALUES (p_id, p_amt);
+  COMMIT;
+END;
+/
+
+// ruleid: plsql-autonomous-transaction-business-dml
 CREATE OR REPLACE PROCEDURE settle(p_id NUMBER) IS
   PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN

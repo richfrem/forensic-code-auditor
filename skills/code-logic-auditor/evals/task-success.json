@@ -7,6 +7,7 @@
       "Identifies redeem_coupon lost-update / TOCTOU race under READ COMMITTED isolation",
       "Identifies get_invoice tenant leak missing tenant scoping predicate",
       "Identifies update_order_status FSM transition bypass from client-controlled status",
+      "Identifies refund check-then-act race where concurrent requests both pass status check and trigger duplicate payment_gateway.refund calls",
       "Identifies refund error-swallowing dual-write where gateway failure marks order REFUNDED",
       "Evaluates payment_webhook with nuanced precision: confirms duplicate delivery idempotency via unique constraint on provider_id, but identifies unhandled partial failure (affected-row count unchecked on Wallet.objects.update and broad IntegrityError swallow)",
       "Correctly rules out ship_order and debit_wallet as verified protected by atomic conditional updates"
@@ -31,7 +32,7 @@
     "expected_behavior": [
       "Identifies invoice_unscoped looking up Invoice by pk without tenant filter",
       "Identifies invoice_query_param filtering by unvalidated GET parameter without tenant constraint",
-      "Identifies invoice_attacker_tenant where scoping keyword is present but populated from untrusted request.GET",
+      "Identifies invoice_attacker_tenant where scoping keyword is present but populated from untrusted request.GET (CONFIRMED when routed in urls.py; would be SUSPECTED/unreachable if unrouted)",
       "Correctly verifies invoice_scoped_kw restricts lookup by authenticated request.user.tenant_id",
       "Correctly verifies invoice_scoped_relation traverses relation anchored to authenticated user tenant"
     ]

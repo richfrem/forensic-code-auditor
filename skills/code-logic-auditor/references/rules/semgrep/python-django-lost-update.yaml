@@ -10,7 +10,7 @@ rules:
       $M.objects.filter(pk=..., $F__gte=amt).update($F=F('$F') - amt) and check the row
       count, or select_for_update() inside atomic().
     metadata:
-      classification: TOCTOU-RACE
+      classification: LOST-UPDATE
       confidence: MEDIUM
     patterns:
       - pattern-either:

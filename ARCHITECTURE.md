@@ -67,14 +67,15 @@ crow-raven-analysis/
 │       │   ├── semgrep_logic_rules.md         # Tested Semgrep AST patterns catalog
 │       │   ├── codeql_taint_recipes.md        # Modern CodeQL taint recipes guide
 │       │   ├── rules/
-│       │   │   ├── semgrep/                   # 8 tested AST rules with paired test code
-│       │   │   └── codeql/                    # Compilable CodeQL packs (python, javascript)
-│       │   └── prompts/                       # 6 domain-specific inspection prompts
+│       │   │   ├── semgrep/                   # 9 tested YAML files (13 rule IDs) with paired test code
+│       │   │   └── codeql/                    # 2 compilable CodeQL packs (python, javascript)
+│       │   └── prompts/                       # 7 domain-specific inspection prompts
 │       │       ├── state_machine_audit.md     # FSM transitions & terminal state locks
 │       │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
 │       │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
 │       │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
 │       │       ├── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
+│       │       ├── legacy_forms_authorization_audit.md # Oracle Forms & PL/SQL authorization
 │       │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
 │       └── evals/
 │           ├── evals.json                     # 20 routing test cases (positive + negative)
@@ -90,11 +91,11 @@ crow-raven-analysis/
 
 ## The Forensic Analytical Engine
 
-The auditor operates across an unambiguous **Seven-Step Forensic Procedure** governed by **Four Strict Evidence Levels**:
+The auditor operates across an unambiguous **Step 0 + Seven-Step Forensic Procedure** governed by **Four Strict Evidence Levels**:
 
 ```
 +-------------------------------------------------------------------------+
-|                    Seven-Step Forensic Sequence                         |
+|                Step 0 + Seven-Step Forensic Sequence                    |
 |                                                                         |
 |  Step 0: Scope & Triage (Rank by financial/lifecycle blast radius)      |
 |  Step 1: Observed Facts (ASTs, CFGs, call sites, schemas - file:line)   |
@@ -140,15 +141,16 @@ The auditor operates across an unambiguous **Seven-Step Forensic Procedure** gov
 ## Empirical Static Verification Architecture
 
 The package rejects uncompiled pseudo-code rules:
-- **Semgrep Suite**: 10 standalone YAML rules in `references/rules/semgrep/`, each paired with a test fixture annotated with `ruleid:` and `ok:` test assertions. Verified via `semgrep --test`.
-- **CodeQL Packs**: Compilable packs in `references/rules/codeql/` for Python and JavaScript, implementing modern `DataFlow::ConfigSig` and `TaintTracking::Global` modules. Verified against CodeQL CLI 2.27.3.
+- **Semgrep Suite**: 9 standalone YAML files holding 13 rule IDs in `references/rules/semgrep/`, each paired with a test fixture annotated with `ruleid:` and `ok:` test assertions. Verified via `semgrep --test`.
+- **CodeQL Packs**: 2 compilable packs in `references/rules/codeql/` for Python and JavaScript, implementing modern `DataFlow::ConfigSig` and `TaintTracking::Global` modules (2 query files: `UnscopedTenantLookup.ql`, `UnguardedStateTransition.ql`). Verified against CodeQL CLI 2.27.3.
+- **Total Static Logic Rules**: 15 rules across 11 files (13 Semgrep rule IDs + 2 CodeQL queries).
 
 ---
 
 ## Adversarial Game Simulation & MCTS Concurrency
 
 Rather than relying on passive pattern matching, the engine models the audited codebase as an adversarial game:
-- The auditor agent is scored by an explicit **RL Reward Matrix** (+100 pts for runnable reproducers, +60 pts for FSM jumps, +40 pts for perimeter bypasses, -25 pts for false positives).
+- The auditor agent is scored by the explicit **Epistemic Evaluation Matrix** defined in [`instructions.md §6`](skills/code-logic-auditor/instructions.md) and [`references/game_simulation_rl_auditing.md`](skills/code-logic-auditor/references/game_simulation_rl_auditing.md) (+100 for CONFIRMED with reproducer, +50 for REFUTED with verified defense, +30 for NON LIQUET with telemetry spec, -100 for unproven CONFIRMED claims, -50 for un-sourced claims, -30 for syntactic false positives).
 - Concurrency race windows are analyzed via **Monte Carlo Tree Search (MCTS)** over execution interleavings between check and act steps.
 
 ---

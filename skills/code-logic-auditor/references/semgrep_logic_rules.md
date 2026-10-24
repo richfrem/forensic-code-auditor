@@ -1,23 +1,26 @@
 # Semgrep Rules: Index and Limits
 
-Rules live in [rules/semgrep/](./rules/semgrep/). Each `*.yaml` has a companion test fixture with `ruleid:`/`ok:` annotations.
+Rules live in [rules/semgrep/](./rules/semgrep/). There are **9 YAML files containing 13 standalone rule IDs**. Each `*.yaml` has a companion test fixture with `ruleid:`/`ok:` annotations.
 
-All rules are **triage heuristics**. A hit becomes a finding only after Steps 1–7 of the forensic doctrine confirm an actual reachable path.
+All rules are **triage heuristics**. A hit becomes a finding only after Step 0 + Seven Steps of the forensic doctrine confirm an actual reachable path.
 
-## Tested Rules Catalog
+## Tested Rules Catalog (13 Rule IDs across 9 Files)
 
 | Rule ID | Language | Classification | Confidence | Target Mechanism |
 | :--- | :--- | :--- | :--- | :--- |
-| `plsql-autonomous-transaction-business-dml` | PL/SQL | TRANSACTION-DEMARCATION | Medium | Autonomous unit executing UPDATE/DELETE/MERGE and COMMIT |
-| `plsql-autonomous-transaction-in-trigger` | PL/SQL | TRANSACTION-DEMARCATION | High | Autonomous trigger workaround for ORA-04091 mutating table |
-| `csharp-check-then-act-balance` | C# | TOCTOU-RACE | Medium | `GetBalance()` followed by `Deduct()` without Serializable isolation |
-| `java-requires-new-partial-commit` | Java | TRANSACTION-DEMARCATION | Low | EJB / Spring `@Transactional(REQUIRES_NEW)` partial commit |
+| `ambient-header-identity-trust` | TS/JS | PERIMETER-BYPASS | Medium | Direct extraction of identity from ambient proxy headers (`x-user-id`, `req.header()`, `req.get()`, destructuring) without verified signature |
+| `csharp-check-then-act-balance` | C# | TOCTOU-RACE | Medium | `GetBalance()` check followed by `DeductBalance()` across independent connections or without serializable isolation |
+| `fail-open-authorization-handler` | TS/JS | FAIL-OPEN-AUTH | Medium | Catch-block in authorization check returning `true`, `allow`, or `{ allowed: true }` (including arrow functions and methods) |
 | `java-transactional-self-invocation` | Java | TRANSACTION-DEMARCATION | Medium | Calling `@Transactional` method on `this` bypassing Spring AOP proxy |
+| `java-requires-new-partial-commit` | Java | TRANSACTION-DEMARCATION | Low | EJB / Spring `@Transactional(REQUIRES_NEW)` causing non-atomic partial commits |
 | `php-sql-by-id-without-tenant-predicate` | PHP | TENANT-LEAK | Low | SQL query by ID lacking tenant/organization column discriminator |
-| `ts-floating-mutation-promise` | TS/JS | ERROR-SWALLOW | Low | Un-awaited `save/update/delete/charge` mutation in async handler |
-| `python-django-read-modify-write` | Python | LOST-UPDATE | Medium | Django ORM `get()` → field mutate → `save()` lost update race |
-| `ambient-header-identity-trust` | TS/JS | PERIMETER-BYPASS | Medium | Direct extraction of identity from ambient proxy headers without signature |
-| `fail-open-authorization-handler` | TS/JS | FAIL-OPEN-AUTH | High | Catch-block in authorization check returning `true` / allow |
+| `plsql-autonomous-transaction-business-dml` | PL/SQL | TRANSACTION-DEMARCATION | Medium | Autonomous unit executing UPDATE/DELETE/MERGE or non-audit INSERT and COMMIT |
+| `plsql-autonomous-transaction-in-trigger` | PL/SQL | TRANSACTION-DEMARCATION | High | Autonomous trigger workaround for ORA-04091 mutating table |
+| `plsql-auth-function-when-others-allow` | PL/SQL | FAIL-OPEN-AUTH | Medium | Authorization function with `WHEN OTHERS THEN RETURN TRUE` or `'Y'` masking database errors as permission grants |
+| `plsql-vpd-policy-empty-predicate` | PL/SQL | FAIL-OPEN-AUTH | High | Oracle Virtual Private Database (VPD) policy function returning `NULL` or empty string, disabling row-level security |
+| `plsql-null-expands-scope-filter` | PL/SQL | TENANT-LEAK | Medium | SQL where-clause using `(:param IS NULL OR col = :param)`, expanding tenant or permission scope to all rows on null bind |
+| `python-django-read-modify-write` | Python | LOST-UPDATE | Medium | Django ORM `get()` → field mutate → `save()` lost update race (mitigated by `F()` expressions or `select_for_update`) |
+| `ts-floating-mutation-promise` | TS/JS | ERROR-SWALLOW | Low | Un-awaited `save/update/delete/charge` mutation in async Express route handler |
 
 ## Execution Protocol
 

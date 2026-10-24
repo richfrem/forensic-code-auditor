@@ -1,7 +1,7 @@
 /**
  * @name Request-controlled value reaches an unscoped or attacker-controlled ORM lookup
  * @description A value from the request is used in an ORM lookup through the model's
- *              root manager (Model.objects) where either:
+ *              manager (Model.objects, _default_manager, get_object_or_404) where either:
  *              1. No tenant/org/owner keyword predicate is provided in the call, OR
  *              2. The tenant scoping keyword argument itself receives untrusted remote input.
  *              Caveat: Syntactic queries cannot verify database-level PostgreSQL Row-Level
@@ -25,17 +25,29 @@ predicate isScopingKeyword(string k) {
   k.regexpMatch("(?i).*(tenant|org|organi[sz]ation|company|account|owner|workspace).*")
 }
 
+/** Matches Model.objects, Model._default_manager, etc. */
+bindingset[attr]
+predicate isManagerAttribute(string attr) {
+  attr.regexpMatch("(?i)(objects|_default_manager|all_objects)")
+}
+
 /** A call like `Model.objects.get(...)` / `.filter(...)` with no scoping keyword. */
 predicate lookupMissingScopeKeyword(DataFlow::MethodCallNode call) {
   call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create"] and
-  call.getObject().(DataFlow::AttrRead).getAttributeName() = "objects" and
+  isManagerAttribute(call.getObject().(DataFlow::AttrRead).getAttributeName()) and
+  not exists(string k | exists(call.getArgByName(k)) and isScopingKeyword(k))
+}
+
+/** A call like `get_object_or_404(Model, pk=...)` with no scoping keyword. */
+predicate getObjectOr404MissingScope(DataFlow::CallNode call) {
+  call.getCalleeName() = "get_object_or_404" and
   not exists(string k | exists(call.getArgByName(k)) and isScopingKeyword(k))
 }
 
 /** A call like `Model.objects.get(...)` where a scoping keyword is present. */
 predicate lookupWithScopeKeyword(DataFlow::MethodCallNode call, string k) {
   call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create"] and
-  call.getObject().(DataFlow::AttrRead).getAttributeName() = "objects" and
+  isManagerAttribute(call.getObject().(DataFlow::AttrRead).getAttributeName()) and
   isScopingKeyword(k) and
   exists(call.getArgByName(k))
 }
@@ -49,7 +61,12 @@ module UnscopedLookupConfig implements DataFlow::ConfigSig {
       n = c.getArgByName(_) or n = c.getArg(_)
     )
     or
-    // Case 2: Scoping keyword is present, but its argument value is tainted by untrusted input
+    // Case 2: get_object_or_404 call lacking scoping keyword
+    exists(DataFlow::CallNode c | getObjectOr404MissingScope(c) |
+      n = c.getArgByName(_) or n = c.getArg(_)
+    )
+    or
+    // Case 3: Scoping keyword is present, but its argument value is tainted by untrusted input
     exists(DataFlow::MethodCallNode c, string k | lookupWithScopeKeyword(c, k) |
       n = c.getArgByName(k)
     )

@@ -6,6 +6,20 @@ function extractIdentityUnsafe(req) {
   return { user, siteminder };
 }
 
+function extractIdentityMethods(req) {
+  // ruleid: ambient-header-identity-trust
+  const user = req.header('x-user-id');
+  // ruleid: ambient-header-identity-trust
+  const sm = req.get('sm_user');
+  return { user, sm };
+}
+
+function extractDestructuring(req) {
+  // ruleid: ambient-header-identity-trust
+  const { 'x-user-id': u } = req.headers;
+  return u;
+}
+
 function extractIgnoredResult(req) {
   // Ignored boolean result / no throw: should still be flagged
   verifySignature(req);

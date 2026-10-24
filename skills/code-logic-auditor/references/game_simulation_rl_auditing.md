@@ -49,9 +49,10 @@ In game-theoretic state exploration:
 |  +50 pts: Valid Refutation (Proving alternative defense secures state)  |
 |  +30 pts: High-Value NON LIQUET with Concrete Telemetry Specification   |
 |  +10 pts: State-Space Coverage Expansion                                |
-|  -50 pts: Un-sourced Invariant Violation Claim                          |
-|  -30 pts: Syntactic Heuristic False Positive (AST pattern != bug)       |
 |  -10 pts: Trivial Syntax / Formatting Noise                             |
+|  -30 pts: Syntactic Heuristic False Positive (AST pattern != bug)       |
+|  -50 pts: Un-sourced Invariant Violation Claim                          |
+|  -100 pts: Unproven CONFIRMED Claim (no executed reproducer/static trace)|
 +-------------------------------------------------------------------------+
 ```
 
@@ -64,12 +65,16 @@ To align the auditor with the **Four Evidence Levels** and **First-Principles Ep
 | Objective / Action | Points | Invariant & Evidence Criteria |
 | :--- | :--- | :--- |
 | **Confirmed Invariant Breach** | `+100` | Sourced invariant cited; exact state reachability path proven; reproducible property test or dynamic exploit vector generated (`CONFIRMED`). |
-| **Rigorous Refutation of Plausible Defect** | `+50` | Identifying an apparent vulnerability, rigorously inspecting alternative defenses (e.g. DB check constraints, Postgres RLS, or serializable locks), and proving the invariant is preserved (`REFUTED`). |
-| **High-Value Uncertainty Resolution** | `+30` | Identifying ambiguous boundary conditions, issuing `NON LIQUET`, and formulating an actionable telemetry specification or logging hook to resolve it. |
+| **Rigorous Refutation of Plausible Defect** | `+50` | Identifying an apparent vulnerability, rigorously inspecting alternative defenses (e.g. DB check constraints, Postgres RLS, or serializable locks), and proving the invariant is preserved (`REFUTED`). *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent gaming.)* |
+| **High-Value Uncertainty Resolution** | `+30` | Identifying ambiguous boundary conditions, issuing `NON LIQUET`, and formulating an actionable telemetry specification or logging hook to resolve it. *(Scored only when resolving an automated rule hit or ranked entry point; capped to prevent flooding.)* |
 | **Coverage Expansion** | `+10` | Systematic mapping of previously un-audited state transitions, background worker handlers, or MCP tool dispatchers. |
 | **Trivial Syntax / Linter Noise** | `-10` | Reporting cosmetic style issues, formatting, or linting warnings out of scope for logic auditing. |
 | **Syntactic False Positive** | `-30` | Flagging code as vulnerable purely because a keyword is missing, without verifying whether alternative mechanisms protect the state. |
 | **Un-Sourced Breach Claim** | `-50` | Claiming a security or logic flaw without citing an explicit business specification, schema constraint, or contract rule. |
+| **Unproven CONFIRMED Claim** | `-100` | Emitting a `CONFIRMED` verdict without an executed test reproducer or complete verified static call chain. |
+
+> [!NOTE]
+> **False-Negative Evaluation Check**: In static reward tallying, missed findings incur 0 points directly; however, coverage gaps and false-negative suppression are rigorously penalized and gated via the behavioral test suite ([`evals/task-success.json`](../evals/task-success.json)).
 
 ---
 

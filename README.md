@@ -14,7 +14,7 @@ To use `code-logic-auditor` globally across all your repositories (supporting An
 
 ### Option A: Install from Local Clone
 ```bash
-apm install /Users/richardfremmerlid/Projects/crow-raven-analysis --global
+apm install "$(pwd)" --global
 ```
 
 ### Option B: Install from GitHub
@@ -47,4 +47,4 @@ crow-raven-analysis/
 
 - **Skill Quality**: Passed `audit_skill.py` with 0 errors and 0 warnings.
 - **APM Package Compliance**: Passed `validate_apm_package.py`.
-- **Empirical Rule Tests**: 8 tested Semgrep AST rules and 2 compilable CodeQL packs (10 static logic rules total).
+- **Empirical Rule Tests**: 9 tested Semgrep YAML files (13 rule IDs) and 2 compilable CodeQL packs (15 static logic rules total).

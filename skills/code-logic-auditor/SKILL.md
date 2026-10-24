@@ -40,6 +40,7 @@ cat references/prompts/state_machine_audit.md             # FSM Transitions
 cat references/prompts/multi_tenant_context_audit.md      # Multi-Tenant
 cat references/prompts/idempotency_replay_audit.md        # Idempotency
 cat references/prompts/authorization_perimeter_audit.md   # Perimeter & Auth
+cat references/prompts/legacy_forms_authorization_audit.md # Forms & PL/SQL
 cat references/prompts/agentic_tool_boundary_audit.md     # Agentic & MCP
 semgrep --test references/rules/semgrep                  # Test triage rules
 ```
@@ -69,5 +70,5 @@ python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/sk
 - Game Simulation & RL Auditing: [references/game_simulation_rl_auditing.md](./references/game_simulation_rl_auditing.md)
 - Tested Semgrep Rules Index: [references/semgrep_logic_rules.md](./references/semgrep_logic_rules.md)
 - Tested CodeQL Query Packs: [references/codeql_taint_recipes.md](./references/codeql_taint_recipes.md)
-- Inspection Prompts: [FSM](references/prompts/state_machine_audit.md) • [Multi-Tenant](references/prompts/multi_tenant_context_audit.md) • [TOCTOU](references/prompts/concurrency_toctou_audit.md) • [Idempotency](references/prompts/idempotency_replay_audit.md) • [Perimeter & Auth](references/prompts/authorization_perimeter_audit.md) • [Agentic & MCP](references/prompts/agentic_tool_boundary_audit.md)
+- Inspection Prompts: [FSM](references/prompts/state_machine_audit.md) • [Multi-Tenant](references/prompts/multi_tenant_context_audit.md) • [TOCTOU](references/prompts/concurrency_toctou_audit.md) • [Idempotency](references/prompts/idempotency_replay_audit.md) • [Perimeter & Auth](references/prompts/authorization_perimeter_audit.md) • [Forms & PL/SQL](references/prompts/legacy_forms_authorization_audit.md) • [Agentic & MCP](references/prompts/agentic_tool_boundary_audit.md)
 - Persona Standard: [agents/forensic_systems_analyst.md](agents/forensic_systems_analyst.md)

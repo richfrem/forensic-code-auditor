@@ -19,32 +19,51 @@ Execute this inspection when auditing shared resources, balance updates, token r
 - [ ] **Distributed Coordination**: If distributed locks are employed, do they include fencing tokens to protect against lock expiration during GC pauses or network delays?
 - [ ] **Transaction Demarcation**: Are all dependent mutations enclosed in a transaction with an appropriate isolation level (`REPEATABLE READ` or `SERIALIZABLE`) to prevent non-repeatable reads and lost updates?
 
-## 3. Discriminating Race Simulation (Synchronized Barrier)
+## 3. Discriminating Race Simulation (Isolated DB Connections & Barrier)
+
+To prove a real database-level TOCTOU or lost-update race condition across transactions, threads must NOT share an in-memory ORM instance or single test transaction. Use `TransactionTestCase` and explicitly cycle or isolate database connections per worker thread:
+
 ```python
 import threading
+from django.test import TransactionTestCase
+from django.db import connection, connections
+from myapp.models import Account
+from myapp.services import debit_account
 
-def test_concurrent_debit_prevents_double_spend():
-    initial_balance = 100
-    debit_amount = 100
-    account = create_account(balance=initial_balance)
-    
-    num_threads = 5
-    barrier = threading.Barrier(num_threads)
-    results = []
+class ConcurrentDebitRaceTest(TransactionTestCase):
+    def test_concurrent_debit_prevents_double_spend(self):
+        initial_balance = 100
+        debit_amount = 100
+        acct = Account.objects.create(balance=initial_balance)
+        
+        num_threads = 5
+        barrier = threading.Barrier(num_threads)
+        results = []
+        errors = []
 
-    def attempt_debit():
-        # Synchronize thread execution at the exact check-then-act window
-        barrier.wait()
-        res = account.debit(debit_amount)
-        results.append(res)
+        def worker_thread():
+            # Close inherited connection so thread creates its own isolated DB connection
+            connections.close_all()
+            try:
+                # Synchronize thread execution at the exact check-then-act window
+                barrier.wait()
+                success = debit_account(acct.pk, debit_amount)
+                results.append(success)
+            except Exception as e:
+                errors.append(e)
+            finally:
+                connections.close_all()
 
-    threads = [threading.Thread(target=attempt_debit) for _ in range(num_threads)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
+        threads = [threading.Thread(target=worker_thread) for _ in range(num_threads)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
 
-    successes = sum(1 for r in results if r.is_success)
-    assert successes == 1, f"Double-spend detected! Successful debits: {successes}"
-    assert account.refresh().balance == 0
+        successes = sum(1 for r in results if r is True)
+        acct.refresh_from_db()
+
+        # Invariant: exactly one debit succeeds; balance must never drop below 0
+        assert successes == 1, f"Double-spend detected! Successful debits: {successes}"
+        assert acct.balance == 0, f"Balance invariant breached: {acct.balance}"
 ```
