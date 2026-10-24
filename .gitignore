@@ -1,4 +1,4 @@
 temp/
-crow/
-raven/
+repos/*
+!repos/README.md
 .vscode/
