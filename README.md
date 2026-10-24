@@ -28,14 +28,18 @@ apm install https://github.com/richfrem/crow-raven-analysis#main --global
 
 ```text
 crow-raven-analysis/
+├── AGENTS.md                                  # Canonical agent instructions & invariant bounds
+├── CLAUDE.md                                  # Minimal bridge to AGENTS.md
+├── ARCHITECTURE.md                            # Complete architectural spec & state machines
+├── INSTALL.md                                 # APM installation, registry, update & rollback guide
 ├── apm.yml                                    # APM package manifest
-├── README.md                                  # Repository overview and APM installation guide
+├── README.md                                  # Repository overview and quick start
 ├── .apm/
 │   └── skills/code-logic-auditor/             # APM skill distribution link
-├── skills/
-│   └── code-logic-auditor/             # Primary authoring source & test suites
+├── skills/                                    # Root skills directory
+│   └── code-logic-auditor/                    # Primary authoring source & test suites
 ├── issues/                                    # Issue tracking and logged vulnerability reports
-├── reviews/                                   # Multi-model review consensus & synthesis roadmap
+├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
 └── repos/                                     # Isolated target codebases under audit (crow, raven)
 ```
 

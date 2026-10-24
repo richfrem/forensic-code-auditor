@@ -185,7 +185,8 @@ python3 "$HOME/.gemini/antigravity-cli/skills/packaging-with-apm/scripts/validat
 ### 3. Root Instruction Compliance Audit
 Verify that root `AGENTS.md` and `CLAUDE.md` adhere to length, relative link, and anti-leak constraints:
 ```bash
-python3 "$HOME/.gemini/antigravity-cli/skills/authoring-instructions/scripts/audit_agents_md.py" . --all --strict
+python3 "$HOME/.gemini/antigravity-cli/skills/authoring-instructions/scripts/audit_agents_md.py" AGENTS.md --strict
+python3 "$HOME/.gemini/antigravity-cli/skills/authoring-instructions/scripts/audit_agents_md.py" CLAUDE.md --strict
 ```
 *Expected Result:* `Total: 2 | Passed: 2 | Failed: 0`
 

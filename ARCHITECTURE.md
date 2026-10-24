@@ -54,33 +54,34 @@ crow-raven-analysis/
 ├── README.md                                  # Repository overview and quick start
 ├── .apm/
 │   └── skills/code-logic-auditor/             # APM skill distribution link
-├── skills/code-logic-auditor/         # Canonical skill source tree
-│   ├── SKILL.md                               # Authoring-standard router (<= 80 lines)
-│   ├── instructions.md                        # Full 7-step procedure, evidence levels & schemas
-│   ├── code-logic-auditor-flow.mmd            # State machine execution diagram
-│   ├── agents/                                # Agent persona definitions
-│   │   └── forensic_systems_analyst.md        # Generalized first-principles directive
-│   ├── references/
-│   │   ├── logic_invariants_taxonomy.md       # 13 non-syntactic invariant domains
-│   │   ├── game_simulation_rl_auditing.md     # MCTS & RL reward matrix
-│   │   ├── semgrep_logic_rules.md             # Tested Semgrep AST patterns catalog
-│   │   ├── codeql_taint_recipes.md            # Modern CodeQL taint recipes guide
-│   │   ├── rules/
-│   │   │   ├── semgrep/                       # 10 tested rules with paired test code
-│   │   │   └── codeql/                        # Compilable CodeQL packs (python, javascript)
-│   │   └── prompts/                           # 5 domain-specific inspection prompts
-│   │       ├── state_machine_audit.md         # FSM transitions & terminal state locks
-│   │       ├── multi_tenant_context_audit.md  # Multi-tenant isolation & scoping
-│   │       ├── concurrency_toctou_audit.md    # Check-then-act & race windows
-│   │       ├── idempotency_replay_audit.md    # Idempotency, replay & dual writes
-│   │       └── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
-│   └── evals/
-│       ├── evals.json                         # 20 routing test cases (positive + negative)
-│       ├── task-success.json                  # Behavioral task-success evaluation cases
-│       ├── rule_tests.tsv                     # Empirical CLI execution evidence log
-│       └── fixtures/                          # Code fixtures with planted concurrency bugs
+├── skills/                                    # Root skills directory
+│   └── code-logic-auditor/                    # Canonical skill source tree
+│       ├── SKILL.md                           # Authoring-standard router (<= 80 lines)
+│       ├── instructions.md                    # Full 7-step procedure, evidence levels & schemas
+│       ├── code-logic-auditor-flow.mmd        # State machine execution diagram
+│       ├── agents/                            # Agent persona definitions
+│       │   └── forensic_systems_analyst.md    # Generalized first-principles directive
+│       ├── references/
+│       │   ├── logic_invariants_taxonomy.md   # 13 non-syntactic invariant domains
+│       │   ├── game_simulation_rl_auditing.md # MCTS & RL reward matrix
+│       │   ├── semgrep_logic_rules.md         # Tested Semgrep AST patterns catalog
+│       │   ├── codeql_taint_recipes.md        # Modern CodeQL taint recipes guide
+│       │   ├── rules/
+│       │   │   ├── semgrep/                   # 10 tested rules with paired test code
+│       │   │   └── codeql/                    # Compilable CodeQL packs (python, javascript)
+│       │   └── prompts/                       # 5 domain-specific inspection prompts
+│       │       ├── state_machine_audit.md     # FSM transitions & terminal state locks
+│       │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
+│       │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
+│       │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
+│       │       └── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
+│       └── evals/
+│           ├── evals.json                     # 20 routing test cases (positive + negative)
+│           ├── task-success.json              # Behavioral task-success evaluation cases
+│           ├── rule_tests.tsv                 # Empirical CLI execution evidence log
+│           └── fixtures/                      # Code fixtures with planted concurrency bugs
 ├── issues/                                    # Issue tracking templates & findings
-├── reviews/                                   # Multi-model frontier reviews (Opus, Astra, Grok, Argon)
+├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
 └── repos/                                     # Target working trees under audit (crow, raven)
 ```
 

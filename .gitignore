@@ -1,4 +1,7 @@
 temp/
+reviews/
 repos/*
 !repos/README.md
+research/*
+!research/README.md
 .vscode/
