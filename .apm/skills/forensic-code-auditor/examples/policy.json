@@ -1,0 +1,15 @@
+{
+  "basis_class": "requirement_doc",
+  "source_ref": "worked-example-policy",
+  "closed_world": true,
+  "rules": [
+    {
+      "role": "approver",
+      "operation": "approve",
+      "scope": "north",
+      "state": "PENDING",
+      "allow": true
+    }
+  ],
+  "exceptions": []
+}

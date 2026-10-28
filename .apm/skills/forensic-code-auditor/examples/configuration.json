@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "n10",
+      "parent": null
+    },
+    {
+      "id": "n20",
+      "parent": "n10",
+      "operation": "approve",
+      "operation_class": "lifecycle"
+    }
+  ],
+  "rows": [
+    {
+      "id": "r171",
+      "role": "clerk",
+      "node": "n20",
+      "operation": "approve",
+      "scope": "north",
+      "allow": true,
+      "priority": 1,
+      "from": 0,
+      "until": 100
+    },
+    {
+      "id": "r302",
+      "role": "approver",
+      "node": "n20",
+      "operation": "approve",
+      "scope": "north",
+      "allow": true,
+      "priority": 1,
+      "from": 0,
+      "until": 100
+    }
+  ],
+  "roles": {
+    "clerk": [],
+    "approver": []
+  },
+  "semantics": {
+    "inheritance": {
+      "value": "leaf_only",
+      "source_ref": "worked-example-evaluator"
+    },
+    "conflict": {
+      "value": "deny",
+      "source_ref": "worked-example-evaluator"
+    },
+    "null_scope": {
+      "value": "none",
+      "source_ref": "worked-example-evaluator"
+    },
+    "default": {
+      "value": "deny",
+      "source_ref": "worked-example-evaluator"
+    },
+    "precedence": {
+      "value": "priority",
+      "source_ref": "worked-example-evaluator"
+    }
+  },
+  "scopes": [
+    "north"
+  ],
+  "states": [
+    "PENDING"
+  ],
+  "time_points": [
+    15
+  ]
+}
