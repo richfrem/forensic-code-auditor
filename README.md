@@ -1,48 +1,41 @@
-# CROW / RAVEN Analysis: `code-logic-auditor`
+# Forensic Code Auditor
 
-Forensic code logic and invariant auditor engineered to detect business-logic flaws, FSM transition bypasses, TOCTOU race windows, multi-tenant context leaks, and perimeter authorization collapse across enterprise legacy and modern distributed systems.
+`forensic-code-auditor` is a standalone APM skill for auditing business logic, state transitions,
+authorization data, concurrency, tenant isolation and distributed side effects. It supports modern
+applications and legacy Oracle Forms/PL/SQL, Java, .NET and PHP systems.
 
-`crow-raven-analysis` is an independent, open-source forensic engineering and invariant research repository developed under the MIT License, providing audit tooling and reference evaluations for modern and enterprise legacy codebases (including BC Gov NR Sector reference architectures [`bcgov/crow`](https://github.com/bcgov/crow) and [`bcgov/raven`](https://github.com/bcgov/raven)).
+The auditor starts with state-changing operations, traces their callers and policy sources, and
+separates confirmed findings from unresolved evidence. Correct authorization code can still consume
+an incorrect permission row; the workflow compares independently intended, configured and enforced access.
+Semgrep and CodeQL supply candidates for investigation, never proof of security.
 
-For comprehensive installation, registry, update, and rollback documentation, see [INSTALL.md](INSTALL.md). For system architecture and mathematical foundations, see [ARCHITECTURE.md](ARCHITECTURE.md).
+Install with APM using [INSTALL.md](INSTALL.md). The package has **no Crow, Raven, or MCP dependencies**.
+Those tools can be installed separately without becoming part of this package.
 
----
+- [Architecture and evidence contracts](ARCHITECTURE.md)
+- [Skill entrypoint](.apm/skills/forensic-code-auditor/SKILL.md)
+- [Testing, benchmark protocol and limitations](.apm/skills/forensic-code-auditor/TESTING.md)
+- [GHAS and security reporting guidance](.apm/skills/forensic-code-auditor/references/ghas-security-reporting.md)
+- [Contributor instructions](AGENTS.md)
 
-## Global Installation with APM
-
-To use `code-logic-auditor` globally across all your repositories (supporting Antigravity, Claude, Codex, and Copilot):
-
-### Option A: Install from Local Clone
-```bash
-apm install "$(pwd)" --global
-```
-
-### Option B: Install from GitHub
-```bash
-apm install https://github.com/richfrem/crow-raven-analysis#main --global
-```
-
----
-
-## Project Structure
+## Repository layout
 
 ```text
-crow-raven-analysis/
-├── AGENTS.md                                  # Canonical agent instructions & invariant bounds
-├── CLAUDE.md                                  # Minimal bridge to AGENTS.md
-├── ARCHITECTURE.md                            # Complete architectural spec & state machines
-├── INSTALL.md                                 # APM installation, registry, update & rollback guide
-├── apm.yml                                    # APM package manifest
-├── README.md                                  # Repository overview and quick start
-├── .apm/
-│   └── skills/code-logic-auditor/             # Primary authoring source, test suites & APM distribution root
-├── issues/                                    # Issue tracking and logged vulnerability reports
-├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
-└── repos/                                     # Isolated target codebases under audit (crow, raven)
+.apm/skills/forensic-code-auditor/  # Canonical source shipped by APM
+  SKILL.md                        # Compact routing and discovery gate
+  instructions.md                 # Seven-step doctrine and completion contract
+  agents/                         # Forensic analyst persona
+  references/                     # Specialist procedures and candidate rules
+  templates/                      # Structured report schema and evidence artifacts
+  scripts/                        # Validators, isolated demo and rule harnesses
+  tests/                          # Synthetic local acceptance cases
+  evals/                          # Existing routing and behavioral evaluation cases
+apm.yml                           # Standalone package manifest
 ```
 
-## Validation & Audits
+Local `repos/`, `temp/`, `issues/`, runtime downloads, installed harness copies and build outputs
+are ignored. Optional checkouts in `repos/` are audit targets or development tools, not package dependencies.
+Only authored source belongs in `.apm/`; make changes there and install through APM.
 
-- **Skill Quality**: Passed `audit_skill.py` with 0 errors and 0 warnings.
-- **APM Package Compliance**: Passed `validate_apm_package.py`.
-- **Empirical Rule Tests**: 9 tested Semgrep YAML files (15 rule IDs) and 2 compilable CodeQL packs (17 static logic rules total).
+The former skill/package name was `code-logic-auditor`. See the migration instructions in
+[INSTALL.md](INSTALL.md). Existing CodeQL pack names and original query IDs remain stable for consumers.

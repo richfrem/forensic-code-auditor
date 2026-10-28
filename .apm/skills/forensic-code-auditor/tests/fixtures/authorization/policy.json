@@ -1,0 +1,10 @@
+{
+  "source": "tests/fixtures/authorization/approved-policy.md#p-approve",
+  "version": "synthetic-owner-approved-v1",
+  "independent": true,
+  "rules": [
+    {"role": "clerk", "operation": "approve", "scope": "north", "state": "PENDING", "allow": false},
+    {"role": "approver", "operation": "approve", "scope": "north", "state": "PENDING", "allow": true}
+  ],
+  "exceptions": [{"principal": "relief-clerk", "operation": "approve", "scope": "north", "state": "PENDING", "allow": true, "source": "approved-policy.md#e-relief", "from": 10, "until": 20}]
+}

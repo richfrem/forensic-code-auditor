@@ -1,0 +1,5 @@
+{
+  "trust_vulnerable": {"source": "synthetic-approved-control-policy: no shared credential may approve across scopes", "firewall": true, "gateway_tls": true, "credential_policy": "shared-no-rotation", "backend_operations": ["read", "approve:any-scope"], "backend_guard": false},
+  "trust_protected": {"source": "synthetic-approved-control-policy: no shared credential may approve across scopes", "firewall": true, "gateway_tls": true, "credential_policy": "unique-rotated", "backend_operations": ["read:north"], "backend_guard": true},
+  "runtime_policy": {"revocation": "execution-time", "fsm": "only approver may move PENDING to APPROVED", "tenant": "context missing must deny; checkout must clear previous tenant", "replay": "one external effect per principal/operation/fingerprint", "tool": "approval binds principal/action/resource/state/expiry/nonce"}
+}

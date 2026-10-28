@@ -1,0 +1,14 @@
+{
+  "precedence": "highest-priority-then-deny-on-tie",
+  "navigation": [
+    ["Claims", "Search", "SEARCH_FORM", "WHEN-BUTTON-PRESSED", "pkg_claim.search", "read"],
+    ["Claims", "Legacy/Annual/Rare", "APPROVAL_FORM", "WHEN-BUTTON-PRESSED", "pkg_claim.approve", "approve"]
+  ],
+  "rows": [
+    {"id": "L1-claims", "level": 1, "role": "*", "resource": "Claims", "operation": "navigate", "scope": "north", "allow": true, "priority": 0, "from": 0, "until": 100},
+    {"id": "L2-rare", "level": 2, "role": "clerk", "resource": "APPROVAL_FORM", "operation": "approve", "scope": "north", "allow": true, "priority": 1, "from": 0, "until": 100},
+    {"id": "L2-approver", "level": 2, "role": "approver", "resource": "APPROVAL_FORM", "operation": "approve", "scope": "north", "allow": true, "priority": 1, "from": 0, "until": 100}
+  ],
+  "callers": ["Forms", "REST", "batch", "MCP", "scheduler", "direct-DB"],
+  "unavailable_paths": ["dynamic legacy library attachment"]
+}
