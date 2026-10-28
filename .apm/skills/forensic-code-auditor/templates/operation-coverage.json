@@ -46,5 +46,8 @@
       "evidence": [],
       "needed": "Supply coverage"
     }
-  }
+  },
+  "class": "lifecycle",
+  "status": "deferred",
+  "reason": "Supply an independent candidate inventory and dossier"
 }

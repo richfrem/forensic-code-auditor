@@ -1,33 +1,41 @@
-# Authorization data integrity
+# Authorization data integrity runbook
 
-Use for every discovered data-driven authorization store, not only suspected fail-open code.
+Use for every discovered data-driven authorization store, including correct code consuming a wrong
+permission row. Current rows/tests are not independent authority for intended policy.
 
-1. Enumerate menu → submenu → form → trigger → package/procedure → protected operation.
-   Include rarely used, hidden, disabled, alternate and legacy branches. Record dynamic targets,
-   unresolved library attachments and unavailable exports in the branch-coverage ledger.
-2. Inventory tables, views, synonyms, role/group mappings, grants, inheritance, exceptions,
-   NULL/wildcards, defaults, overrides, effective dates, cache TTL/invalidation, policy versions,
-   tenant/organization/session contexts. Record export provenance/time and exact row keys without secrets.
-3. Reconstruct actual evaluator order: rule selection, precedence, deny/allow conflicts, missing rows,
-   duplicate rows and errors. Never assume deny-overrides or allow-overrides. Expand effective grants
-   through hierarchy and groups; retain all contributing rows and the winning rule/precedence trace.
-4. Obtain an independent signed-off matrix, requirement, regulation or owner-approved policy.
-   Code/current DB rows/tests cannot alone establish intended policy. If unavailable, emit
-   `NON LIQUET` / `NOT_VERIFIED` for policy correctness with the missing baseline and owner question.
-   An executed operation may be dynamically observed while its policy correctness remains unresolved.
-5. Fill [effective-permission-matrix.csv](../templates/effective-permission-matrix.csv) for each relevant
-   principal/role/resource/operation/scope/entry point/state/time. Compare intended/configured/enforced;
-   cite scoped exceptions before treating a discrepancy as a violation. Unknown is not deny.
-6. Examine unexpected grants, sibling differences, inherited wildcard scope, stale/duplicate/conflicting
-   records, wrong org, effective dates and unreviewed privileged branches. Pinpoint the row, not merely
-   the correct function reading it. Root cause: `AUTHZ-BYPASS`, tag `AUTHZ-DATA-INTEGRITY`.
-7. In explicitly authorized disposable local fixtures, replay intended-denied and intended-allowed cases
-   through evaluator and operation. Assert committed rows, audit/queue ledger and external effects.
-   Report runtime as NOT VERIFIED if no faithful local runtime/data is available; never use live probes.
+1. Obtain authorized offline navigation, role/group, grants, scope/date and policy exports. Record
+   table/view/synonym names, export time/version, cache behavior and exact row keys without secrets.
+   Expand menu → submenu → form → trigger → procedure → operation, including hidden/disabled/legacy
+   branches. Missing exports and dynamic bindings remain unresolved.
+2. Establish the application's actual evaluator semantics and provenance. Normalize nodes, rows,
+   role inheritance, principals, scope/state/time domains and known entry paths into JSON. Each
+   semantics key carries `source_ref` or ASSUMED. The current helper supports leaf_only, nearest and
+   union hierarchy adapters; priority/specificity selection; deny/allow/unknown conflicts; explicit
+   NULL-scope meaning and defaults. These are declared models, never universal Oracle semantics.
+3. Run `python3 scripts/authz_effective.py --config configuration.json --policy policy.json --output WORKSPACE`.
+   Omit --policy when unavailable. Read `matrix.csv`, `coverage.json`, `diff.json`,
+   `owner_questions.json` and `anomaly_signals.json`. Compare every declared role/resource/scope/path/
+   state/time combination. Keep all matched/winning rows and precedence; cycle/dangling/oversized
+   inputs fail explicitly. The row ratio counts inspected exports, not proven permission correctness.
+4. Independently source intended policy from approved owner requirements, regulation, contracts or
+   signed-off matrices. Honor scoped/time-limited exceptions. Closed-world denial is allowed only
+   when policy explicitly declares it; open-world absence remains unknown. Contradictory policy also
+   remains unknown. No baseline means owner questions; a peer anomaly is never a confirmed violation.
+5. Inspect unexpected grants, inherited/wildcard expansion, conflicting/inactive records, scope errors
+   and path differences. The engine's six generic anomaly signals are prompts for review: privileged
+   peer outlier, inherited grant, wildcard expansion, conflicting grants, inactive rule and cross-entry
+   divergence. SoD constraints are separately sourced review signals. Rank measurements apply only
+   to the tested synthetic distribution and do not establish intent without policy.
+6. Distinguish incorrect configuration from incorrect evaluator semantics and runtime enforcement.
+   `modeled_path_decision` is declared behavior; `enforced` stays unknown without actual observation.
+   Use optional --differential only with a reviewed local evaluator command. Never execute imported SQL
+   or an unknown application to read its policy data.
+7. Join [operation paths](cross-entrypoint-authorization.md) before synthesizing findings. For dynamic
+   proof, use a disposable local model/test DB, independently sourced allowed/denied principals and
+   fresh-connection status plus audit/outbox/external mock ledgers. Record execution using run_repro.py.
+   Without the actual supported Oracle runtime, AUTHID/VPD behavior remains NOT VERIFIED.
 
-Required artifacts: navigation graph; data-source inventory; effective-permission matrix;
-intended/configured/enforced diff; branch-coverage ledger; unresolved-policy questions.
-Use [cross-entrypoint authorization](cross-entrypoint-authorization.md) for every operation with multiple callers.
-The synthetic wrong-row fixture lives in [policy.json](../tests/fixtures/authorization/policy.json),
-[configuration.json](../tests/fixtures/authorization/configuration.json) and [runtime.py](../tests/fixtures/authorization/runtime.py).
-It models correct Level 1/2 evaluation with erroneous row L2-rare; it does not validate Oracle semantics.
+Required artifacts: navigation graph; source/export inventory; effective matrix; intended/configured/
+observed diff; candidate coverage and owner questions. Assumed semantics, incomplete domains and unknown
+branches cap assurance. The [worked example](../examples/configuration.json) demonstrates the input
+format; it is not a blind benchmark or an authoritative policy for another application.

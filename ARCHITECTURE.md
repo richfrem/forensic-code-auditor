@@ -62,15 +62,15 @@ has evidence or explicitly states the missing evidence. Unknown branches remain 
 Evidence (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`) is independent of verification
 (`STATIC_PROVEN`, `DYNAMIC_REPRODUCED`, `TEST_GENERATED`, `NOT_VERIFIED`) and severity.
 Assurance (`VERIFIED_SCOPE`, `PARTIAL`, `INSUFFICIENT_EVIDENCE`, `NOT_ASSESSED`) measures coverage.
-The report validator rejects unqualified `SECURE`/`PASS`, missing operation items, unexecuted dynamic
-proof and unsupported assurance. It validates structure/consistency, not the truth of citations.
+Schema v2 verifies evidence files/hashes/locators, execution records, required discovery categories and candidate accounting. It retains the v1 validator for legacy structural checks. It rejects unqualified `SECURE`/`PASS`, missing operation items, unexecuted dynamic
+proof and unsupported assurance. It validates artifact availability/integrity and declared coverage, not semantic truth or honest initial discovery.
 
 ## Detection and test boundaries
 
-The Semgrep catalog contains 15 candidate rule IDs in nine YAML files with paired positive/negative
-fixtures. Two CodeQL packs now contain three queries: the original Python tenant and JavaScript FSM
+The Semgrep catalog contains 30 candidate/inventory rule IDs in 24 rule files with paired positive/negative
+fixtures. Inventory hits feed a bounded operation graph; its limitations remain part of coverage. Two CodeQL packs now contain three queries: the original Python tenant and JavaScript FSM
 queries plus a Python scope-provenance/raw/bulk inventory query. Original scanner identifiers stay stable.
-Revised CodeQL compilation is not established without executing its CLI harness.
+The revised queries compile and pass five pinned qltests (including extraction counts) with CodeQL 2.23.3.
 
 Synthetic tests demonstrate sequential committed authorization effects, report gates, forced local
 revocation timing, tenant context reuse, replay and approval binding. SQLite is used only for local

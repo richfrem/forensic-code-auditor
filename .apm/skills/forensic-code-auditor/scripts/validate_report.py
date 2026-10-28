@@ -24,7 +24,7 @@ def validate(report, *, evidence_root=None):
     if evidence_root is None: return ['v2 requires an explicit evidence root; use validate_report_v1.py only for legacy structural checks']
     for ref in all_references(report):
         try: resolve(ref,evidence_root)
-        except (OSError,ValueError,KeyError,TypeError) as exc: errors.append(str(exc))
+        except (OSError,ValueError,KeyError,TypeError,AttributeError) as exc: errors.append(str(exc))
     if errors: return errors
     categories = report['scope']['categories']; operations = report['operations']; findings = report['findings']
     def unique(items, key):
@@ -34,13 +34,15 @@ def validate(report, *, evidence_root=None):
     if {c['category'] for c in categories} != CATEGORIES: errors.append('all discovery categories must be accounted for')
     try:
         discovery = json.loads(resolve(report['discovery'],evidence_root).read_text())
+        for ref in all_references(discovery): resolve(ref,evidence_root)
         required = {o['id']:o for o in discovery['operations']}
         if len(required) != len(discovery['operations']): errors.append('duplicate discovered operation')
-    except (OSError,ValueError,KeyError,TypeError) as exc: return errors+['invalid discovery manifest: '+str(exc)]
+    except (OSError,ValueError,KeyError,TypeError,AttributeError) as exc: return errors+['invalid discovery manifest: '+str(exc)]
+    if not isinstance(discovery.get('edges',[]),list) or any(not isinstance(edge,dict) for edge in discovery.get('edges',[])): return errors+['invalid discovery edges']
     ops = {o['id']:o for o in operations}
     if set(required)-set(ops): errors.append('omitted discovered operations: '+','.join(sorted(set(required)-set(ops))))
     if set(ops)-set(required): errors.append('operations lack discovery provenance')
-    incomplete = bool(discovery.get('limitations')) or not operations
+    incomplete = bool(discovery.get('limitations')) or not operations or any(edge.get('status')!='established' for edge in discovery.get('edges',[]))
     for op in operations:
         if op['class'] != required.get(op['id'],{}).get('class'): errors.append('operation class differs from discovery')
         if op['status']=='deferred':
@@ -53,7 +55,8 @@ def validate(report, *, evidence_root=None):
             elif not item['evidence'] or item['needed']: errors.append('complete item requires evidence and no missing prerequisite')
     for c in categories:
         if not c['evidence']: errors.append('category evidence required, including absence')
-        linked = [required.get(i) for i in c['operation_ids']]
+        derived_ids=set(c['operation_ids']) | set(discovery.get('categories',{}).get(c['category'],[])) & set(required)
+        linked = [required.get(i) for i in derived_ids]
         if any(o is None for o in linked): errors.append('unknown category operation')
         critical = c['status']!='absent' and (c['category']=='policy_store' or any(o and o['class'] in ('value','lifecycle','policy') for o in linked))
         if critical and not c['critical']: errors.append('criticality cannot be downgraded')
@@ -86,7 +89,20 @@ def validate(report, *, evidence_root=None):
             coverage=json.loads(resolve(artifacts['coverage.json'],evidence_root).read_text())
             if any(coverage.get(k)!=1.0 for k in ('row_ratio','node_ratio','decision_ratio')) or coverage.get('semantics_assumed')!=[] or coverage.get('limitations'):
                 errors.append('policy coverage incomplete or semantics assumed')
-        except (OSError,ValueError,TypeError) as exc: errors.append('invalid coverage: '+str(exc))
+            semantics=coverage.get('semantics_sources',{})
+            if set(semantics)!={'inheritance','conflict','null_scope','default','precedence'} or any(not isinstance(ref,dict) or not {'path','sha256'}.issubset(ref) for ref in semantics.values()):
+                errors.append('verified policy coverage requires resolvable semantics sources')
+            else:
+                for ref in semantics.values(): resolve(ref,evidence_root)
+            if 'configuration.json' not in artifacts:
+                errors.append('verified policy coverage requires original normalized export')
+            else:
+                configuration=json.loads(resolve(artifacts['configuration.json'],evidence_root).read_text())
+                import csv
+                with resolve(artifacts['matrix.csv'],evidence_root).open(newline='') as stream: decisions=sum(1 for _ in csv.DictReader(stream))
+                if coverage.get('rows_inspected')!=len(configuration['rows']) or coverage.get('nodes_inspected')!=len(configuration['nodes']) or coverage.get('decisions')!=decisions:
+                    errors.append('coverage denominator differs from exported data or actual matrix')
+        except (OSError,ValueError,TypeError,AttributeError) as exc: errors.append('invalid coverage: '+str(exc))
     for f in findings:
         status=f['evidence_status']; verification=f['verification']
         if f['operation_id'] not in ops: errors.append('finding unknown operation')
@@ -105,7 +121,13 @@ def validate(report, *, evidence_root=None):
                 record=json.loads(resolve(f['run_record'],evidence_root).read_text())
                 from run_repro import validate_record
                 errors.extend(validate_record(record,evidence_root))
-            except (OSError,ValueError,KeyError,TypeError) as exc: errors.append('invalid run record: '+str(exc))
+                if status in ('CONFIRMED','REFUTED') and record.get('observed',{}).get('claim') != ('violation' if status=='CONFIRMED' else 'defense'):
+                    errors.append('run claim does not match finding verdict')
+                case=record.get('observed',{}).get('case',{})
+                if case.get('operation') != f['operation_id']: errors.append('run record is not bound to finding operation')
+                if case.get('contributing_rows') is not None and set(case['contributing_rows']) != {r.get('row_key') for r in f['contributing_rows']}:
+                    errors.append('run record is not bound to contributing rows')
+            except (OSError,ValueError,KeyError,TypeError,AttributeError) as exc: errors.append('invalid run record: '+str(exc))
         elif 'run_record' in f and verification in ('TEST_GENERATED','NOT_VERIFIED'): errors.append('unexecuted verification cannot claim run record')
     for tool in report['tools_executed']:
         if tool['exit_code'] and tool['outcome']!='failed': errors.append('failed scanner cannot report hits/no hits')
@@ -115,7 +137,7 @@ def validate(report, *, evidence_root=None):
 def main():
     p=argparse.ArgumentParser(description=__doc__); p.add_argument('report',type=Path);p.add_argument('--evidence-root',type=Path,required=True);a=p.parse_args()
     try: errors=validate(json.loads(a.report.read_text()),evidence_root=a.evidence_root)
-    except (OSError,ValueError,TypeError) as exc: p.exit(2,str(exc)+'\n')
+    except (OSError,ValueError,TypeError,AttributeError) as exc: p.exit(2,str(exc)+'\n')
     for error in errors: print(error)
     print('INVALID' if errors else 'VALID: structure, artifact integrity and declared coverage only; semantics require review')
     return int(bool(errors))

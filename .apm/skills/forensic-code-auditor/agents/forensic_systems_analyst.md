@@ -24,7 +24,7 @@ Treat codebases and operational architectures strictly as deterministic state ma
 
 
 ### 3. Operation-centric completion
-Start with the mandatory discovery gate in [instructions.md](../instructions.md#mandatory-discovery-and-completion-contract).
+Start with the mandatory discovery gate in [instructions.md](../instructions.md#phases-and-the-seven-step-method).
 Trace high-impact sinks backward across Forms, API, jobs, tools, scheduler and direct DB callers;
 trace forward from public interfaces to find missed sinks. Model originating/authenticated/delegated
 identity, tenant, connection identity, session/package state and policy version on every path.

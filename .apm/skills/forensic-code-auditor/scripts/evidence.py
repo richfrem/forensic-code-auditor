@@ -23,6 +23,7 @@ def resolve(ref, root):
         raise ValueError('evidence missing or escapes root: ' + raw)
     if sha256(path) != ref['sha256']:
         raise ValueError('evidence hash mismatch: ' + raw)
+    if 'end_line' in ref and 'line' not in ref: raise ValueError('end_line requires line')
     if 'line' in ref:
         lines = path.read_text().splitlines()
         if not 1 <= ref['line'] <= ref.get('end_line',ref['line']) <= len(lines):
@@ -39,8 +40,8 @@ def resolve(ref, root):
                 for child in value.values(): yield from keys(child)
             elif isinstance(value,list):
                 for child in value: yield from keys(child)
-        if ref['row_key'] not in set(keys(data)):
-            raise ValueError('evidence row does not exist: ' + ref['row_key'])
+        if list(keys(data)).count(ref['row_key']) != 1:
+            raise ValueError('evidence row missing or ambiguous: ' + ref['row_key'])
     return path
 
 

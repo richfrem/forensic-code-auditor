@@ -2,6 +2,8 @@
 
 Comprehensive taxonomy of non-syntactic logic invariants across polyglot cloud services and enterprise legacy systems. Use in Step 6 to classify findings; use the inspection prompts for procedural execution.
 
+These mechanisms are investigative examples. Verify independently sourced invariants and accept alternative enforcement mechanisms that demonstrably preserve them.
+
 ## Contents
 - [1. Lifecycle Integrity (FSM-BYPASS)](#1-lifecycle-integrity-fsm-bypass)
 - [2. Transaction Demarcation (TRANSACTION-DEMARCATION)](#2-transaction-demarcation-transaction-demarcation)

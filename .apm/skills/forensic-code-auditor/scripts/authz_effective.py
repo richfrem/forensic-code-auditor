@@ -24,7 +24,8 @@ def analyze(config,policy=None,*,max_decisions=100000):
         spec=config.get('semantics',{}).get(key,{'value':default,'source_ref':'ASSUMED'})
         value=spec['value']
         if value not in VALUES[key]:raise ValueError('unsupported semantics '+key)
-        if not spec.get('source_ref') or spec['source_ref']=='ASSUMED':assumed.append(key)
+        source=spec.get('source_ref')
+        if not isinstance(source,dict) or not source.get('path') or not source.get('sha256'):assumed.append(key)
         semantics[key]=value
     def ancestry(key,lookup,parent_key,trail=()):
         if key in trail:raise ValueError('cyclic hierarchy')
@@ -114,7 +115,7 @@ def analyze(config,policy=None,*,max_decisions=100000):
         for role,parents in role_lineages.items():
             if set(constraint.get('roles',[])).issubset(parents):signals.append({'kind':'sod_review','role':role,'source_ref':constraint.get('source_ref','ASSUMED')})
     questions.sort(key=lambda q:(-q['score'],str(q['contributing_rows']),q['entry_point']))
-    return {'matrix':matrix,'coverage':{'row_ratio':1.0,'node_ratio':1.0,'decision_ratio':len(matrix)/total,'rows_inspected':len(rows),'active_rows_used':len(used),'nodes_inspected':len(nodes),'decisions':len(matrix),'semantics_assumed':assumed,'limitations':list(config.get('limitations',[]))+([] if independent else ['Independent policy unavailable; intended decisions unresolved'])},'diff':diff,'owner_questions':questions,'signals':signals}
+    return {'matrix':matrix,'coverage':{'row_ratio':1.0,'node_ratio':1.0,'decision_ratio':len(matrix)/total,'rows_inspected':len(rows),'active_rows_used':len(used),'nodes_inspected':len(nodes),'decisions':len(matrix),'domains':{'roles':list(roles),'scopes':dimensions[0],'states':dimensions[1],'time_points':dimensions[2],'entry_points':[e['id'] for e in dimensions[3]]},'semantics_assumed':assumed,'semantics_sources':{k:config.get('semantics',{}).get(k,{}).get('source_ref') for k in DEFAULTS},'limitations':list(config.get('limitations',[]))+([] if independent else ['Independent policy unavailable; intended decisions unresolved'])},'diff':diff,'owner_questions':questions,'signals':signals}
 
 
 def write_outputs(result,output):
@@ -135,7 +136,7 @@ def main():
         if a.differential:
             command=a.differential
             script=Path(command[1]).resolve() if len(command)>1 else None
-            if not script or not script.is_file() or script.suffix!='.py' or any('://' in x for x in command):raise ValueError('differential accepts only a reviewed local Python evaluator')
+            if not script or not script.is_file() or script.suffix!='.py' or Path(command[0]).name not in ('python','python3','python3.11','python3.12','python3.13','python3.14') or any('://' in x for x in command):raise ValueError('differential accepts only a reviewed local Python evaluator')
             run=subprocess.run(command,input=json.dumps(config),capture_output=True,text=True,timeout=30,shell=False,check=True)
             actual=json.loads(run.stdout)
             expected=[r['configured'] for r in result['matrix']]

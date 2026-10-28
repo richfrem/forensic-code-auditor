@@ -22,6 +22,8 @@ def now(): return datetime.now(timezone.utc).isoformat()
 def run(command, *, root, environment, runtime='local-python', timeout=30):
     root=Path(root).resolve()
     if environment!='isolated-local-synthetic': raise ValueError('explicit isolated-local-synthetic opt-in required')
+    if not re.fullmatch(r'(?:isolated-local|local|disposable)-[a-z0-9_-]+',runtime) or re.search(r'(?:production|staging|shared|live)',runtime):
+        raise ValueError('runtime label contradicts isolated local execution')
     if not command or not 1<=timeout<=300: raise ValueError('invalid command/timeout')
     for arg in command:
         if re.search(r'(?i)://(?!localhost(?=[:/]|$)|127\.0\.0\.1(?=[:/]|$)|\[::1\])',arg): raise ValueError('remote URL forbidden')
@@ -54,6 +56,7 @@ def validate_record(record,root):
     if set(record)!=required: return ['run record has missing/unknown fields']
     if record['producer']!='forensic-code-auditor/run_repro-v1' or record['schema_version']!=1: errors.append('unknown run producer/version')
     if record['environment']!='isolated-local-synthetic' or record['cwd']!='.': errors.append('invalid run environment/cwd')
+    if not isinstance(record['runtime'],str) or not re.fullmatch(r'(?:isolated-local|local|disposable)-[a-z0-9_-]+',record['runtime']) or re.search(r'(?:production|staging|shared|live)',record['runtime']): errors.append('runtime label contradicts isolation declaration')
     if not record['command'] or not record['tool_versions'] or not record['runtime']: errors.append('incomplete run provenance')
     try:
         if datetime.fromisoformat(record['ended'])<datetime.fromisoformat(record['started']): errors.append('invalid run times')

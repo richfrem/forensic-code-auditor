@@ -1,5 +1,8 @@
 """Configured semantics, unknown policy and mutation-resistant discovery."""
 import copy
+import json
+import subprocess
+import tempfile
 from pathlib import Path
 import sys
 import unittest
@@ -57,6 +60,21 @@ class AuthorityTests(unittest.TestCase):
         with self.assertRaises(ValueError):analyze(c)
         c=self.simple();c['semantics']['inheritance']['value']='unknown-engine'
         with self.assertRaises(ValueError):analyze(c)
+
+    def test_local_differential_cli_match_and_mismatch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);c=self.simple()
+            c['semantics']['inheritance']['value']='union';c['semantics']['null_scope']['value']='all'
+            (root/'config.json').write_text(json.dumps(c))
+            script=root/'evaluator.py';script.write_text('print("[true]")')
+            cli=Path(__file__).resolve().parents[1]/'scripts/authz_effective.py'
+            command=[sys.executable,str(cli),'--config',str(root/'config.json'),'--output',str(root/'out'),'--differential',sys.executable,str(script)]
+            matched=subprocess.run(command,capture_output=True,text=True)
+            self.assertEqual(matched.returncode,0,matched.stderr)
+            self.assertTrue(json.loads((root/'out/differential.json').read_text())['matches'])
+            script.write_text('print("[false]")')
+            mismatched=subprocess.run(command,capture_output=True,text=True)
+            self.assertEqual(mismatched.returncode,1,mismatched.stderr)
 
     def test_seeded_detection_rates(self):
         detected=exceptions=ranked=0

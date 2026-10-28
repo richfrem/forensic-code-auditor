@@ -5,7 +5,7 @@ authorization data, concurrency, tenant isolation and distributed side effects. 
 applications and legacy Oracle Forms/PL/SQL, Java, .NET and PHP systems.
 
 The auditor starts with state-changing operations, traces their callers and policy sources, and
-separates confirmed findings from unresolved evidence. Correct authorization code can still consume
+separates confirmed findings from unresolved evidence. The hardening adds an offline effective-authority engine, bounded operation graph, artifact-aware schema-v2 validator and actual reproduction records. Correct authorization code can still consume
 an incorrect permission row; the workflow compares independently intended, configured and enforced access.
 Semgrep and CodeQL supply candidates for investigation, never proof of security.
 
@@ -32,6 +32,8 @@ Those tools can be installed separately without becoming part of this package.
   evals/                          # Existing routing and behavioral evaluation cases
 apm.yml                           # Standalone package manifest
 ```
+
+See [CHANGELOG-hardening.md](CHANGELOG-hardening.md) for actual tests, migrations and remaining limits.
 
 Local `repos/`, `temp/`, `issues/`, runtime downloads, installed harness copies and build outputs
 are ignored. Optional checkouts in `repos/` are audit targets or development tools, not package dependencies.

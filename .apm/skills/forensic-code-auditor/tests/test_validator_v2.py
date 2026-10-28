@@ -25,14 +25,15 @@ def golden(root):
     source = write_ref(root, 'target.sql', 'PROCEDURE approve IS BEGIN NULL; END;\n')
     policy = write_ref(root, 'policy.json', {'rows': [{'id': 'P1', 'allow': False}]})
     graph = write_ref(root, 'operations.json', {'schema_version': 1, 'operations': [{'id': 'approve','class': 'lifecycle'}], 'edges': [], 'limitations': [], 'categories': {'stored_procedure': ['approve'], 'policy_store': ['permissions']}})
-    coverage = write_ref(root, 'coverage.json', {'row_ratio': 1.0, 'node_ratio': 1.0, 'decision_ratio': 1.0, 'semantics_assumed': [], 'limitations': []})
+    configuration = write_ref(root, 'configuration.json', {'rows':[{'id':'R1'}],'nodes':[{'id':'N1'}]})
+    coverage = write_ref(root, 'coverage.json', {'row_ratio': 1.0, 'node_ratio': 1.0, 'decision_ratio': 1.0, 'semantics_assumed': [], 'semantics_sources':{k:source for k in ('inheritance','conflict','null_scope','default','precedence')},'rows_inspected':1,'nodes_inspected':1,'decisions':1,'limitations': []})
     matrix = write_ref(root, 'matrix.csv', 'principal,operation,intended,configured\na,approve,DENY,DENY\n')
     diff = write_ref(root, 'diff.json', [])
     return {'schema_version': 2, 'assurance': 'VERIFIED_SCOPE','conclusion': 'NO_FINDINGS_IN_VERIFIED_SCOPE',
             'scope': {'categories': [{'category': c, 'status': 'verified' if c in ('stored_procedure','policy_store') else 'absent', 'critical': c in ('stored_procedure','policy_store'), 'operation_ids': ['approve'] if c == 'stored_procedure' else [], 'evidence': [source], 'limitations': []} for c in CATEGORIES]},
             'operations': [{'id': 'approve','class': 'lifecycle','status': 'complete','reason': '', 'completion': {k: {'status': 'complete','evidence': [source], 'needed': ''} for k in ITEMS}}],
             'findings': [], 'references_loaded': [], 'tools_executed': [],
-            'artifacts': [{'kind': k, 'ref': r} for k,r in [('operations.json', graph),('coverage.json',coverage),('matrix.csv',matrix),('diff.json',diff)]],
+            'artifacts': [{'kind': k, 'ref': r} for k,r in [('configuration.json',configuration),('operations.json', graph),('coverage.json',coverage),('matrix.csv',matrix),('diff.json',diff)]],
             'discovery': graph}
 
 
@@ -85,6 +86,7 @@ class ValidatorV2Tests(unittest.TestCase):
         self.assertTrue(self.check())
         self.report = golden(self.root)
         self.report['scope']['categories'][3]['critical'] = False
+        self.report['scope']['categories'][3]['operation_ids'] = []
         self.assertTrue(self.check())
         self.report = golden(self.root)
         self.report['operations'][0].update(status='deferred', reason='out of budget')
@@ -116,6 +118,26 @@ class ValidatorV2Tests(unittest.TestCase):
         f['verification'] = 'TEST_GENERATED'; self.assertTrue(self.check())
         f['verification'] = 'STATIC_PROVEN'; del f['run_record']
         self.report['tools_executed'] = [{'tool': 'scanner','version': '1','command': ['scanner'],'exit_code': 2,'outcome': 'no_hits','output_ref': f['location']}]
+        self.assertTrue(self.check())
+
+    def test_unresolved_discovery_edge_caps_assurance(self):
+        graph_path=self.root/'operations.json'
+        graph=json.loads(graph_path.read_text())
+        graph['edges']=[{'from':'unknown','to':'approve','status':'unresolved'}]
+        new_ref=write_ref(self.root,'operations.json',graph)
+        self.report['discovery']=new_ref
+        next(a for a in self.report['artifacts'] if a['kind']=='operations.json')['ref']=new_ref
+        self.assertTrue(self.check())
+
+    def test_coverage_denominator_and_semantics_are_checked(self):
+        path=self.root/'coverage.json'
+        data=json.loads(path.read_text());data['decisions']=999
+        ref=write_ref(self.root,'coverage.json',data)
+        next(a for a in self.report['artifacts'] if a['kind']=='coverage.json')['ref']=ref
+        self.assertTrue(self.check())
+        data['decisions']=1;data['semantics_sources']={'default':'claimed'}
+        ref=write_ref(self.root,'coverage.json',data)
+        next(a for a in self.report['artifacts'] if a['kind']=='coverage.json')['ref']=ref
         self.assertTrue(self.check())
 
     def test_no_policy_manifest_or_false_absence(self):

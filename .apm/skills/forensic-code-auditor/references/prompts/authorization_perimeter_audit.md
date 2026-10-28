@@ -23,7 +23,7 @@ Execute this inspection when auditing authentication handoffs, microservice boun
 - **Wildcard & NULL Predicate Expansion**:
   - Inspect authorization queries using dynamic filtering:
     ```sql
-    -- VULNERABLE: If :org_filter is NULL, matches all rows in multi-tenant table
+    -- Candidate scope expansion: If :org_filter is NULL, matches all rows in multi-tenant table
     SELECT * FROM records WHERE (:org_filter IS NULL OR org_id = :org_filter)
     ```
   - Flag any pattern where an unsupplied or empty organizational context parameter silently expands authorization to all entities.
@@ -54,9 +54,13 @@ def test_perimeter_bypass_direct_invocation():
     """
     client = TestClient(app)
     
+    before = read_committed_record(1001)
+    queued_before = mock_queue.snapshot()
+    external_before = mock_effects.snapshot()
+
     # 1. Direct invocation bypassing upstream SSO proxy
     # Attacker crafts ambient header directly without valid cryptographic signature
-    spoofed_headers = {"X-Forwarded-User": "admin@gov.bc.ca"}
+    spoofed_headers = {"X-Forwarded-User": "admin@example.test"}
     
     response = client.post("/internal/tools/execute-action", 
                            headers=spoofed_headers, 
@@ -64,6 +68,9 @@ def test_perimeter_bypass_direct_invocation():
     
     # Invariant: Must return 401/403 Unauthorized unless authenticated via local cryptographic proof
     assert response.status_code in (401, 403), f"Bypassed perimeter authorization! Got {response.status_code}"
+    assert read_committed_record(1001) == before
+    assert mock_queue.snapshot() == queued_before
+    assert mock_effects.snapshot() == external_before
 ```
 
 ## 5. Mandatory data and operation reconstruction
@@ -72,5 +79,4 @@ Load [authorization data integrity](../authorization-data-integrity.md) for perm
 For firewall/gateway/service-account chains load [infrastructure trust](../infrastructure-trust-dependencies.md).
 A servlet getRemoteUser() is container identity, not direct header access; inspect its configured
 identity origin and trusted proxy reachability separately. Basic Auth over TLS is not inherently a defect.
-The HTTP example above is incomplete without before/after persisted-state and queued/external
-mock effect assertions. Add those and prove actual backend authorization/delegation before a verdict.
+The HTTP example asserts committed state and queued/external effects. Verify the actual backend authorization/delegation before a verdict.

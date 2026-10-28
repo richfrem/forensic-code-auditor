@@ -35,17 +35,18 @@ def demo(output,config_path=None,policy_path=None,without_policy=False):
     if result['diff']:
         runtime=output/'runtime';runtime.mkdir(exist_ok=True)
         for name in ('authz_effective.py','evidence.py'):shutil.copy2(ROOT/'scripts'/name,runtime/name)
-        (output/'reproduce.py').write_text('''import json,sqlite3,sys
+        (output/'reproduce.py').write_text('''import json,sqlite3,sys,tempfile
 from pathlib import Path
 sys.path.insert(0,str(Path("runtime").resolve()))
 from authz_effective import analyze
 config=json.loads(Path("configuration.json").read_text());policy=json.loads(Path("policy.json").read_text())
 result=analyze(config,policy);case=result["diff"][0]
-db=sqlite3.connect(":memory:")
+temporary=tempfile.TemporaryDirectory();db_path=str(Path(temporary.name)/"model.sqlite");db=sqlite3.connect(db_path)
 db.executescript("CREATE TABLE claim(status); INSERT INTO claim VALUES('PENDING'); CREATE TABLE effects(action);")
 row=next(r for r in result["matrix"] if all(r[k]==case[k] for k in ("role","resource","operation","scope","entry_point","state","effective_at")))
 if row["modeled_path_decision"] is True:
     db.execute("UPDATE claim SET status='APPROVED'");db.execute("INSERT INTO effects VALUES('approve')");db.commit()
+db.commit();db.close();db=sqlite3.connect(db_path)
 status=db.execute("SELECT status FROM claim").fetchone()[0];effects=db.execute("SELECT count(*) FROM effects").fetchone()[0]
 print(json.dumps({"claim":"violation","case":case,"assertions":[{"kind":"durable_state","name":"committed status","actual":status,"expected":"APPROVED","passed":status=="APPROVED"},{"kind":"side_effect","name":"effect ledger","actual":effects,"expected":1,"passed":effects==1}]}))
 ''')

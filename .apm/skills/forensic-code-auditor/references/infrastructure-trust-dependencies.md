@@ -19,3 +19,9 @@ or `NON LIQUET`, never an unconditional exploit claim.
 
 [Synthetic trust configurations](../tests/fixtures/specialist-cases.json) include broad shared authority
 and a scoped backend-guarded control. Tests inspect configuration only; no network/password testing.
+
+For an explicit capability/edge export, run `scripts/control_dependency.py graph.json --output
+WORKSPACE/control-outcomes.json` using [control-graph.json](../templates/control-graph.json).
+It models each single declared control compromise and downstream capability requirements. Its outcomes
+are conditional STATIC_MODEL_ONLY observations; an absent policy remains NON LIQUET. A TLS/Basic Auth
+label, credential policy or syntactic backend check alone never establishes exploitable reachability.
