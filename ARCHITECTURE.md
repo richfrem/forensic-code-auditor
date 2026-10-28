@@ -1,161 +1,82 @@
-# System Architecture: CROW / RAVEN Analysis (`code-logic-auditor`)
+# Forensic Code Auditor architecture
 
-## Contents
-- [Executive Architectural Overview](#executive-architectural-overview)
-- [The Tripartite Modernization Topology](#the-tripartite-modernization-topology)
-- [Repository Layout & Component Isolation](#repository-layout--component-isolation)
-- [The Forensic Analytical Engine](#the-forensic-analytical-engine)
-- [The 13-Domain Logic Invariants Taxonomy](#the-13-domain-logic-invariants-taxonomy)
-- [Empirical Static Verification Architecture](#empirical-static-verification-architecture)
-- [Adversarial Game Simulation & MCTS Concurrency](#adversarial-game-simulation--mcts-concurrency)
-- [APM Package Distribution Architecture](#apm-package-distribution-architecture)
+## Standalone package
 
----
+`forensic-code-auditor` is an independent APM package with no package or MCP dependencies.
+Crow, Raven and other scanners may be installed separately as development tools or audited as targets.
+Their presence does not change this architecture or confer authority on their scan results.
+Local checkouts live in ignored `repos/`; local reports and private findings live in ignored `temp/`.
 
-## Executive Architectural Overview
+The canonical distribution root is `.apm/skills/forensic-code-auditor/`. `apm.yml` includes only that
+skill. APM deploys authored source to harness-specific locations; installed copies are outputs.
 
-`crow-raven-analysis` houses the **`code-logic-auditor`** skill—a first-principles forensic analysis package engineered to identify architectural vulnerabilities, broken state invariants, check-then-act (TOCTOU) race windows, and authorization perimeter collapse across enterprise legacy and modern cloud software.
+## Analytical flow
 
-Unlike conventional syntactic SAST suites (e.g. SonarQube, Fortify, ESLint) that scan for syntax hygiene or known CVE signatures, `code-logic-auditor` treats software systems as **deterministic state machines governed by hard physical, resource, temporal, and cryptographic boundaries**.
-
----
-
-## The Tripartite Modernization Topology
-
-```
-+-----------------------------------------------------------------------------------------+
-|                               Enterprise Modernization Stack                            |
-+-----------------------------------------------------------------------------------------+
-|  [ RAVEN ] : Enterprise Execution & Autonomous DevOps Pipeline                          |
-|  - Multi-MCP server gateway (Bitbucket, Jira, Sonar, Server Monitor, Jenkins).         |
-|  - Autonomous AI pipeline detecting production errors, triaging, and generating PRs.    |
-+-----------------------------------------------------------------------------------------+
-|  [ CROW ] : Agent & Capability Ecosystem (APM Distribution)                             |
-|  - APM-distributed collections for brownfield architecture, legacy modernization,       |
-|    and security remediation across Java EE, .NET, PHP, and CI/CD pipelines.            |
-+-----------------------------------------------------------------------------------------+
-|  [ code-logic-auditor ] : The Forensic Invariant Engine (This Package)                  |
-|  - Standalone, empirically validated skill operating across Raven and Crow.             |
-|  - Powers deep AST analysis, FSM edge checks, and data-driven authorization audits.     |
-+-----------------------------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    D[Mandatory surface discovery] --> O[Rank protected operations]
+    O --> T[Trace callers backward and interfaces forward]
+    T --> P[Independent invariant and policy provenance]
+    P --> F[Step 1 facts through Step 6 failure mapping]
+    F --> V[Step 7 discriminating proof]
+    V --> R[Evidence and verification classification]
+    R --> C[Coverage and assurance contract]
+    C --> J[Validate report JSON]
 ```
 
----
+The original Step 0 plus seven-step method is preserved: observed facts; hard boundaries;
+competing reconstructions; degradation; trust dynamics; failure mapping; discriminating proof.
+Discovery precedes conditional specialist routing so the auditor need not recognize a defect before
+loading the procedure that could discover it.
 
-## Repository Layout & Component Isolation
+## Responsibility boundaries
 
-```text
-crow-raven-analysis/
-├── AGENTS.md                                  # Canonical agent instructions & invariant bounds
-├── CLAUDE.md                                  # Minimal bridge to AGENTS.md
-├── ARCHITECTURE.md                            # Complete architectural spec (this document)
-├── INSTALL.md                                 # APM installation, registry, update & rollback guide
-├── apm.yml                                    # APM package manifest
-├── README.md                                  # Repository overview and quick start
-├── .apm/
-│   └── skills/
-│       └── code-logic-auditor/                # Primary skill source tree & APM distribution root
-│           ├── SKILL.md                       # Authoring-standard router (<= 80 lines)
-│           ├── instructions.md                # Step 0 + Seven Steps, evidence levels & schemas
-│           ├── code-logic-auditor-flow.mmd    # State machine execution diagram
-│           ├── agents/                        # Agent persona definitions
-│           │   └── forensic_systems_analyst.md # Generalized first-principles directive
-│           ├── references/
-│           │   ├── logic_invariants_taxonomy.md # 13 non-syntactic invariant domains
-│           │   ├── game_simulation_rl_auditing.md # MCTS & RL reward matrix
-│           │   ├── semgrep_logic_rules.md     # Tested Semgrep AST patterns catalog
-│           │   ├── codeql_taint_recipes.md    # Modern CodeQL taint recipes guide
-│           │   ├── rules/
-│           │   │   ├── semgrep/               # 9 tested YAML files (15 rule IDs) with paired test code
-│           │   │   └── codeql/                # 2 compilable CodeQL packs (python, javascript)
-│           │   └── prompts/                   # 7 domain-specific inspection prompts
-│           │       ├── state_machine_audit.md # FSM transitions & terminal state locks
-│           │       ├── multi_tenant_context_audit.md # Multi-tenant isolation & scoping
-│           │       ├── concurrency_toctou_audit.md # Check-then-act & race windows
-│           │       ├── idempotency_replay_audit.md # Idempotency, replay & dual writes
-│           │       ├── authorization_perimeter_audit.md # Perimeter collapse & fail-open DB auth
-│           │       ├── legacy_forms_authorization_audit.md # Oracle Forms & PL/SQL authorization
-│           │       └── agentic_tool_boundary_audit.md # MCP tool authorization & rollback atomicity
-│           └── evals/
-│               ├── evals.json                 # 28 routing test cases (positive + negative)
-│               ├── task-success.json          # 4 behavioral task-success evaluation cases
-│               ├── rule_tests.tsv             # Empirical CLI execution evidence log (17 static logic rules)
-│               └── fixtures/                  # Code fixtures with planted concurrency bugs
-├── issues/                                    # Issue tracking templates & findings
-├── research/                                  # Security research & safety labs (AI-Security-and-Safety-Lab)
-└── repos/                                     # Target working trees under audit (crow, raven)
-```
+| Component | Responsibility |
+|---|---|
+| `SKILL.md` | Trigger, discovery gate, progressive disclosure and concise workflow |
+| `instructions.md` | Canonical doctrine, evidence/assurance meanings and operation completion |
+| `agents/forensic_systems_analyst.md` | Analyst role and operation-centric execution discipline |
+| `references/` | Authorization-data reconstruction, cross-entrypoint tracing, infrastructure trust, taxonomy and specialist prompts |
+| `templates/` | Report schema, operation coverage, permission matrix and assurance skeleton |
+| `scripts/` | Report validation, local demo and reproducible scanner testing |
+| `tests/` | Vulnerable/protected synthetic models and negative report-contract cases |
+| `evals/` | Preserved routing and behavior tasks; these are not automatically executed LLM evaluations |
 
----
+## Authorization reconstruction
 
-## The Forensic Analytical Engine
+For each selected sink, trace Forms/menu, triggers, procedures, direct grants, APIs, jobs, queues,
+schedulers and tools. Record originating, authenticated, delegated and DB connection identities,
+session/tenant state, policy source/version, actual checks and durable effects. List unavailable edges.
 
-The auditor operates across an unambiguous **Step 0 + Seven-Step Forensic Procedure** governed by **Four Strict Evidence Levels**:
+For data-driven access, reconstruct navigation hierarchy and effective grants with the actual evaluator's
+precedence, inheritance, exceptions, wildcard/NULL, scope and effective dates. Compare independently
+intended policy with configuration and runtime decisions. A correct Level 2 evaluator consuming an
+incorrect row is an authorization-data integrity failure. Missing independent policy yields `NON LIQUET`.
 
-```
-+-------------------------------------------------------------------------+
-|                Step 0 + Seven-Step Forensic Sequence                    |
-|                                                                         |
-|  Step 0: Scope & Triage (Rank by financial/lifecycle blast radius)      |
-|  Step 1: Observed Facts (ASTs, CFGs, call sites, schemas - file:line)   |
-|  Step 2: Hard Boundary Conditions (Isolation levels, locks, async hops) |
-|  Step 3: Competing Reconstructions (Intended vs Adversarial paths)      |
-|  Step 4: Degradation & Obfuscation (Swallows, fallbacks, defaults)      |
-|  Step 5: Incentive & Trust Dynamics (Caller-controlled ingress state)   |
-|  Step 6: Failure Point Mapping (Pinpoint exact line & classify)         |
-|  Step 7: Discriminating Tests & Proof (Reproducer or Telemetry Spec)    |
-+-------------------------------------------------------------------------+
-                                    |
-                                    v
-+-------------------------------------------------------------------------+
-|                         Evidence Evaluation Gate                        |
-|                                                                         |
-|  CONFIRMED   --> Reachable trace / reproducer   --> [FINDING-XXX]       |
-|  SUSPECTED   --> Unverified assumption          --> [FINDING-XXX]       |
-|  NON LIQUET  --> Indeterminate path             --> [NON-LIQUET-XXX]    |
-|  REFUTED     --> Verified defense discovered    --> Coverage Note       |
-+-------------------------------------------------------------------------+
-```
+Each operation records nine completion items: invariant, entry points, policy provenance, execution
+trace, competing defenses, hypothesis, discriminating proof, classification and coverage. Every item
+has evidence or explicitly states the missing evidence. Unknown branches remain visible.
 
----
+## Evidence and assurance
 
-## The 13-Domain Logic Invariants Taxonomy
+Evidence (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`) is independent of verification
+(`STATIC_PROVEN`, `DYNAMIC_REPRODUCED`, `TEST_GENERATED`, `NOT_VERIFIED`) and severity.
+Assurance (`VERIFIED_SCOPE`, `PARTIAL`, `INSUFFICIENT_EVIDENCE`, `NOT_ASSESSED`) measures coverage.
+The report validator rejects unqualified `SECURE`/`PASS`, missing operation items, unexecuted dynamic
+proof and unsupported assurance. It validates structure/consistency, not the truth of citations.
 
-1. **FSM-BYPASS**: Unvalidated status assignments bypassing transition guards.
-2. **TRANSACTION-DEMARCATION**: Unintended partial commits (`REQUIRES_NEW`, autonomous transactions, Spring self-invocation).
-3. **BALANCE-VIOLATION / LOST-UPDATE**: Broken conservation laws and unprotected read-modify-write sequences.
-4. **TENANT-LEAK / AUTHZ-BYPASS**: Missing tenant/org scoping predicates in database queries or storage keys.
-5. **TOCTOU-RACE**: Non-atomic check-then-act gaps across database or file locks.
-6. **REPLAY-IDEMPOTENCY**: Duplicate message/webhook deliveries causing duplicate business effects.
-7. **DUAL-WRITE**: Non-atomic split writes between databases and external queues/APIs lacking outboxes.
-8. **INPUT-DOMAIN**: Negative, fractional, or overflowing domain inputs producing invalid states.
-9. **RESOURCE-LEAK**: Unclosed database cursors (`OPEN ... FOR`), pooled thread-static state, or unreleased locks.
-10. **ERROR-SWALLOW**: Catch blocks returning `true` or continuing through broken multi-step state mutations.
-11. **PERIMETER-BYPASS**: Internal procedures relying on upstream reverse-proxy assumptions (SiteMinder) that collapse when invoked directly or via MCP tools.
-12. **FAIL-OPEN-AUTH**: Database-backed authorization tables failing open on timeouts or unhandled exceptions.
-13. **AGENTIC-TOOL-LEAK**: Autonomous LLM tool-calling boundaries lacking localized principal authorization.
+## Detection and test boundaries
 
----
+The Semgrep catalog contains 15 candidate rule IDs in nine YAML files with paired positive/negative
+fixtures. Two CodeQL packs now contain three queries: the original Python tenant and JavaScript FSM
+queries plus a Python scope-provenance/raw/bulk inventory query. Original scanner identifiers stay stable.
+Revised CodeQL compilation is not established without executing its CLI harness.
 
-## Empirical Static Verification Architecture
+Synthetic tests demonstrate sequential committed authorization effects, report gates, forced local
+revocation timing, tenant context reuse, replay and approval binding. SQLite is used only for local
+committed-state assertions; it proves no Oracle/PG lock semantics. Oracle Forms extraction, real DB
+concurrency and a matched-model before/after skill comparison remain separate verification tasks.
 
-The package rejects uncompiled pseudo-code rules:
-- **Semgrep Suite**: 9 standalone YAML files holding 15 rule IDs in `references/rules/semgrep/`, each paired with a test fixture annotated with `ruleid:` and `ok:` test assertions. Verified via `semgrep --test`.
-- **CodeQL Packs**: 2 compilable packs in `references/rules/codeql/` for Python and JavaScript, implementing modern `DataFlow::ConfigSig` and `TaintTracking::Global` modules (2 query files: `UnscopedTenantLookup.ql`, `UnguardedStateTransition.ql`). Verified against CodeQL CLI 2.27.3.
-- **Total Static Logic Rules**: 17 rules across 11 files (15 Semgrep rule IDs + 2 CodeQL queries).
-
----
-
-## Adversarial Game Simulation & MCTS Concurrency
-
-Rather than relying on passive pattern matching, the engine models the audited codebase as an adversarial game:
-- The auditor agent is scored by the explicit **Epistemic Evaluation Matrix** defined in [`instructions.md §6`](.apm/skills/code-logic-auditor/instructions.md) and [`references/game_simulation_rl_auditing.md`](.apm/skills/code-logic-auditor/references/game_simulation_rl_auditing.md) (+100 for CONFIRMED with reproducer, +50 for REFUTED with verified defense, +30 for NON LIQUET with telemetry spec, -100 for unproven CONFIRMED claims, -50 for un-sourced claims, -30 for syntactic false positives).
-- Concurrency race windows are analyzed via **Monte Carlo Tree Search (MCTS)** over execution interleavings between check and act steps.
-
----
-
-## APM Package Distribution Architecture
-
-`crow-raven-analysis` is structured as a native APM package:
-- [`apm.yml`](apm.yml) defines package metadata, targets (`antigravity`, `claude`, `codex`, `copilot`), and explicit allowlist inclusion of `.apm/skills/code-logic-auditor`.
-- Deployed globally via `apm install <path-or-url> --global`, materializing directly into user-level runtime skill directories without repo pollution.
+All reproductions require explicitly authorized disposable local resources and synthetic data.
+Rollback alone cannot isolate autonomous commits or external effects. See
+[TESTING.md](.apm/skills/forensic-code-auditor/TESTING.md) for commands and limitations.

@@ -1,37 +1,43 @@
-# Project Instructions: CROW-RAVEN Analysis (`code-logic-auditor`)
+# Project instructions: Forensic Code Auditor
 
-Forensic code logic and invariant auditing repository. Houses the `code-logic-auditor` skill, multi-model consensus evaluations, and forensic security audits for enterprise legacy and modern runtimes (`bcgov/crow` and `bcgov/raven`).
+Standalone forensic code logic and invariant auditing skill distributed through APM.
 
-## Quick Navigation
-- System Design & Architectural Invariants: See [ARCHITECTURE.md](ARCHITECTURE.md)
-- APM Installation, Upgrades & Deployment: See [INSTALL.md](INSTALL.md)
-- Primary Skill Router: See [.apm/skills/code-logic-auditor/SKILL.md](.apm/skills/code-logic-auditor/SKILL.md)
-- Issue Tracking & Finding Logs: See [issues/](issues/)
+## Navigation
 
-## Core Operational Invariants
-1. **First-Principles Epistemic Stance**: Agents MUST evaluate code as deterministic state machines bounded by physical, resource, and informational limits.
-2. **Rejection of Authority as Proof**: Agents MUST NEVER accept vendor claims, compliance badges (SOC2/ISO), or passing SAST scans as proof of safety (though official platform specifications and DBMS locking manuals are admissible evidence of mechanical semantics).
-3. **Four Evidence Levels**: Findings MUST explicitly declare evidence status (`CONFIRMED`, `SUSPECTED`, `NON LIQUET`, `REFUTED`), strictly separating evidence from severity.
-4. **Invariant Sourcing Requirement**: Agents MUST cite the explicit source of an invariant (business rule, schema constraint, or API contract) before claiming a breach.
-5. **Target & Research Isolation**: External target repositories (`repos/`) and security research labs (`research/`) MUST remain gitignored to prevent submodule pollution.
+- [Architecture](ARCHITECTURE.md)
+- [Installation and migration](INSTALL.md)
+- [Canonical skill source](.apm/skills/forensic-code-auditor/SKILL.md)
+- [Tests and limits](.apm/skills/forensic-code-auditor/TESTING.md)
 
-## Essential Commands
+## Invariants
 
-### Skill Authoring & Quality Audit
+1. Treat software as deterministic state machines bounded by physical, resource and informational limits.
+2. Vendor claims, compliance badges and passing scans are not proof of safety. Platform specifications
+   and DBMS manuals may establish mechanical semantics.
+3. Separate evidence status, verification state, impact severity and assurance coverage. Cite invariant
+   sources; independently source intended business policy rather than trusting code/current rows/tests.
+4. Preserve Step 0 plus the seven-step forensic method. Discover surfaces before conditional routing;
+   record missing entry paths and complete or explicitly leave unresolved all operation contract items.
+5. Reproductions use explicitly authorized disposable local environments and synthetic data only.
+6. Edit `.apm/skills/forensic-code-auditor/`, never installed `.agents`, `.claude` or other harness copies.
+7. Keep target checkouts in ignored `repos/`; private findings, local state and evidence belong in ignored
+   `temp/` or `evidence/`. Runtime downloads, installed tools and private recovery bundles are not public assets.
+8. Crow and Raven may be optional local tools/targets; do not add them as package dependencies.
+9. Do not claim a tool compiled, a test executed or detection improved without actual recorded results.
+
+## Commands
+
+Run from the skill source directory:
+
 ```bash
-# Audit skill against authoring standards (both source and installed modes)
-python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" .apm/skills/code-logic-auditor --mode source
-python3 "${APM_HOME:-$HOME/.apm}/apm_modules/_local/agent-extension-authoring/skills/authoring-skills/scripts/audit_skill.py" "$HOME/.gemini/antigravity-cli/skills/code-logic-auditor" --mode installed
+python3 -m pip install -r requirements-tests.txt
+python3 -m unittest discover -s tests -v
+python3 scripts/demo_authorization.py --output /tmp/forensic-auditor-demo
+python3 scripts/validate_report.py /tmp/forensic-auditor-demo/report.json
+semgrep --test references/rules/semgrep
+python3 scripts/test_codeql.py
 ```
 
-### Static Rule Verification
-```bash
-# Test Semgrep AST logic rules against annotated test fixtures
-semgrep --test .apm/skills/code-logic-auditor/references/rules/semgrep
-```
-
-### Context Bundling
-```bash
-# Recompile single-file Markdown context bundle for LLM reviews
-python3 "$HOME/.gemini/antigravity-cli/skills/bundling-context/scripts/bundle.py" --manifest temp/bundles/code-logic-auditor-manifest.json --bundle temp/bundles/code-logic-auditor-v3.4.md
-```
+CodeQL harness exit 77 means NOT RUN, not success. Preserve existing valid fixtures and record scanner
+false positives. Use the isolated consumer packaging workflow in [INSTALL.md](INSTALL.md); packing the dependency-free
+source root does not include its authored source. Root `apm.lock.yaml` is local development state and ignored.

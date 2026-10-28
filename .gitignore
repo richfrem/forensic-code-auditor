@@ -1,15 +1,39 @@
 temp/
 reviews/
-repos/*
-!repos/README.md
-research/*
-!research/README.md
+/repos/
+/research/
 .vscode/
 
 # APM Deployed Harness Artifacts
 .agents/
 .claude/
 .codex/
+.codex/agents/
 .github/skills/
+.github/agents/
 context/
 apm_modules/
+
+# Local runtime downloads, analysis state, and shareable build outputs
+/codebase-memory/
+/versions/
+/build/
+/evidence/
+/state.json
+/pending-plan.json
+/mcp-fragment.json
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+
+# Private audit findings stay local; preserve the public issue template
+/issues/
+
+# Dependency-free package: this lockfile belongs to local tool installations
+/apm.lock.yaml
+.pytest_cache/
+.env
+.env.*
+!.env.example
+/.mcp.json

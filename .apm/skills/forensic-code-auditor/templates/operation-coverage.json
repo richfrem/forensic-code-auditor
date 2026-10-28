@@ -1,0 +1,50 @@
+{
+  "id": "replace-operation-id",
+  "completion": {
+    "invariant": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply invariant"
+    },
+    "entry_points": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply entry_points"
+    },
+    "policy_provenance": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply policy_provenance"
+    },
+    "execution_trace": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply execution_trace"
+    },
+    "competing_defenses": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply competing_defenses"
+    },
+    "failure_hypothesis": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply failure_hypothesis"
+    },
+    "discriminating_proof": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply discriminating_proof"
+    },
+    "classification": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply classification"
+    },
+    "coverage": {
+      "status": "unresolved",
+      "evidence": [],
+      "needed": "Supply coverage"
+    }
+  }
+}
