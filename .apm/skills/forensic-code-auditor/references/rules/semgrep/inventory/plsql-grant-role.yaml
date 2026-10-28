@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-grant-role",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-grant-role; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "db_grant"
+      },
+      "pattern-regex": "(?i)\\bGRANT(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+(?!EXECUTE\\b|SELECT\\b|UPDATE\\b|INSERT\\b|DELETE\\b)\\w+(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+TO(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+"
+    }
+  ]
+}

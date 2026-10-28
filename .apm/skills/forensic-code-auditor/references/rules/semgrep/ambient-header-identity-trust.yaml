@@ -3,10 +3,12 @@ rules:
     languages: [typescript, javascript]
     severity: ERROR
     message: >-
+      Candidate:
       User identity or tenant ID is extracted directly from an ambient proxy header ('x-forwarded-user', 'sm_user',
       'x-user-id', 'x-ms-client-principal', 'remote_user', 'x-auth-request-user') without verifying cryptographic
       signature or gateway context on this specific request.
     metadata:
+      purpose: candidate_discovery
       classification: PERIMETER-BYPASS
       confidence: MEDIUM
     patterns:
@@ -84,9 +86,11 @@ rules:
     languages: [php]
     severity: ERROR
     message: >-
+      Candidate:
       User identity or tenant ID is extracted directly from ambient server/proxy headers ($_SERVER['HTTP_SM_USER'],
       $_SERVER['REMOTE_USER'], $_SERVER['HTTP_X_MS_CLIENT_PRINCIPAL'], or PSR-7 header getters) without cryptographic attestation.
     metadata:
+      purpose: candidate_discovery
       classification: PERIMETER-BYPASS
       confidence: MEDIUM
     patterns:
@@ -112,9 +116,11 @@ rules:
     languages: [java]
     severity: ERROR
     message: >-
+      Candidate:
       User identity is extracted from ambient proxy headers (request.getHeader("SM_USER"),
       or "x-ms-client-principal") without origin signature or mTLS attestation.
     metadata:
+      purpose: candidate_discovery
       classification: PERIMETER-BYPASS
       confidence: MEDIUM
     patterns:

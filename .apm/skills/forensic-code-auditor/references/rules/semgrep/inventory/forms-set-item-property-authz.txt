@@ -1,0 +1,4 @@
+// ruleid: forms-set-item-property-authz
+SET_ITEM_PROPERTY('approve',ENABLED,PROPERTY_FALSE);
+// ok: forms-set-item-property-authz
+SET_ITEM_PROPERTY('title',LABEL,'Claims');

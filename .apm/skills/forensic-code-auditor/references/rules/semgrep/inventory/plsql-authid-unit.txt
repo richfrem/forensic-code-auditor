@@ -1,0 +1,6 @@
+// ruleid: plsql-authid-unit
+CREATE OR REPLACE PACKAGE BODY app_pkg AS
+// ok: plsql-authid-unit
+SELECT 1 FROM dual;
+// ruleid: plsql-authid-unit
+CREATE /* exported */ OR REPLACE PACKAGE BODY app_pkg AS

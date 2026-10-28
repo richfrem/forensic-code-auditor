@@ -1,0 +1,10 @@
+rules:
+  - id: plsql-boolean-auth-null
+    languages: [generic]
+    severity: INFO
+    message: 'Candidate: nullable Boolean authorization with NOT may skip rejection; inspect NULL semantics and defenses.'
+    metadata:
+      purpose: candidate_discovery
+      classification: FAIL-OPEN-AUTH
+      confidence: LOW
+    pattern-regex: (?i)\bIF\s+NOT\s+\w*(?:auth|access|perm|allowed)\w*\s*\([^;]*?\)\s+THEN

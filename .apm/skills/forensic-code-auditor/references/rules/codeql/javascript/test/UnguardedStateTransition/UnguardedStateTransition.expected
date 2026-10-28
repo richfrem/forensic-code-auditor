@@ -1,0 +1,55 @@
+edges
+| routes.js:6:18:6:25 | req.body | routes.js:6:18:6:32 | req.body.status | provenance |  |
+| routes.js:12:77:12:84 | req.body | routes.js:12:77:12:91 | req.body.status | provenance |  |
+| routes.js:18:9:18:30 | next | routes.js:20:20:20:23 | next | provenance |  |
+| routes.js:18:16:18:23 | req.body | routes.js:18:9:18:30 | next | provenance |  |
+| routes.js:28:9:28:30 | next | routes.js:30:18:30:21 | next | provenance |  |
+| routes.js:28:16:28:23 | req.body | routes.js:28:9:28:30 | next | provenance |  |
+| routes.js:47:9:47:30 | next | routes.js:50:21:50:24 | next | provenance |  |
+| routes.js:47:16:47:23 | req.body | routes.js:47:9:47:30 | next | provenance |  |
+| routes.js:59:54:59:61 | req.body | routes.js:59:54:59:68 | req.body.status | provenance |  |
+| routes.js:64:68:64:75 | req.body | routes.js:64:68:64:82 | req.body.status | provenance |  |
+| routes.js:75:19:75:26 | req.body | routes.js:75:19:75:33 | req.body.status | provenance |  |
+| routes.js:78:54:78:61 | req.body | routes.js:78:54:78:68 | req.body.status | provenance |  |
+| routes.js:78:54:78:68 | req.body.status | routes.js:78:53:78:83 | [req.bo ... ams.id] | provenance |  |
+| routes.js:78:70:78:82 | req.params.id | routes.js:78:53:78:83 | [req.bo ... ams.id] | provenance |  |
+nodes
+| routes.js:6:18:6:25 | req.body | semmle.label | req.body |
+| routes.js:6:18:6:32 | req.body.status | semmle.label | req.body.status |
+| routes.js:12:77:12:84 | req.body | semmle.label | req.body |
+| routes.js:12:77:12:91 | req.body.status | semmle.label | req.body.status |
+| routes.js:18:9:18:30 | next | semmle.label | next |
+| routes.js:18:16:18:23 | req.body | semmle.label | req.body |
+| routes.js:20:20:20:23 | next | semmle.label | next |
+| routes.js:28:9:28:30 | next | semmle.label | next |
+| routes.js:28:16:28:23 | req.body | semmle.label | req.body |
+| routes.js:30:18:30:21 | next | semmle.label | next |
+| routes.js:47:9:47:30 | next | semmle.label | next |
+| routes.js:47:16:47:23 | req.body | semmle.label | req.body |
+| routes.js:50:21:50:24 | next | semmle.label | next |
+| routes.js:59:54:59:61 | req.body | semmle.label | req.body |
+| routes.js:59:54:59:68 | req.body.status | semmle.label | req.body.status |
+| routes.js:64:68:64:75 | req.body | semmle.label | req.body |
+| routes.js:64:68:64:82 | req.body.status | semmle.label | req.body.status |
+| routes.js:68:24:68:31 | req.body | semmle.label | req.body |
+| routes.js:71:62:71:69 | req.body | semmle.label | req.body |
+| routes.js:75:19:75:26 | req.body | semmle.label | req.body |
+| routes.js:75:19:75:33 | req.body.status | semmle.label | req.body.status |
+| routes.js:78:53:78:83 | [req.bo ... ams.id] | semmle.label | [req.bo ... ams.id] |
+| routes.js:78:54:78:61 | req.body | semmle.label | req.body |
+| routes.js:78:54:78:68 | req.body.status | semmle.label | req.body.status |
+| routes.js:78:70:78:82 | req.params.id | semmle.label | req.params.id |
+subpaths
+#select
+| routes.js:6:18:6:32 | req.body.status | routes.js:6:18:6:25 | req.body | routes.js:6:18:6:32 | req.body.status | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:6:18:6:25 | req.body | remote input |
+| routes.js:12:77:12:91 | req.body.status | routes.js:12:77:12:84 | req.body | routes.js:12:77:12:91 | req.body.status | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:12:77:12:84 | req.body | remote input |
+| routes.js:20:20:20:23 | next | routes.js:18:16:18:23 | req.body | routes.js:20:20:20:23 | next | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:18:16:18:23 | req.body | remote input |
+| routes.js:30:18:30:21 | next | routes.js:28:16:28:23 | req.body | routes.js:30:18:30:21 | next | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:28:16:28:23 | req.body | remote input |
+| routes.js:50:21:50:24 | next | routes.js:47:16:47:23 | req.body | routes.js:50:21:50:24 | next | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:47:16:47:23 | req.body | remote input |
+| routes.js:59:54:59:68 | req.body.status | routes.js:59:54:59:61 | req.body | routes.js:59:54:59:68 | req.body.status | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:59:54:59:61 | req.body | remote input |
+| routes.js:64:68:64:82 | req.body.status | routes.js:64:68:64:75 | req.body | routes.js:64:68:64:82 | req.body.status | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:64:68:64:75 | req.body | remote input |
+| routes.js:68:24:68:31 | req.body | routes.js:68:24:68:31 | req.body | routes.js:68:24:68:31 | req.body | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:68:24:68:31 | req.body | remote input |
+| routes.js:71:62:71:69 | req.body | routes.js:71:62:71:69 | req.body | routes.js:71:62:71:69 | req.body | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:71:62:71:69 | req.body | remote input |
+| routes.js:75:19:75:33 | req.body.status | routes.js:75:19:75:26 | req.body | routes.js:75:19:75:33 | req.body.status | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:75:19:75:26 | req.body | remote input |
+| routes.js:78:53:78:83 | [req.bo ... ams.id] | routes.js:78:54:78:61 | req.body | routes.js:78:53:78:83 | [req.bo ... ams.id] | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:78:54:78:61 | req.body | remote input |
+| routes.js:78:53:78:83 | [req.bo ... ams.id] | routes.js:78:70:78:82 | req.params.id | routes.js:78:53:78:83 | [req.bo ... ams.id] | Candidate: $@ reaches a state mutation; authorization and legal transition are NOT VERIFIED. | routes.js:78:70:78:82 | req.params.id | remote input |

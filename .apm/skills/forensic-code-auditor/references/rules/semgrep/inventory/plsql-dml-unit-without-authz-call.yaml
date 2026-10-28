@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-dml-unit-without-authz-call",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-dml-unit-without-authz-call; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "stored_procedure"
+      },
+      "pattern-regex": "(?is)\\bPROCEDURE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+\\b(?!(?:(?!\\b(?:PROCEDURE|FUNCTION)\\b).)*?\\b(?:assert_operation|assert_authorized|check_permission)(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\()(?:(?!\\b(?:PROCEDURE|FUNCTION)\\b).)*?\\b(?:UPDATE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+SET|INSERT(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+INTO|DELETE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+FROM)\\b"
+    }
+  ]
+}

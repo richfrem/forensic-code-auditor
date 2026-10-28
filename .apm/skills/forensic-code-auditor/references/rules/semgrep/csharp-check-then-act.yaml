@@ -3,12 +3,14 @@ rules:
     languages: [csharp]
     severity: WARNING
     message: >-
+      Candidate:
       Balance/stock is read, compared, then mutated in a separate call. Two concurrent requests
       can both pass the check (lost update / double spend). Prefer one atomic conditional
       statement (UPDATE ... SET bal = bal - @amt WHERE id = @id AND bal >= @amt; check rows
       affected) or an explicit row lock. A TransactionScope only helps at Serializable/
       RepeatableRead isolation and then fails by deadlock, so the caller must retry.
     metadata:
+      purpose: candidate_discovery
       classification: TOCTOU-RACE
       confidence: MEDIUM
     patterns:

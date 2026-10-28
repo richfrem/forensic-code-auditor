@@ -64,3 +64,33 @@ BEGIN
   COMMIT;
 END;
 /
+
+
+CREATE OR REPLACE PACKAGE BODY test_pkg AS
+// ruleid: plsql-autonomous-transaction-business-dml
+ PROCEDURE apply_payment IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+ BEGIN
+  UPDATE ledger SET status='PAID';
+  COMMIT;
+ END apply_payment;
+// ok: plsql-autonomous-transaction-business-dml
+ PROCEDURE append_trace IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+ BEGIN
+  INSERT INTO app.event_log(msg) VALUES ('done');
+  COMMIT;
+ END append_trace;
+// ok: plsql-autonomous-transaction-business-dml
+ PROCEDURE uncommitted IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+ BEGIN
+  UPDATE ledger SET status='PENDING';
+ END uncommitted;
+// ok: plsql-autonomous-transaction-business-dml
+ PROCEDURE later_commit IS
+ BEGIN
+  COMMIT;
+ END later_commit;
+END test_pkg;
+/

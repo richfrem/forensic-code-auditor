@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-utl-external-effect",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-utl-external-effect; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "stored_procedure"
+      },
+      "pattern-regex": "(?i)\\bUTL_(?:HTTP|SMTP|TCP)(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\.(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\w+"
+    }
+  ]
+}

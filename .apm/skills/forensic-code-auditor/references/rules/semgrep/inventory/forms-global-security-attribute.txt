@@ -1,0 +1,4 @@
+// ruleid: forms-global-security-attribute
+:GLOBAL.USER_ROLE := role_name;
+// ok: forms-global-security-attribute
+:GLOBAL.DISPLAY_LABEL := title;

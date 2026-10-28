@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-owa-cgi-identity",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-owa-cgi-identity; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "gateway"
+      },
+      "pattern-regex": "(?i)\\bOWA_UTIL(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\.(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*GET_CGI_ENV(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\("
+    }
+  ]
+}

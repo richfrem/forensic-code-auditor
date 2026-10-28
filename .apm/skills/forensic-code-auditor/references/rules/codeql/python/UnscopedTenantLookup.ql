@@ -10,10 +10,11 @@
  * @problem.severity warning
  * @precision medium
  * @id code-logic-auditor/python/unscoped-tenant-lookup
- * @tags security external/cwe/cwe-639 classification/TENANT-LEAK
+ * @tags purpose/candidate-discovery security external/cwe/cwe-639 classification/TENANT-LEAK
  */
 
 import python
+import semmle.python.ApiGraphs
 import semmle.python.dataflow.new.DataFlow
 import semmle.python.dataflow.new.TaintTracking
 import semmle.python.dataflow.new.RemoteFlowSources
@@ -57,22 +58,22 @@ predicate hasPositiveScope(DataFlow::Node n) {
 
 /** A call missing both immediate and inherited positive scoping predicates. */
 predicate lookupMissingScopeKeyword(DataFlow::MethodCallNode call) {
-  call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create", "update", "delete"] and
+  call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create", "update", "delete", "aget", "aget_or_create", "aupdate_or_create", "aupdate", "adelete", "in_bulk"] and
   isQuerysetOrManager(call.getObject()) and
   not exists(string k | exists(call.getArgByName(k)) and isScopingKeyword(k)) and
   not hasPositiveScope(call.getObject())
 }
 
 /** Relations named user/principal are not name-based trust sanitizers. */
-predicate getObjectOr404MissingScope(DataFlow::CallNode call) {
-  call.getCalleeName() = "get_object_or_404" and
+predicate getObjectOr404MissingScope(DataFlow::CallCfgNode call) {
+  call = API::moduleImport("django.shortcuts").getMember("get_object_or_404").getACall() and
   not exists(string k | exists(call.getArgByName(k)) and isScopingKeyword(k)) and
   not hasPositiveScope(call.getArg(0))
 }
 
 /** A call like `Model.objects.get(...)` where a scoping keyword is present. */
 predicate lookupWithScopeKeyword(DataFlow::MethodCallNode call, string k) {
-  call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create", "update", "delete"] and
+  call.getMethodName() in ["get", "filter", "exclude", "get_or_create", "update_or_create", "update", "delete", "aget", "aget_or_create", "aupdate_or_create", "aupdate", "adelete", "in_bulk"] and
   isQuerysetOrManager(call.getObject()) and
   isScopingKeyword(k) and
   exists(call.getArgByName(k))
@@ -88,12 +89,18 @@ module UnscopedLookupConfig implements DataFlow::ConfigSig {
     )
     or
     // Case 2: get_object_or_404 call lacking scoping keyword
-    exists(DataFlow::CallNode c | getObjectOr404MissingScope(c) |
+    exists(DataFlow::CallCfgNode c | getObjectOr404MissingScope(c) |
       n = c.getArgByName(_) or n = c.getArg(_) or n = c.getKwargs()
     )
     or
     // Case 3: Scoping keyword is present, but its argument value is tainted by untrusted input
-    exists(DataFlow::MethodCallNode c, string k | lookupWithScopeKeyword(c, k) |
+    exists(DataFlow::CallCfgNode c, string k |
+      (
+        lookupWithScopeKeyword(c.(DataFlow::MethodCallNode), k)
+        or
+        (c = API::moduleImport("django.shortcuts").getMember("get_object_or_404").getACall() and
+         isScopingKeyword(k) and exists(c.getArgByName(k)))
+      ) |
       n = c.getArgByName(k)
     )
   }

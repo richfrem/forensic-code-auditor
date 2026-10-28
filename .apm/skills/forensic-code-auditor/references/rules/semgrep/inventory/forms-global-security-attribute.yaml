@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "forms-global-security-attribute",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: forms-global-security-attribute; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "ui_entry"
+      },
+      "pattern-regex": "(?i):GLOBAL\\.(?:USER\\w*|ROLE\\w*|ORG\\w*|TENANT\\w*|IS_ADMIN)\\b"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-scheduler-job",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-scheduler-job; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "scheduler"
+      },
+      "pattern-regex": "(?i)\\bDBMS_SCHEDULER(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\.(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*(?:CREATE_JOB|RUN_JOB)\\b"
+    }
+  ]
+}

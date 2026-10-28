@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "gateway-route-upstream",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: gateway-route-upstream; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "gateway"
+      },
+      "pattern-regex": "(?i)\\b(?:upstream|proxy_pass|basic_auth|serviceAccount)(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*[:= ]"
+    }
+  ]
+}

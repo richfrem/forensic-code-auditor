@@ -3,9 +3,11 @@ rules:
     languages: [typescript, javascript]
     severity: ERROR
     message: >-
+      Candidate:
       Authorization check catch-block returns 'true', an allow string, or calls next() without error,
       causing a fail-open access control vulnerability when the database or auth service fails.
     metadata:
+      purpose: candidate_discovery
       classification: FAIL-OPEN-AUTH
       confidence: MEDIUM
     patterns:

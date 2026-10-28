@@ -5,10 +5,12 @@ rules:
     languages: [php]
     severity: INFO
     message: >-
+      Candidate:
       Query or ORM lookup resolves an entity by primary key (id, invoice_id, etc.) without an
       organizational or tenant discriminator. If the identifier is client-supplied, verify whether
       scoping is enforced in session middleware or storage-level policies.
     metadata:
+      purpose: candidate_discovery
       classification: TENANT-LEAK
       confidence: LOW
     patterns:

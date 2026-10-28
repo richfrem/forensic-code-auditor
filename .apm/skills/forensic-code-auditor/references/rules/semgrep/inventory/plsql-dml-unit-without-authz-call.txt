@@ -1,0 +1,4 @@
+// ruleid: plsql-dml-unit-without-authz-call
+PROCEDURE approve IS BEGIN UPDATE claim SET status=1; END;
+// ok: plsql-dml-unit-without-authz-call
+PROCEDURE approve IS BEGIN assert_operation(); UPDATE claim SET status=1; END;
