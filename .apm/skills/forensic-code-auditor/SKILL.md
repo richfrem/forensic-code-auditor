@@ -25,7 +25,8 @@ Syntax/style, dependency-CVE-only scans and generic walkthroughs are outside thi
 Persist a bounded inventory of protected operations, entry points, permission stores, privileged
 execution identities, async paths, tenant boundaries and legacy UI/DB access. Include unsupported,
 excluded and dynamic paths explicitly. Run [inventory and path reconstruction](references/cross-entrypoint-authorization.md)
-before deciding which specialists apply. Never call candidate extraction exhaustive ground truth.
+before deciding which specialists apply. Supplement unsupported executable languages manually; an empty
+extractor result is not an empty attack surface. Never call candidate extraction exhaustive ground truth.
 
 ## Workflow
 
@@ -52,6 +53,7 @@ callers and shared identities require joined operation-path analysis, not separa
 | Forms, PL/SQL, globals and DB rights | [Legacy Forms](references/prompts/legacy_forms_authorization_audit.md) |
 | Concurrency/revocation | [TOCTOU](references/prompts/concurrency_toctou_audit.md), [interleaving heuristic](references/game_simulation_rl_auditing.md) |
 | Lifecycle and tenant context | [FSM](references/prompts/state_machine_audit.md), [tenant](references/prompts/multi_tenant_context_audit.md) |
+| CI, release workflows, candidate code and privileged automation | [CI/release authority](references/prompts/ci_release_trust_audit.md) |
 | Replay, perimeter and agent tools | [Replay](references/prompts/idempotency_replay_audit.md), [perimeter](references/prompts/authorization_perimeter_audit.md), [tools](references/prompts/agentic_tool_boundary_audit.md) |
 
 ## Quick start

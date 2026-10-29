@@ -71,7 +71,10 @@ disappear when context is compressed or analysis is delegated.
 ## Routing
 
 Run lightweight discovery first. Candidate extraction is bounded and is never an exhaustive denominator
-for languages/features it cannot resolve. Unknown surfaces must survive into the report.
+for languages/features it cannot resolve. Unknown surfaces must survive into the report. For developer
+tooling, inventory installation, configuration, hooks, credentialed execution and release writes as
+protected operations; prioritize transitions into stronger authority. Route CI/release paths through
+the [CI/release authority prompt](references/prompts/ci_release_trust_audit.md).
 
 | Discovered surface | Reference | Tool | Artifact |
 |---|---|---|---|
@@ -89,7 +92,10 @@ exit codes and outputs; a failed scanner is not a zero-hit scan.
 ## Structured reports and evidence
 
 Schema v2 is canonical: [report.schema.json](templates/report.schema.json). Markdown finding sections
-are a readable rendering of the same report: use identical enum casing. NON LIQUET is a finding with
+are a readable rendering of the same report: use identical enum casing. Reconcile counts and
+refuted/unresolved dispositions across the Markdown, JSON and any SARIF. For maintainer delivery,
+include the evidence needed to reproduce and fix each finding without local issue files; follow
+the [GHAS completion checks](references/ghas-security-reporting.md) for submission metadata. NON LIQUET is a finding with
 `obstruction_mechanism`, `candidate_models`, `telemetry_spec` and unresolved prerequisites; relevant
 obstructions include MISSING-POLICY and MISSING-EXPORT. Hypothetical severity describes conditional
 impact and does not establish a vulnerability. Source and artifact references are structured objects
