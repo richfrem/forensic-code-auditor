@@ -25,6 +25,25 @@ Standalone forensic code logic and invariant auditing skill distributed through 
 8. Crow and Raven may be optional local tools/targets; do not add them as package dependencies.
 9. Do not claim a tool compiled, a test executed or detection improved without actual recorded results.
 
+## Global APM hooks and upstream repairs
+
+Universal agent tooling is installed globally through APM. A hook failure in this repository may
+originate from an upstream package rather than the forensic auditor. Inspect `~/.apm/apm.yml`,
+`~/.apm/apm.lock.yaml` and `~/.codex/hooks.json` to identify the owning package and deployed script.
+The `agent-agentic-os` package owns the metrics and turn-evolution Stop hooks;
+`agent-orchestration` owns the loop-closure Stop hook. Check for duplicate registrations.
+
+Repair these packages in `../agent-plugins-skills/plugins/<package>/.apm/hooks/`, never in deployed
+`~/.codex/hooks/`, skill copies or plugin caches. Use a feature branch, reproduce the protocol failure
+with disposable local fixtures, run the relevant tests, and submit the fix through a GitHub PR when
+authorized. Codex Stop-hook stdout must conform to its JSON protocol; keep diagnostics on stderr.
+Preserve guard decisions and distinguish empty output from malformed non-empty output in tests.
+
+After the user merges the PR, verify its merged state, return the source checkout to `main`, pull
+`origin main` without discarding local work, and remove the merged feature branch/worktree. Reinstall
+the affected package globally through the APM workflow, previewing changes and backing up global
+install state first. Verify deployed code and hook output; do not claim a fix is active before reinstall.
+
 ## Commands
 
 Run from the skill source directory:
