@@ -41,3 +41,7 @@ Only authored source belongs in `.apm/`; make changes there and install through 
 
 The former skill/package name was `code-logic-auditor`. See the migration instructions in
 [INSTALL.md](INSTALL.md). Existing CodeQL pack names and original query IDs remain stable for consumers.
+
+## License
+
+Licensed under the [MIT License](LICENSE). Copyright © 2026 Richard Fremmerlid.
