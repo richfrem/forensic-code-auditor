@@ -32,16 +32,37 @@ harness. Select a harness explicitly when needed with `--target codex`, `--targe
 
 ## Install from GitHub
 
-After the changes have been merged/published, replace the placeholder with an existing commit SHA
-or release tag. Do not copy the placeholder literally:
+Run from the consuming project to install the current default branch for Codex:
 
 ```bash
-apm install "https://github.com/richfrem/forensic-code-auditor#<commit-sha-or-tag>" --global
+apm install https://github.com/richfrem/forensic-code-auditor --target codex
 ```
 
-Omit `--global` for a consuming-project installation. APM can maintain a lockfile in that project
-for reproducibility. This dependency-free source repository ignores its own local lockfile because
-it may describe independently installed development tools.
+Select multiple harnesses with a comma-separated list:
+
+```bash
+apm install https://github.com/richfrem/forensic-code-auditor --target codex,copilot,claude
+```
+
+Other supported targets include `antigravity`, `gemini`, `cursor`, `opencode` and `windsurf`.
+Use `apm install --help` for the full list. Do not repeat `--target`: only its last value is retained.
+`--target all` excludes some explicit-only targets, including Antigravity; list those explicitly when needed.
+
+Add `--global` for user-wide installation instead of project-local installation:
+
+```bash
+apm install https://github.com/richfrem/forensic-code-auditor --target codex,copilot,claude --global
+```
+
+For reproducible installation, pin an existing commit SHA or release tag. Replace the placeholder;
+do not copy it literally:
+
+```bash
+apm install "https://github.com/richfrem/forensic-code-auditor#<commit-sha-or-tag>" --target codex,copilot,claude
+```
+
+APM can maintain a lockfile in the consuming project for reproducibility. This dependency-free source
+repository ignores its own local lockfile because it may describe independently installed development tools.
 
 ## Update or roll back
 
