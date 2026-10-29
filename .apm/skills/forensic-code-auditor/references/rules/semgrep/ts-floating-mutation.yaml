@@ -5,10 +5,12 @@ rules:
     languages: [typescript, javascript]
     severity: WARNING
     message: >-
+      Candidate:
       '$OBJ.$METHOD(...)' looks like an async state mutation started without await, return,
       .catch(), or explicit 'void'. Its failure is unobserved and the handler may respond
       before the write lands.
     metadata:
+      purpose: candidate_discovery
       classification: ERROR-SWALLOW
       confidence: LOW
     patterns:

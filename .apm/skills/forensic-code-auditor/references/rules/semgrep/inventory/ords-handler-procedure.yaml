@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "ords-handler-procedure",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: ords-handler-procedure; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "api_route"
+      },
+      "pattern-regex": "(?i)\\bORDS(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\.(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*DEFINE_HANDLER(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\("
+    }
+  ]
+}

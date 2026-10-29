@@ -1,0 +1,11 @@
+{
+  "python": "3.11.14",
+  "jsonschema": "4.25.1",
+  "semgrep": "1.182.1",
+  "ruamel.yaml": "0.19.1",
+  "codeql": "2.23.3",
+  "codeql/python-all": "1.0.7",
+  "codeql/javascript-all": "2.6.0",
+  "codeql_macos_sha256": "37d8e06c3fe21f0a61283c6e95458440cecfef681da539375a8fd2614668b338",
+  "baseline_commit": "c7cb05da831a6eac78993193d94a95753bd29306"
+}

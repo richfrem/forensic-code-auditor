@@ -1,39 +1,29 @@
-# Semgrep Rules: Index and Limits
+# Semgrep candidate and inventory rules
 
-Rules live in [rules/semgrep/](./rules/semgrep/). There are **9 YAML files containing 15 standalone rule IDs**. Each `*.yaml` has companion test fixtures with `ruleid:`/`ok:` annotations.
+The current suite has 30 IDs: the original 15 candidate rules, one nullable-Boolean authorization
+candidate, and 14 INFO inventory rules. Existing IDs are stable. Each YAML/JSON-YAML rule has purpose
+metadata and positive/negative annotated fixtures. `semgrep --test references/rules/semgrep` exercises
+all groups; the source-only combined-corpus test also checks explicit expected locations.
 
-All rules are **triage heuristics**. A hit becomes a finding only after Step 0 + Seven Steps of the forensic doctrine confirm an actual reachable path.
+Original candidates cover ambient header identity (TS/Java/PHP), C# check-then-act, fail-open handlers,
+Java transaction boundaries, PHP unscoped lookups, autonomous PL/SQL DML/triggers, fail-open PL/SQL,
+VPD empty predicates, NULL scope expansion, Django lost updates and floating TS mutations.
 
-## Tested Rules Catalog (15 Rule IDs across 9 Files)
+Added tests cover comment-separated THEN/RETURN, context assigned before a NULL check, package-member
+autonomous DML, sibling-procedure boundaries, OUT-flag authorization, both NULL-disjunct orders and
+nullable Boolean rejection patterns. Generic regexes still have nested block/comment/string limits.
+An audit-looking table suffix, auth function name, direct grant or AUTHID alone is never proof of safety
+or exploitability. Verify actual table purpose, evaluator/caller semantics and competing defenses.
 
-| Rule ID | Language | Classification | Confidence | Target Mechanism |
-| :--- | :--- | :--- | :--- | :--- |
-| `ambient-header-identity-trust` | TS/JS | PERIMETER-BYPASS | Medium | Direct extraction of identity from ambient proxy headers (`x-forwarded-user`, `sm_user`, `x-user-id`, `x-ms-client-principal`, `remote_user`) without verified signature |
-| `php-ambient-header-identity-trust` | PHP | PERIMETER-BYPASS | Medium | Direct extraction of identity from `$_SERVER['HTTP_SM_USER']`, `$_SERVER['HTTP_X_MS_CLIENT_PRINCIPAL']`, or PSR-7 headers without signature |
-| `java-ambient-header-identity-trust` | Java | PERIMETER-BYPASS | Medium | Direct extraction of identity from `request.getHeader("SM_USER")` or `x-ms-client-principal` without signature |
-| `csharp-check-then-act-balance` | C# | TOCTOU-RACE | Medium | `GetBalance()` check followed by `DeductBalance()` across independent connections or without serializable isolation |
-| `fail-open-authorization-handler` | TS/JS | FAIL-OPEN-AUTH | Medium | Catch-block in authorization check returning `true`, `allow`, `{ allowed: true }`, or Express `next()` error bypass |
-| `java-transactional-self-invocation` | Java | TRANSACTION-DEMARCATION | Medium | Calling `@Transactional` method on `this` bypassing Spring AOP proxy |
-| `java-requires-new-partial-commit` | Java | TRANSACTION-DEMARCATION | Low | EJB / Spring `@Transactional(REQUIRES_NEW)` causing non-atomic partial commits |
-| `php-sql-by-id-without-tenant-predicate` | PHP | TENANT-LEAK | Low | SQL query by ID (`id =`, `invoice_id =`) or ORM find/findBy lacking organizational scope parameter |
-| `plsql-autonomous-transaction-business-dml` | PL/SQL | TRANSACTION-DEMARCATION | Medium | Autonomous unit executing UPDATE/DELETE/MERGE or non-audit INSERT and COMMIT |
-| `plsql-autonomous-transaction-in-trigger` | PL/SQL | TRANSACTION-DEMARCATION | High | Autonomous trigger workaround for ORA-04091 mutating table |
-| `plsql-auth-function-when-others-allow` | PL/SQL | FAIL-OPEN-AUTH | Medium | Authorization function with `WHEN OTHERS THEN RETURN TRUE` or `'Y'` masking database errors as permission grants |
-| `plsql-vpd-policy-empty-predicate` | PL/SQL | FAIL-OPEN-AUTH | Medium | Oracle Virtual Private Database (VPD) policy function returning `NULL` or empty string, disabling row-level security |
-| `plsql-null-expands-scope-filter` | PL/SQL | TENANT-LEAK | Medium | SQL where-clause using `(:param IS NULL OR col = :param)`, NVL, or DECODE, expanding tenant scope to all rows on null bind |
-| `python-django-read-modify-write` | Python | LOST-UPDATE | Medium | Django ORM `get()` → field mutate → `save()` lost update race (mitigated by `F()` expressions or `select_for_update`) |
-| `ts-floating-mutation-promise` | TS/JS | ERROR-SWALLOW | Low | Un-awaited `save/update/delete/charge` mutation in async Express route handler |
+Inventory rules cover PL/SQL units/DML/grants/roles/schedulers/external calls/context/CGI identity,
+Forms trigger calls/globals/item restrictions, JDBC procedure calls, ORDS handlers and gateway routes.
+Feed their JSON to build_operation_graph.py and account for unresolved dynamic/synonym edges. A static
+unit without a recognized check is an investigation candidate, not a proven authorization bypass.
 
-## Execution Protocol
+Java getRemoteUser() is container identity requiring separate deployment/proxy-origin review; it is
+not a direct raw-header read. Syntactic signature guards and verified middleware may require different
+manual disposition. Cross-function transaction/ORM defenses can defeat a local pattern hypothesis.
 
-Run tests across all rules:
-```bash
-semgrep --test references/rules/semgrep
-```
-
-
-Java container `getRemoteUser()` is deliberately not a raw-header candidate. Its actual identity
-origin and trusted proxy/container configuration still require manual review. Signature function
-names and syntactic guards in all rules are heuristics, not proven authenticity. Evaluate implementation,
-request binding, proxy stripping/reachability and backend scope before confirming or refuting a hit.
-The paired Java fixture's verifySignature stub is test syntax, not a real security defense.
+The previous small-corpus comparison (55 candidate locations, baseline FP=3/revised FP=0) belonged to
+the earlier 15-rule implementation. It is historical and does not measure the expanded suite or blind
+agent detection. See [TESTING.md](../TESTING.md) and the hardening changelog for current executed gates.

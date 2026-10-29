@@ -80,7 +80,27 @@ Replace the placeholder with an existing commit. Running `apm pack` directly in 
 source checkout does not bundle its authored source; it can emit an empty bundle or use unrelated
 locally installed dependencies. The separate consumer keeps local tools out of the distribution.
 
-Builds and private local recovery files under `build/` are ignored. The review ZIP supplied separately
-contains the complete authored skill, root documentation, and implementation evidence; it is distinct
-from the installable APM archive. Installation into real user harnesses is not an acceptance test and
+Temporary builds and private recovery files belong under ignored `temp/`. The review Markdown bundle
+at `temp/bundles/forensic-code-auditor-bundle.md` contains the authored skill, root documentation and
+selected implementation evidence; it is distinct from an installable APM archive. Installation into real user harnesses is not an acceptance test and
 is not performed by the implementation workflow.
+
+
+## Runtime-only staging and report migration
+
+The development checkout retains regression tests and known examples. For a lean runtime or controlled
+blind evaluation, stage only runtime content under the existing temp directory:
+
+```bash
+python3 .apm/skills/forensic-code-auditor/scripts/stage_package.py --output temp/runtime-package/.apm/skills/forensic-code-auditor
+```
+
+Use a fresh destination; the staging command refuses to overwrite. Copy the standalone `apm.yml`
+into `temp/runtime-package/` before installing that staged source through APM in a disposable consumer.
+`contamination_lint.py` checks the runtime tree for specified sealed identifiers and fixture markers.
+This does not prove that no semantic benchmark information could leak; enforce agent visibility too.
+
+Schema v2 requires `--evidence-root` and structured hashed references. Existing schema-v1 reports
+use `validate_report_v1.py` for legacy structural validation, then migrate before claiming v2 evidence
+verification. No released version is implied by a local hardening commit; the package version remains
+3.4.0 pending release/version selection.

@@ -1,0 +1,13 @@
+| views.py:17:11:20:5 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:25:11:25:70 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:36:12:36:67 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:40:12:40:68 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:44:12:44:52 | ControlFlowNode for Attribute() | Expanded kwargs: effective scope needs inspection. |
+| views.py:48:12:48:92 | ControlFlowNode for Attribute() | Raw or bulk operation: inspect actual scope and identity provenance. |
+| views.py:52:12:52:71 | ControlFlowNode for Attribute() | Raw or bulk operation: inspect actual scope and identity provenance. |
+| views.py:58:12:58:61 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:65:12:65:44 | ControlFlowNode for get_object_or_404() | Shortcut-named call (binding unverified): inspect effective scope and principal provenance. |
+| views.py:69:12:69:77 | ControlFlowNode for get_object_or_404() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |
+| views.py:69:12:69:77 | ControlFlowNode for get_object_or_404() | Shortcut-named call (binding unverified): inspect effective scope and principal provenance. |
+| views.py:73:12:73:93 | ControlFlowNode for get_object_or_404() | Shortcut-named call (binding unverified): inspect effective scope and principal provenance. |
+| views.py:73:30:73:85 | ControlFlowNode for Attribute() | Scope keyword present; trusted principal provenance is NOT VERIFIED. |

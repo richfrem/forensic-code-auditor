@@ -1,0 +1,4 @@
+// ruleid: ords-handler-procedure
+ORDS.DEFINE_HANDLER(p_source=>'BEGIN pkg_claim.approve(); END;');
+// ok: ords-handler-procedure
+logger.info(message);

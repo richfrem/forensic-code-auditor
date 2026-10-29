@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-grant-execute",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-grant-execute; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "db_grant"
+      },
+      "pattern-regex": "(?i)\\bGRANT(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+EXECUTE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+ON(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+[\\w.]+(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+TO(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+"
+    }
+  ]
+}

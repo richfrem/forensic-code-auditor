@@ -1,0 +1,6 @@
+// ruleid: plsql-grant-role
+GRANT clerk_role TO gateway_svc;
+// ok: plsql-grant-role
+GRANT SELECT ON claims TO reader;
+// ruleid: plsql-grant-role
+GRANT /* exported */ clerk_role TO gateway_svc;

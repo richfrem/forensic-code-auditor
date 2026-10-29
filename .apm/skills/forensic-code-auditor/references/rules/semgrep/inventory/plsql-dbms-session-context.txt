@@ -1,0 +1,4 @@
+// ruleid: plsql-dbms-session-context
+DBMS_SESSION.SET_CONTEXT('APP_CTX','TENANT','A');
+// ok: plsql-dbms-session-context
+DBMS_OUTPUT.PUT_LINE(message);

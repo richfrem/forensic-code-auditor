@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "forms-xml-trigger-call",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: forms-xml-trigger-call; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "ui_entry"
+      },
+      "pattern-regex": "(?is)<Trigger\\b[^>]*>[^<]*\\b\\w+\\.\\w+(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\("
+    }
+  ]
+}

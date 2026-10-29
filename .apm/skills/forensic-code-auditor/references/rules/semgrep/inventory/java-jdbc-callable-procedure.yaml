@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "java-jdbc-callable-procedure",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: java-jdbc-callable-procedure; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "api_route"
+      },
+      "pattern-regex": "(?i)\\bprepareCall(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\((?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*[\\x22\\x27](?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\{?(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*call(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+\\.\\w+"
+    }
+  ]
+}

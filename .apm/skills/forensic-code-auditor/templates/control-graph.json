@@ -1,0 +1,9 @@
+{
+  "source_ref": "REPLACE_WITH_AUTHORIZED_CONFIG_EXPORT",
+  "origin": "external",
+  "baseline_capabilities": [],
+  "controls": [{"id": "shared-credential", "grants_on_compromise": ["gateway-auth"]}],
+  "nodes": [{"id": "external"}, {"id": "gateway"}, {"id": "backend"}, {"id": "approve", "operation": "approve", "scope": "north"}],
+  "edges": [{"from": "external", "to": "gateway", "requires": ["gateway-auth"]}, {"from": "gateway", "to": "backend", "requires": []}, {"from": "backend", "to": "approve", "requires": ["scoped-delegation"]}],
+  "policy": null
+}

@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "forms-set-item-property-authz",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: forms-set-item-property-authz; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "ui_entry"
+      },
+      "pattern-regex": "(?i)\\bSET_ITEM_PROPERTY(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\([^;]*\\b(?:ENABLED|UPDATE_ALLOWED)\\b"
+    }
+  ]
+}

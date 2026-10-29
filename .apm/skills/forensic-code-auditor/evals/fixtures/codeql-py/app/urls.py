@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path("shortcut/<int:pk>/", views.invoice_shortcut),
+    path("shortcut-attacker/<int:pk>/", views.invoice_shortcut_attacker_scope),
+    path("shortcut-scoped/<int:pk>/", views.invoice_shortcut_scoped),
     path("inv-chain/<int:pk>/", views.invoice_chained_scope),
     path("inv-exclude/<int:pk>/", views.invoice_excluded_scope),
     path("inv-kwargs/", views.invoice_kwargs),

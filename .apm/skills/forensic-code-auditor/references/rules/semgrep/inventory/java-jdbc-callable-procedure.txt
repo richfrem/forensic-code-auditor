@@ -1,0 +1,4 @@
+// ruleid: java-jdbc-callable-procedure
+pool.prepareCall("{call pkg_claim.approve(?)}");
+// ok: java-jdbc-callable-procedure
+pool.prepareStatement("SELECT * FROM claim");

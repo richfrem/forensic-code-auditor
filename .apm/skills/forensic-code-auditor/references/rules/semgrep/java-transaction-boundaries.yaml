@@ -3,10 +3,12 @@ rules:
     languages: [java]
     severity: INFO
     message: >-
+      Candidate:
       REQUIRES_NEW suspends the caller's transaction and commits independently. Fine for audit
       logging or sequence allocation; for business state it leaves committed changes behind
       when the caller rolls back. Confirm intent.
     metadata:
+      purpose: candidate_discovery
       classification: TRANSACTION-DEMARCATION
       confidence: LOW
     pattern-either:
@@ -29,10 +31,12 @@ rules:
     languages: [java]
     severity: WARNING
     message: >-
+      Candidate:
       '$M' is @Transactional but is called on 'this' from '$CALLER', which is not. Proxy-based
       transactions are not applied to self-invocation, so '$M' runs with no transaction (or the
       caller's), and its propagation/rollback rules are ignored.
     metadata:
+      purpose: candidate_discovery
       classification: TRANSACTION-DEMARCATION
       confidence: MEDIUM
     patterns:

@@ -21,6 +21,10 @@ def test_unauthorized_mcp_tool_execution_blocked():
     # Caller token belongs to unprivileged Viewer role
     viewer_client = get_mcp_client(role="viewer")
     
+    before = read_committed_schema_version()
+    queued_before = mock_queue.snapshot()
+    external_before = mock_effects.snapshot()
+
     # Attempt destructive tool call
     result = viewer_client.call_tool(
         name="execute_database_migration",
@@ -29,6 +33,9 @@ def test_unauthorized_mcp_tool_execution_blocked():
     
     assert result.is_error, "Invariant breached: Unprivileged caller executed destructive tool"
     assert "PERMISSION_DENIED" in result.error_code
+    assert read_committed_schema_version() == before
+    assert mock_queue.snapshot() == queued_before
+    assert mock_effects.snapshot() == external_before
 ```
 
 
@@ -38,5 +45,5 @@ queue effects. A service account is allowed only under explicit scoped delegatio
 cannot grant authority. Bind approval to exact action, resource, state/version, principal, scope,
 expiry and single-use nonce. Test resource substitution, expired/replayed approval, indirect injected
 instructions and alternate routing. Verify persisted state and queued/external mock effects, not merely
-an error string. The example above must add those assertions. Do not assume rollback compensates
+an error string. The example records committed state and mock effects; add action/resource/state/nonce substitution cases for the actual approval store. Do not assume rollback compensates
 remote effects; inspect per-step compensation and report partial completion.

@@ -33,7 +33,7 @@ Never connect conversion tooling to a live enterprise database.
 - [ ] **Autonomous Transaction Mutating Table Workarounds**: Does a database trigger declare `PRAGMA AUTONOMOUS_TRANSACTION` to avoid `ORA-04091` (mutating table error)?
 
 ### C. Direct Database Privilege & Grants Inventory
-- [ ] **Connection Account Privilege Escalation**: What direct operations can the Forms runtime database connection perform without the Forms client? Run:
+- [ ] **Connection Account Privilege Escalation**: What direct operations can the Forms runtime database connection perform without the Forms client? Obtain from an authorized export:
 ```sql
 -- Inventory direct table and procedure privileges for the runtime account
 SELECT table_name, privilege FROM user_tab_privs;

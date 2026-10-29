@@ -1,0 +1,6 @@
+// ruleid: plsql-grant-execute
+GRANT EXECUTE ON app_pkg TO gateway_role;
+// ok: plsql-grant-execute
+REVOKE EXECUTE ON app_pkg FROM gateway_role;
+// ruleid: plsql-grant-execute
+GRANT /* exported */ EXECUTE ON app_pkg TO gateway_role;

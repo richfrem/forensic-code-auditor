@@ -1,0 +1,4 @@
+// ruleid: forms-xml-trigger-call
+<Trigger Name="WHEN-BUTTON-PRESSED">pkg_claim.approve(id);</Trigger>
+// ok: forms-xml-trigger-call
+<Item Name="claim"/>

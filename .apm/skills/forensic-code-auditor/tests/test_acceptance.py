@@ -16,12 +16,12 @@ def module(name, path):
     return result
 
 
-validator = module('report_validator', ROOT / 'scripts/validate_report.py')
+validator = module('report_validator', ROOT / 'scripts/validate_report_v1.py')
 fixture = module('authorization_fixture', ROOT / 'tests/fixtures/authorization/runtime.py')
 
 
 def report():
-    result = json.loads((ROOT / 'templates/assurance-summary.json').read_text())
+    result = json.loads((ROOT / 'templates/assurance-summary-v1.json').read_text())
     result.update(assurance='PARTIAL', conclusion='INCONCLUSIVE')
     result['scope'][0].update(status='reviewed')
     return result

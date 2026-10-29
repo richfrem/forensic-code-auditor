@@ -1,18 +1,9 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "assurance",
-    "conclusion",
-    "scope",
-    "operations",
-    "findings"
-  ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "assurance": {
       "enum": [
@@ -31,70 +22,360 @@
       ]
     },
     "scope": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "id",
-          "status",
-          "critical",
-          "evidence",
-          "limitations"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "status": {
-            "enum": [
-              "discovered",
-              "reviewed",
-              "verified",
-              "partially_examined",
-              "unexamined",
-              "unknown"
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "enum": [
+                  "ui_entry",
+                  "menu_node",
+                  "policy_store",
+                  "stored_procedure",
+                  "db_grant",
+                  "api_route",
+                  "gateway",
+                  "queue_consumer",
+                  "batch_job",
+                  "scheduler",
+                  "mcp_tool",
+                  "db_link",
+                  "direct_db_access"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "absent",
+                  "verified",
+                  "reviewed",
+                  "unknown",
+                  "unexamined",
+                  "unsupported"
+                ]
+              },
+              "critical": {
+                "type": "boolean"
+              },
+              "operation_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/evidence"
+                },
+                "minItems": 0
+              },
+              "limitations": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "category",
+              "status",
+              "critical",
+              "operation_ids",
+              "evidence",
+              "limitations"
             ]
           },
-          "critical": {
-            "type": "boolean"
-          },
-          "evidence": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          },
-          "limitations": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
+          "minItems": 13
         }
-      }
+      },
+      "required": [
+        "categories"
+      ]
     },
     "operations": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "id",
-          "completion"
-        ],
         "properties": {
           "id": {
             "type": "string",
             "minLength": 1
           },
+          "class": {
+            "enum": [
+              "read",
+              "value",
+              "lifecycle",
+              "policy"
+            ]
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "deferred"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
           "completion": {
             "type": "object",
             "additionalProperties": false,
+            "properties": {
+              "invariant": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "entry_points": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "policy_provenance": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "execution_trace": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "competing_defenses": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "failure_hypothesis": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "discriminating_proof": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "classification": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              },
+              "coverage": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "complete",
+                      "unresolved"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/evidence"
+                    },
+                    "minItems": 0
+                  },
+                  "needed": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status",
+                  "evidence",
+                  "needed"
+                ]
+              }
+            },
             "required": [
               "invariant",
               "entry_points",
@@ -105,277 +386,24 @@
               "discriminating_proof",
               "classification",
               "coverage"
-            ],
-            "properties": {
-              "invariant": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "entry_points": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "policy_provenance": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "execution_trace": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "competing_defenses": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "failure_hypothesis": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "discriminating_proof": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "classification": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              },
-              "coverage": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "status",
-                  "evidence",
-                  "needed"
-                ],
-                "properties": {
-                  "status": {
-                    "enum": [
-                      "complete",
-                      "unresolved"
-                    ]
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "needed": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
+            ]
           }
-        }
-      }
+        },
+        "required": [
+          "id",
+          "class",
+          "status",
+          "reason",
+          "completion"
+        ]
+      },
+      "minItems": 0
     },
     "findings": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "id",
-          "operation_id",
-          "category",
-          "tags",
-          "severity",
-          "evidence_status",
-          "verification",
-          "invariant_source",
-          "policy_independent",
-          "policy_violation",
-          "location",
-          "proof",
-          "test",
-          "unresolved"
-        ],
         "properties": {
           "id": {
             "type": "string",
@@ -444,66 +472,298 @@
               "NOT_VERIFIED"
             ]
           },
-          "invariant_source": {
-            "type": [
-              "string",
-              "null"
+          "policy_basis": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "class": {
+                "enum": [
+                  "owner_signed",
+                  "regulation",
+                  "requirement_doc",
+                  "contract",
+                  "derived_from_code",
+                  "derived_from_rows",
+                  "derived_from_tests",
+                  "none"
+                ]
+              },
+              "ref": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/evidence"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "class",
+              "ref"
             ]
           },
-          "policy_independent": {
-            "type": "boolean"
-          },
-          "policy_violation": {
-            "type": "boolean"
-          },
           "location": {
-            "type": "string",
-            "minLength": 1
+            "$ref": "#/$defs/evidence"
           },
           "proof": {
             "type": "array",
             "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 0
+          },
+          "entry_points": {
+            "type": "array",
+            "items": {
               "type": "string",
               "minLength": 1
-            }
+            },
+            "minItems": 0
           },
-          "test": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "executed",
-              "command",
-              "environment",
-              "result",
-              "durable_effects"
-            ],
-            "properties": {
-              "executed": {
-                "type": "boolean"
+          "contributing_rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/evidence"
+            },
+            "minItems": 0
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "entry_point": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "edges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "to": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "kind": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "status": {
+                        "enum": [
+                          "established",
+                          "assumed",
+                          "unresolved"
+                        ]
+                      },
+                      "evidence_ref": {
+                        "$ref": "#/$defs/evidence"
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to",
+                      "kind",
+                      "status",
+                      "evidence_ref"
+                    ]
+                  },
+                  "minItems": 1
+                }
               },
-              "command": {
-                "type": "string"
-              },
-              "environment": {
-                "type": "string"
-              },
-              "result": {
-                "type": "string"
-              },
-              "durable_effects": {
-                "type": "string"
-              }
-            }
+              "required": [
+                "entry_point",
+                "edges"
+              ]
+            },
+            "minItems": 0
           },
           "unresolved": {
             "type": "array",
             "items": {
               "type": "string",
               "minLength": 1
-            }
+            },
+            "minItems": 0
+          },
+          "run_record": {
+            "$ref": "#/$defs/evidence"
+          },
+          "obstruction_mechanism": {
+            "enum": [
+              "MISSING-POLICY",
+              "MISSING-EXPORT",
+              "RUNTIME-CONFIG",
+              "DYNAMIC-DISPATCH",
+              "EXTERNAL-RPC-OPAQUE",
+              "REFLECTION",
+              "UNTRACKED-TRIGGER",
+              "MISSING-SCHEMA"
+            ]
+          },
+          "telemetry_spec": {
+            "type": "string"
+          },
+          "candidate_models": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 0
           }
-        }
-      }
+        },
+        "required": [
+          "id",
+          "operation_id",
+          "category",
+          "tags",
+          "severity",
+          "evidence_status",
+          "verification",
+          "policy_basis",
+          "location",
+          "proof",
+          "entry_points",
+          "contributing_rows",
+          "paths",
+          "unresolved"
+        ]
+      },
+      "minItems": 0
+    },
+    "references_loaded": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ref": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "required": [
+          "kind",
+          "ref"
+        ]
+      },
+      "minItems": 0
+    },
+    "discovery": {
+      "$ref": "#/$defs/evidence"
+    },
+    "tools_executed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tool": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "command": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          },
+          "exit_code": {
+            "type": "integer"
+          },
+          "outcome": {
+            "enum": [
+              "hits",
+              "no_hits",
+              "failed"
+            ]
+          },
+          "output_ref": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "required": [
+          "tool",
+          "version",
+          "command",
+          "exit_code",
+          "outcome",
+          "output_ref"
+        ]
+      },
+      "minItems": 0
     }
-  }
+  },
+  "required": [
+    "schema_version",
+    "assurance",
+    "conclusion",
+    "scope",
+    "operations",
+    "findings",
+    "references_loaded",
+    "artifacts",
+    "discovery",
+    "tools_executed"
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "row_key": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    }
+  },
+  "$id": "https://example.test/forensic-code-auditor/report-v2.schema.json"
 }

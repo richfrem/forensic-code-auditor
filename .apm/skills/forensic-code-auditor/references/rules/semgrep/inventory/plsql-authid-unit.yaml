@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-authid-unit",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-authid-unit; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "stored_procedure"
+      },
+      "pattern-regex": "(?i)\\bCREATE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+(?:OR(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+REPLACE(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+)?(?:PACKAGE(?:(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+BODY)?|PROCEDURE|FUNCTION)(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)+\\w+"
+    }
+  ]
+}

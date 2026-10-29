@@ -1,0 +1,4 @@
+// ruleid: gateway-route-upstream
+proxy_pass http://localhost:9000;
+// ok: gateway-route-upstream
+display_name: Claims

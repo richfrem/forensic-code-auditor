@@ -1,0 +1,38 @@
+edges
+| views.py:5:31:5:32 | ControlFlowNode for pk | views.py:6:34:6:35 | ControlFlowNode for pk | provenance |  |
+| views.py:10:25:10:31 | ControlFlowNode for request | views.py:11:37:11:53 | ControlFlowNode for Subscript | provenance | AdditionalTaintStep |
+| views.py:15:29:15:35 | ControlFlowNode for request | views.py:19:19:19:42 | ControlFlowNode for Subscript | provenance | AdditionalTaintStep |
+| views.py:39:37:39:38 | ControlFlowNode for pk | views.py:40:77:40:78 | ControlFlowNode for pk | provenance |  |
+| views.py:43:20:43:26 | ControlFlowNode for request | views.py:44:34:44:51 | ControlFlowNode for Attribute() | provenance | AdditionalTaintStep |
+| views.py:51:18:51:24 | ControlFlowNode for request | views.py:52:38:52:54 | ControlFlowNode for Subscript | provenance | AdditionalTaintStep |
+| views.py:55:24:55:30 | ControlFlowNode for request | views.py:57:20:57:43 | ControlFlowNode for Subscript | provenance | AdditionalTaintStep |
+| views.py:57:5:57:11 | [post] ControlFlowNode for request [Attribute auth] | views.py:58:49:58:55 | ControlFlowNode for request [Attribute auth] | provenance |  |
+| views.py:57:20:57:43 | ControlFlowNode for Subscript | views.py:57:5:57:11 | [post] ControlFlowNode for request [Attribute auth] | provenance |  |
+| views.py:58:49:58:55 | ControlFlowNode for request [Attribute auth] | views.py:58:49:58:60 | ControlFlowNode for Attribute | provenance |  |
+nodes
+| views.py:5:31:5:32 | ControlFlowNode for pk | semmle.label | ControlFlowNode for pk |
+| views.py:6:34:6:35 | ControlFlowNode for pk | semmle.label | ControlFlowNode for pk |
+| views.py:10:25:10:31 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| views.py:11:37:11:53 | ControlFlowNode for Subscript | semmle.label | ControlFlowNode for Subscript |
+| views.py:15:29:15:35 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| views.py:19:19:19:42 | ControlFlowNode for Subscript | semmle.label | ControlFlowNode for Subscript |
+| views.py:39:37:39:38 | ControlFlowNode for pk | semmle.label | ControlFlowNode for pk |
+| views.py:40:77:40:78 | ControlFlowNode for pk | semmle.label | ControlFlowNode for pk |
+| views.py:43:20:43:26 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| views.py:44:34:44:51 | ControlFlowNode for Attribute() | semmle.label | ControlFlowNode for Attribute() |
+| views.py:51:18:51:24 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| views.py:52:38:52:54 | ControlFlowNode for Subscript | semmle.label | ControlFlowNode for Subscript |
+| views.py:55:24:55:30 | ControlFlowNode for request | semmle.label | ControlFlowNode for request |
+| views.py:57:5:57:11 | [post] ControlFlowNode for request [Attribute auth] | semmle.label | [post] ControlFlowNode for request [Attribute auth] |
+| views.py:57:20:57:43 | ControlFlowNode for Subscript | semmle.label | ControlFlowNode for Subscript |
+| views.py:58:49:58:55 | ControlFlowNode for request [Attribute auth] | semmle.label | ControlFlowNode for request [Attribute auth] |
+| views.py:58:49:58:60 | ControlFlowNode for Attribute | semmle.label | ControlFlowNode for Attribute |
+subpaths
+#select
+| views.py:6:34:6:35 | ControlFlowNode for pk | views.py:5:31:5:32 | ControlFlowNode for pk | views.py:6:34:6:35 | ControlFlowNode for pk | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:5:31:5:32 | ControlFlowNode for pk | value |
+| views.py:11:37:11:53 | ControlFlowNode for Subscript | views.py:10:25:10:31 | ControlFlowNode for request | views.py:11:37:11:53 | ControlFlowNode for Subscript | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:10:25:10:31 | ControlFlowNode for request | value |
+| views.py:19:19:19:42 | ControlFlowNode for Subscript | views.py:15:29:15:35 | ControlFlowNode for request | views.py:19:19:19:42 | ControlFlowNode for Subscript | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:15:29:15:35 | ControlFlowNode for request | value |
+| views.py:40:77:40:78 | ControlFlowNode for pk | views.py:39:37:39:38 | ControlFlowNode for pk | views.py:40:77:40:78 | ControlFlowNode for pk | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:39:37:39:38 | ControlFlowNode for pk | value |
+| views.py:44:34:44:51 | ControlFlowNode for Attribute() | views.py:43:20:43:26 | ControlFlowNode for request | views.py:44:34:44:51 | ControlFlowNode for Attribute() | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:43:20:43:26 | ControlFlowNode for request | value |
+| views.py:52:38:52:54 | ControlFlowNode for Subscript | views.py:51:18:51:24 | ControlFlowNode for request | views.py:52:38:52:54 | ControlFlowNode for Subscript | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:51:18:51:24 | ControlFlowNode for request | value |
+| views.py:58:49:58:60 | ControlFlowNode for Attribute | views.py:55:24:55:30 | ControlFlowNode for request | views.py:58:49:58:60 | ControlFlowNode for Attribute | Request-controlled $@ reaches an ORM lookup lacking verified principal tenant scoping. | views.py:55:24:55:30 | ControlFlowNode for request | value |

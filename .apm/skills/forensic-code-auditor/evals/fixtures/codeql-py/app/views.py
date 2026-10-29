@@ -56,3 +56,18 @@ def invoice_named_auth(request, pk):
     # Attribute names are not sanitizers. This is intentionally request-controlled.
     request.auth = request.GET["tenant_id"]
     return Invoice.objects.get(pk=pk, tenant_id=request.auth)  # EXPECT: unscoped-tenant-lookup
+
+
+from django.shortcuts import get_object_or_404
+
+
+def invoice_shortcut(request, pk):
+    return get_object_or_404(Invoice, pk=pk)
+
+
+def invoice_shortcut_attacker_scope(request, pk):
+    return get_object_or_404(Invoice, pk=pk, tenant_id=request.GET["tenant"])
+
+
+def invoice_shortcut_scoped(request, pk):
+    return get_object_or_404(Invoice.objects.filter(tenant_id=request.user.tenant_id), pk=pk)

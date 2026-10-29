@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "plsql-dbms-session-context",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: plsql-dbms-session-context; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "policy_store"
+      },
+      "pattern-regex": "(?i)\\bDBMS_SESSION(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*\\.(?:\\s|--[^\\n]*(?:\\n|$)|/\\*.*?\\*/)*(?:SET_CONTEXT|CLEAR_CONTEXT|RESET_PACKAGE|SET_IDENTIFIER)\\b"
+    }
+  ]
+}

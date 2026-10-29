@@ -1,0 +1,4 @@
+// ruleid: plsql-scheduler-job
+DBMS_SCHEDULER.CREATE_JOB(job_name=>'nightly');
+// ok: plsql-scheduler-job
+logger.write(message);

@@ -1,0 +1,4 @@
+// ruleid: plsql-owa-cgi-identity
+user_id := OWA_UTIL.GET_CGI_ENV('REMOTE_USER');
+// ok: plsql-owa-cgi-identity
+user_id := authenticated_principal;

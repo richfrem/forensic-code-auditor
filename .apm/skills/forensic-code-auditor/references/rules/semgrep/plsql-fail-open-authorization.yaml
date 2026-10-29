@@ -4,37 +4,48 @@ rules:
     languages: [generic]
     severity: ERROR
     message: >-
+      Candidate:
       Authorization or permission-check function returns TRUE, 'Y', or sets an allow flag inside
       an exception handler (WHEN OTHERS or WHEN NO_DATA_FOUND). When underlying tables, views, or
       directory lookups fail, access is granted by default (fail-open access control).
     metadata:
+      purpose: candidate_discovery
       classification: FAIL-OPEN-AUTH
       confidence: MEDIUM
-    pattern-regex: (?is)\bFUNCTION\s+(?:\w+\.)?\w*(?:auth|perm|priv|access|secur|role|allow)\w*\s*(?:\([^)]*\))?\s*RETURN\s+(?:BOOLEAN|VARCHAR2|NUMBER)\b(?:(?!\bFUNCTION\b).)*?\bWHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN\s*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;|ROLLBACK\s*;)\s*)*(?:RETURN\s+(?:TRUE|'Y'|'TRUE'|1)\s*;|\w+\s*:=\s*(?:TRUE|'Y'|'TRUE'|1)\s*;(?:(?!\bFUNCTION\b).)*?RETURN\s+\w+\s*;)
+    pattern-either:
+      - pattern-regex: (?is)\bFUNCTION\s+(?:\w+\.)?\w*(?:auth|perm|priv|access|secur|role|allow)\w*\s*(?:\([^)]*\))?\s*RETURN\s+(?:BOOLEAN|VARCHAR2|NUMBER)\b(?:(?!\b(?:FUNCTION|PROCEDURE)\b).)*?\bWHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN(?:\s|--[^\n]*(?:\n|$)|/\*.*?\*/)*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;|ROLLBACK\s*;)\s*)*(?:RETURN\s+(?:TRUE|'Y'|'TRUE'|1)\s*;|\w+\s*:=\s*(?:TRUE|'Y'|'TRUE'|1)\s*;(?:(?!\b(?:FUNCTION|PROCEDURE)\b).)*?RETURN\s+\w+\s*;)
+      - pattern-regex: (?is)\bPROCEDURE\s+\w*(?:auth|perm|priv|access|secur|role|allow)\w*\s*\([^)]*\b(?P<outflag>\w+)\s+OUT\s+[^)]*\)(?:(?!\b(?:PROCEDURE|FUNCTION)\b).)*?\bWHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN(?:\s|--[^\n]*(?:\n|$)|/\*.*?\*/)*(?P=outflag)\s*:=\s*(?:TRUE|1|\x27Y\x27)\s*;(?!(?:(?!\bEND\b).)*?\bRAISE\b)
 
   # Virtual Private Database (VPD / DBMS_RLS) policy function returns empty predicate
   - id: plsql-vpd-policy-empty-predicate
     languages: [generic]
     severity: ERROR
     message: >-
+      Candidate:
       Oracle VPD / FGAC policy function (matching two-VARCHAR2 signature) returns NULL or empty string (''),
       disabling row-level security filtering on normal or exception paths and exposing all table rows.
     metadata:
+      purpose: candidate_discovery
       classification: FAIL-OPEN-AUTH
       confidence: MEDIUM
-    pattern-regex: (?is)\bFUNCTION\s+\w+\s*\(\s*\w+\s+(?:IN\s+)?VARCHAR2\s*,\s*\w+\s+(?:IN\s+)?VARCHAR2\s*\)\s*RETURN\s+VARCHAR2\b(?:(?!\bFUNCTION\b).)*?(?:(?:IF\s+.*?SYS_CONTEXT\s*\(.*?\)\s+IS\s+NULL\s+THEN\s*RETURN\s+(?:NULL|''|'1=1')\s*;)|(?:WHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN\s*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;)\s*)*RETURN\s+(?:NULL|''|'1=1')\s*;))
+    pattern-either:
+      - pattern-regex: (?is)\bFUNCTION\s+\w+\s*\(\s*\w+\s+(?:IN\s+)?VARCHAR2\s*,\s*\w+\s+(?:IN\s+)?VARCHAR2\s*\)\s*RETURN\s+VARCHAR2\b(?:(?!\b(?:FUNCTION|PROCEDURE)\b).)*?(?:(?:IF\s+.*?SYS_CONTEXT\s*\(.*?\)\s+IS\s+NULL\s+THEN(?:\s|--[^\n]*(?:\n|$)|/\*.*?\*/)*RETURN\s+(?:NULL|''|'1=1')\s*;)|(?:WHEN\s+(?:OTHERS|NO_DATA_FOUND)\s+THEN(?:\s|--[^\n]*(?:\n|$)|/\*.*?\*/)*(?:(?:NULL\s*;|DBMS_OUTPUT\.[^;]+;)\s*)*RETURN\s+(?:NULL|''|'1=1')\s*;))
+      - pattern-regex: (?is)\bFUNCTION\s+\w+\s*\(\s*\w+\s+(?:IN\s+)?VARCHAR2\s*,\s*\w+\s+(?:IN\s+)?VARCHAR2\s*\)\s*RETURN\s+VARCHAR2\b(?:(?!\bFUNCTION\b).)*?\b(?P<ctx>\w+)\s*:=\s*SYS_CONTEXT\s*\([^;]+;(?:(?!\bFUNCTION\b).)*?\bIF\s+(?P=ctx)\s+IS\s+NULL\s+THEN(?:\s|--[^\n]*(?:\n|$)|/\*.*?\*/)*RETURN\s+(?:NULL|\x27\x27|\x271=1\x27)\s*;
 
   # Null-expands-scope pattern: NULL bind parameter or parameter disables scoping filter
   - id: plsql-null-expands-scope-filter
     languages: [generic]
     severity: WARNING
     message: >-
+      Candidate:
       SQL filter uses '(:PARAM IS NULL OR col = :PARAM)', 'col = NVL(:PARAM, col)', or DECODE equivalent.
       Passing a NULL parameter bypasses the scoping predicate and matches all records across organizations.
     metadata:
+      purpose: candidate_discovery
       classification: TENANT-LEAK
       confidence: MEDIUM
     pattern-either:
       - pattern-regex: (?i):?([a-zA-Z0-9_.]+)\s+IS\s+NULL\s+OR\s+[a-zA-Z0-9_.]+\s*=\s*:?\1\b
       - pattern-regex: (?i)[a-zA-Z0-9_.]+\s*=\s*NVL\s*\(\s*:?([a-zA-Z0-9_.]+)\s*,\s*[a-zA-Z0-9_.]+\s*\)
       - pattern-regex: (?i)[a-zA-Z0-9_.]+\s*=\s*DECODE\s*\(\s*:?([a-zA-Z0-9_.]+)\s*,\s*NULL\s*,\s*[a-zA-Z0-9_.]+\s*,\s*:?\1\s*\)
+      - pattern-regex: (?i)[a-zA-Z0-9_.]+\s*=\s*:?([a-zA-Z0-9_.]+)\s+OR\s+:?\1\s+IS\s+NULL\b

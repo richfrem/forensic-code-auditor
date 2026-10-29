@@ -1,0 +1,4 @@
+// ruleid: plsql-utl-external-effect
+UTL_HTTP.REQUEST(endpoint);
+// ok: plsql-utl-external-effect
+DBMS_OUTPUT.PUT_LINE(message);

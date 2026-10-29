@@ -33,11 +33,11 @@ Run from the skill source directory:
 python3 -m pip install -r requirements-tests.txt
 python3 -m unittest discover -s tests -v
 python3 scripts/demo_authorization.py --output /tmp/forensic-auditor-demo
-python3 scripts/validate_report.py /tmp/forensic-auditor-demo/report.json
+python3 scripts/validate_report.py /tmp/forensic-auditor-demo/report.json --evidence-root /tmp/forensic-auditor-demo
 semgrep --test references/rules/semgrep
 python3 scripts/test_codeql.py
 ```
 
-CodeQL harness exit 77 means NOT RUN, not success. Preserve existing valid fixtures and record scanner
+CodeQL harness exit 77 means NOT RUN, not success. Schema v2 requires artifact-aware validation; v1 is legacy structural validation. Preserve existing valid fixtures and record scanner
 false positives. Use the isolated consumer packaging workflow in [INSTALL.md](INSTALL.md); packing the dependency-free
 source root does not include its authored source. Root `apm.lock.yaml` is local development state and ignored.

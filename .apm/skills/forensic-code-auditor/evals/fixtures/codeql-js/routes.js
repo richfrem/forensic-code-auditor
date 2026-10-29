@@ -52,3 +52,28 @@ app.post("/orders/:id/status-wrong-object", async (req, res) => {
   }
   res.sendStatus(204);
 });
+
+
+app.post("/orders/:id/enum-only", async (req,res) => {
+  const order = await Order.findById(req.params.id);
+  if (validateState(req.body.status)) order.status = req.body.status;
+});
+app.post("/orders/:id/noop-guard", async (req,res) => {
+  const order = await Order.findById(req.params.id);
+  function canTransition() { return true; }
+  if (canTransition(order.status, req.body.status)) order.status = req.body.status;
+});
+app.post("/orders/:id/assign", async (req,res) => {
+  const order = await Order.findById(req.params.id);
+  Object.assign(order, req.body);
+});
+app.post("/orders/:id/body", async (req,res) => {
+  await prisma.order.update({where: {id:req.params.id}, data:req.body});
+});
+app.post("/orders/:id/setter", async (req,res) => {
+  const order = await Order.findById(req.params.id);
+  order.setStatus(req.body.status);
+});
+app.post("/orders/:id/raw", async (req,res) => {
+  db.query("UPDATE orders SET status=? WHERE id=?", [req.body.status,req.params.id]);
+});

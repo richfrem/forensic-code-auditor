@@ -100,3 +100,50 @@ SELECT * FROM permits WHERE tenant_id = :p_tenant_id;
 
 // ok: plsql-null-expands-scope-filter
 SELECT * FROM permits WHERE (:p_tenant_id IS NULL OR status = 'ACTIVE');
+
+
+// ruleid: plsql-auth-function-when-others-allow
+FUNCTION check_document_access(p_user NUMBER) RETURN BOOLEAN IS
+BEGIN
+  RETURN FALSE;
+EXCEPTION WHEN OTHERS THEN
+  -- Permission query failure must not allow.
+  RETURN TRUE;
+END;
+/
+
+// ruleid: plsql-auth-function-when-others-allow
+PROCEDURE check_access(p_user IN NUMBER, p_allowed OUT VARCHAR2) IS
+BEGIN
+  p_allowed := 'N';
+EXCEPTION WHEN OTHERS THEN
+  -- Actual output assignment, not a local variable.
+  p_allowed := 'Y';
+END;
+/
+
+// ok: plsql-auth-function-when-others-allow
+PROCEDURE check_access_closed(p_user IN NUMBER, p_allowed OUT VARCHAR2) IS
+BEGIN
+  p_allowed := 'N';
+EXCEPTION WHEN OTHERS THEN
+  p_allowed := 'N';
+  RAISE;
+END;
+/
+
+// ruleid: plsql-vpd-policy-empty-predicate
+FUNCTION vpd_document_scoping(p_schema VARCHAR2, p_object VARCHAR2) RETURN VARCHAR2 IS
+ v_org VARCHAR2(50);
+BEGIN
+ v_org := SYS_CONTEXT('APP_CTX','ORG');
+ IF v_org IS NULL THEN
+   -- Missing context must deny, but here drops the predicate.
+   RETURN NULL;
+ END IF;
+ RETURN 'org_id=' || v_org;
+END;
+/
+
+// ruleid: plsql-null-expands-scope-filter
+SELECT * FROM permits WHERE (org_id = :org OR :org IS NULL);
