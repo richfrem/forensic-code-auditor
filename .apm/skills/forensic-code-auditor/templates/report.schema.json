@@ -482,6 +482,7 @@
                   "regulation",
                   "requirement_doc",
                   "contract",
+                  "platform_spec",
                   "derived_from_code",
                   "derived_from_rows",
                   "derived_from_tests",
@@ -706,6 +707,14 @@
           },
           "output_ref": {
             "$ref": "#/$defs/evidence"
+          },
+          "files_analyzed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "inputs_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
           }
         },
         "required": [

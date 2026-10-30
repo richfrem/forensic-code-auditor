@@ -29,11 +29,12 @@ No point rewards or uncertainty caps apply. Quantity of confirmed findings is no
 
 Do not flag the absence of a preferred implementation when a verified alternative enforces the sourced property.
 
-Source an invariant from a business requirement, schema constraint or authoritative API contract.
-For intended authorization policy, code, current permission rows and tests are corroboration rather
-than independent authority. Owner-approved policy, regulation, requirements or contracts must support
-CONFIRMED/SUSPECTED authorization-policy claims. Missing/conflicting policy yields NON LIQUET;
-an unusual row or peer anomaly is an owner question, not an invented violation.
+Source an invariant from a business requirement, schema constraint, authoritative API contract or
+documented platform security boundary (`platform_spec`). For intended authorization policy, code,
+current permission rows and tests are corroboration rather than independent authority. Owner-approved
+policy, regulation, requirements, contracts or platform boundary specs must support CONFIRMED/SUSPECTED
+authorization-policy claims. Missing/conflicting policy yields NON LIQUET; an unusual row or peer
+anomaly is an owner question, not an invented violation.
 
 | Impact / reachability | High | Medium | Low |
 |---|---|---|---|
@@ -128,7 +129,7 @@ with relative path, SHA-256 and optional line range or CSV/JSON row key.
 Run from the skill directory, keeping output under an ignored workspace such as `temp/`:
 
 ```bash
-python3 scripts/build_operation_graph.py --source-root TARGET --evidence-root WORKSPACE --output WORKSPACE/operations.json
+python3 scripts/build_operation_graph.py --source-root TARGET --evidence-root WORKSPACE --manual-operations WORKSPACE/manual-ops.json --output WORKSPACE/operations.json
 python3 scripts/authz_effective.py --config WORKSPACE/configuration.json --policy WORKSPACE/policy.json --output WORKSPACE
 python3 scripts/run_repro.py --evidence-root WORKSPACE --environment isolated-local-synthetic --runtime isolated-local-postgres -- python3 reproduce.py
 python3 scripts/validate_report.py WORKSPACE/report.json --evidence-root WORKSPACE
@@ -139,12 +140,15 @@ conflict precedence and acceptance-time vs execution-time authority are applicat
 modeled grant is not runtime-enforced behavior. Differential checks can compare a reviewed local
 evaluator, but do not execute imported SQL or untrusted application code to load policy exports.
 
-The recorder resolves a bare interpreter such as `python3` through PATH and records its resolved
-path. Explicit relative interpreter and script paths are relative to the evidence root. Review the
-selected interpreter and script before execution; name/path resolution does not establish trust.
+The recorder resolves a bare interpreter such as `python3` through PATH, queries its actual Python
+version, snapshots the pre-execution script bytes, scrubs ambient CI/cloud credentials from the
+child environment and flags post-run script mutation. Explicit relative interpreter and script paths
+are relative to the evidence root. Review the selected interpreter and script before execution;
+name/path resolution does not establish trust.
 
 V2 checks reference existence/integrity, source locations, declared categories, discovered candidate
-accounting and proof metadata. It cannot certify policy authority, truth of static reasoning, honest
+accounting, per-file extraction status (`file_status`), scanner `files_analyzed`/`inputs_digest`
+consistency and proof metadata. It cannot certify policy authority, truth of static reasoning, honest
 initial discovery, or evidence authenticity against an author who can replace all artifacts/hashes.
 A valid run record binds reviewed code and captured observations; inspect the assertions themselves.
 Legacy `validate_report_v1.py` remains available for schema-v1 compatibility and is structural only.

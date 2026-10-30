@@ -43,5 +43,35 @@ class GraphTests(unittest.TestCase):
         self.assertTrue(any('parse' in x for x in graph['limitations']))
         self.assertTrue(any('symlink' in x for x in graph['limitations']))
 
+    def test_operation_graph_discovers_copilot_setup_and_ci_workflows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            wf=root/'.github/workflows/copilot-setup-steps.yml'
+            wf.parent.mkdir(parents=True)
+            wf.write_text('on: pull_request_target\njobs:\n  setup:\n    steps:\n      - run: echo INERT_SETUP_MARKER\n')
+            instr=root/'.github/copilot-instructions.md'
+            instr.write_text('<!-- INERT_INSTRUCTION_MARKER -->\n')
+            mcp=root/'.vscode/mcp.json'
+            mcp.parent.mkdir(parents=True)
+            mcp.write_text('{"servers": {"inert-mock-mcp": {"command": "echo"}}}\n')
+            img=root/'diagram.jpg'
+            img.write_bytes(b'\xff\xd8\xff\xe0\x00\x10JFIF\x00INERT_BINARY')
+            graph=build(root)
+            paths={f['path'] for f in graph['files']}
+            self.assertEqual(paths,{'.github/workflows/copilot-setup-steps.yml','.github/copilot-instructions.md','.vscode/mcp.json','diagram.jpg'})
+            self.assertIn('.github/workflows/copilot-setup-steps.yml',graph['categories']['batch_job'])
+            self.assertIn('.github/workflows/copilot-setup-steps.yml',graph['categories']['mcp_tool'])
+            self.assertIn('.github/copilot-instructions.md',graph['categories']['mcp_tool'])
+            self.assertIn('.vscode/mcp.json',graph['categories']['mcp_tool'])
+            self.assertEqual(graph['file_status']['.github/workflows/copilot-setup-steps.yml'],'manual_required')
+            self.assertEqual(graph['file_status']['diagram.jpg'],'binary_carrier')
+            self.assertTrue(any('CI workflow' in x for x in graph['limitations']))
+            self.assertTrue(any('agent instruction' in x for x in graph['limitations']))
+            self.assertTrue(any('binary/media carrier' in x for x in graph['limitations']))
+            reconciled=build(root,exports={'reconciled_files':['.github/copilot-instructions.md','.vscode/mcp.json','diagram.jpg']},manual_operations=[{'id':'ci:copilot_setup','path':'.github/workflows/copilot-setup-steps.yml','class':'lifecycle','category':'batch_job'}])
+            self.assertEqual([o['id'] for o in reconciled['operations']],['ci:copilot_setup'])
+            self.assertEqual(reconciled['limitations'],[])
+            self.assertTrue(all(v=='extracted' for v in reconciled['file_status'].values()))
+
 
 if __name__=='__main__':unittest.main()

@@ -35,18 +35,23 @@ are preserved. A missing CLI exits 77 (NOT RUN); a wrong tool version fails, not
 - V1 regression tests preserve the prior model/contract under validate_report_v1.py. They are legacy
   structural checks, not v2 assurance or blind evaluation.
 - V2 tests check evidence files, hashes, lines/rows, traversal/symlink containment, candidate omissions,
-  criticality, false absence, policy provenance classes, unexecuted/fake evidence and scanner failures.
-- Actual local run records capture reviewed scripts, command/versions/times and stdout/stderr hashes.
-  The demo uses a file-backed disposable SQLite model, commits, then reads state/effects through a
-  fresh connection. It discovers rows through the engine, with no expected row key in the demo.
+  per-file extraction status (`file_status`), criticality, false absence, policy provenance classes
+  (including `platform_spec`), unexecuted/fake evidence, pre-execution script snapshots/mutation,
+  ambient credential scrubbing and scanner failures (including zero-input scans and `inputs_digest`
+  mismatches).
+- Actual local run records capture reviewed scripts, pre-execution snapshots, child interpreter
+  versions, command/times, scrubbed child environments and stdout/stderr hashes. The demo uses a
+  file-backed disposable SQLite model, commits, then reads state/effects through a fresh connection.
+  It discovers rows through the engine, with no expected row key in the demo.
 - The engine checks explicit inheritance/conflict/NULL/default/date/exception semantics. Over the
   controlled 200-seed generator (500 rows, hierarchy depth ≥4, 40 roles), the implementation observed
   200/200 injected rows with policy, 0/200 exception false positives and 200/200 top-five owner-question
   inclusion without policy. These are fixture-distribution measurements; no policy-free anomaly is a
   confirmed violation and no real-world recall is implied. Renaming/moving rows has separate tests.
-- Thirty Semgrep candidate/inventory rule groups have paired annotated fixtures. A second test scans
-  all rules against the combined corpus and compares 99 explicit location expectations across 38
-  file/rule pairs. The PL/SQL behavioral package's comment and assigned-context cases are included.
+- Thirty-one Semgrep candidate/inventory rule groups have paired annotated fixtures. A second test scans
+  all rules against the combined corpus and compares 102 explicit location expectations across 39
+  file/rule pairs. The PL/SQL behavioral package's comment and assigned-context cases and the CI workflow
+  inventory rule (`ci-workflow-privileged-trigger`) are included.
 - Python CodeQL has seven attributed tenant candidates on its regression fixture; the scope-review
   query deliberately also flags protected sites for provenance review. JavaScript candidates include
   named guards, no-op/enum-only guards, setters, bulk bodies and raw SQL inputs. Candidate hits are
@@ -128,7 +133,11 @@ it does not claim those two taint detections succeeded.
 
 ## GitHub configuration collector
 
-`tests/test_github_collector.py` uses mocked CLI responses to check fixed GET authority, encoded
-paths, pagination, access denial, timeouts, malformed output and refusal to overwrite evidence.
-These tests do not establish live GitHub configuration, cloud access or resistance to prompt injection.
-Use [GitHub scanner security](references/github-ai-scanner-security.md) for collection scope and limits.
+`tests/test_github_collector.py` uses mocked CLI responses to check fixed GET authority, scrubbed child
+environment, caller identity (`/user`), OAuth scope header capture (`X-OAuth-Scopes`), automatic
+`/rulesets/{id}` detail expansion (`bypass_actors`), OIDC subject customization, Actions cache and run
+artifact endpoints, endpoint-specific JSON payload validation, multi-header block parsing, pagination,
+access denial, timeouts, required-control coverage profiles (`control_coverage`) and refusal to
+overwrite evidence. These tests do not establish live GitHub configuration, cloud access or resistance
+to prompt injection. Use [GitHub scanner security](references/github-ai-scanner-security.md) for
+collection scope and limits.

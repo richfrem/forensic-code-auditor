@@ -20,7 +20,9 @@ def check(package,sealed_keys=None):
         relative=p.relative_to(package)
         if any(part in ('evals-private','tests','evals') for part in relative.parts):errors.append('evaluation material deployed: '+str(relative));continue
         try:text=p.read_text()
-        except UnicodeError:continue
+        except UnicodeError:
+            try:text=p.read_bytes().decode('latin-1',errors='ignore')
+            except OSError:continue
         if any(secret in text for secret in secrets):errors.append('sealed identifier leaked: '+str(relative))
         if any(marker in text for marker in ('-- '+'VULNERABLE','-- '+'SAFE DECOY','// '+'EXPECT:')):errors.append('answer marker leaked: '+str(relative))
     return errors

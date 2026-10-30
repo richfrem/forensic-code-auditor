@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "ci-workflow-privileged-trigger",
+      "languages": [
+        "generic"
+      ],
+      "severity": "INFO",
+      "message": "Inventory candidate: ci-workflow-privileged-trigger; semantics and actual authority NOT VERIFIED.",
+      "metadata": {
+        "purpose": "inventory",
+        "category": "batch_job"
+      },
+      "pattern-regex": "(?im)^\\s*(?:on\\s*:\\s*(?:pull_request_target|workflow_run)\\b|-\\s*run\\s*:[^\\n]*\\$\\{\\{\\s*github\\.event\\.|[^#\\n]*>>\\s*\"?\\$GITHUB_(?:ENV|PATH|OUTPUT|STATE)\\b)"
+    }
+  ]
+}

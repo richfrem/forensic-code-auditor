@@ -9,7 +9,8 @@ rules:
       '$O.$F' is read, modified in Python, and saved back. Concurrent requests overwrite each
       other (lost update / double spend), even inside transaction.atomic(). Use
       $M.objects.filter(pk=..., $F__gte=amt).update($F=F('$F') - amt) and check the row
-      count, or select_for_update() inside atomic().
+      count, or select_for_update() inside atomic() after evaluating hot-row contention and
+      bounded retry behavior.
     metadata:
       purpose: candidate_discovery
       classification: LOST-UPDATE

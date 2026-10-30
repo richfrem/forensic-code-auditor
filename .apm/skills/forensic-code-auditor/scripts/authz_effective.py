@@ -7,6 +7,7 @@ proves runtime enforcement. No policy means owner questions, never policy violat
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -137,7 +138,9 @@ def main():
             command=a.differential
             script=Path(command[1]).resolve() if len(command)>1 else None
             if not script or not script.is_file() or script.suffix!='.py' or Path(command[0]).name not in ('python','python3','python3.11','python3.12','python3.13','python3.14') or any('://' in x for x in command):raise ValueError('differential accepts only a reviewed local Python evaluator')
-            run=subprocess.run(command,input=json.dumps(config),capture_output=True,text=True,timeout=30,shell=False,check=True)
+            child_env={k:os.environ[k] for k in ('PATH','LANG','LC_ALL','LC_CTYPE','TERM','TMPDIR','TEMP','TMP','SYSTEMROOT','WINDIR') if k in os.environ}
+            child_env.update(HOME=str(a.output.resolve()),PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+            run=subprocess.run(command,input=json.dumps(config),capture_output=True,text=True,timeout=30,env=child_env,shell=False,check=True)
             actual=json.loads(run.stdout)
             expected=[r['configured'] for r in result['matrix']]
             (a.output/'differential.json').write_text(json.dumps({'matches':actual==expected,'expected':expected,'actual':actual})+'\n')

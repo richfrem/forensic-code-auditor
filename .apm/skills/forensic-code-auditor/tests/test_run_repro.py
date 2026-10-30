@@ -53,5 +53,26 @@ class RunTests(unittest.TestCase):
         ref=run([sys.executable,'noop.py'],root=self.root,environment='isolated-local-synthetic')
         self.assertTrue(validate_record(json.loads(resolve(ref,self.root).read_text()),self.root))
 
+    def test_run_repro_scrubs_ambient_ci_secrets(self):
+        from unittest.mock import patch
+        (self.root/'env_probe.py').write_text('import json,os\nleaked=bool(os.environ.get("GITHUB_TOKEN") or os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN") or os.environ.get("OPENAI_API_KEY"))\nprint(json.dumps({"claim":"defense","assertions":[{"kind":"durable_state","name":"env_scrubbed","actual":leaked,"expected":False,"passed":not leaked}]}))\n')
+        with patch.dict('os.environ',{'GITHUB_TOKEN':'INERT_CANARY_GH_TOKEN_000','ACTIONS_ID_TOKEN_REQUEST_TOKEN':'INERT_CANARY_OIDC_000','OPENAI_API_KEY':'INERT_CANARY_KEY_000'}):
+            ref=run([sys.executable,'env_probe.py'],root=self.root,environment='isolated-local-synthetic')
+        record=json.loads(resolve(ref,self.root).read_text())
+        self.assertEqual(validate_record(record,self.root),[])
+        self.assertFalse(record['observed']['assertions'][0]['actual'])
+
+    def test_script_mutation_during_run_is_flagged_and_snapshot_retained(self):
+        script=self.root/'mutating.py'
+        original='import json\nfrom pathlib import Path\nPath(__file__).write_text("# mutated post-start\\n")\nprint(json.dumps({"claim":"violation","assertions":[{"kind":"durable_state","name":"state","actual":1,"expected":1,"passed":True}]}))\n'
+        script.write_text(original)
+        ref=run([sys.executable,'mutating.py'],root=self.root,environment='isolated-local-synthetic')
+        record=json.loads(resolve(ref,self.root).read_text())
+        self.assertTrue(record['script_mutated'])
+        snapshot=resolve(record['executed_script_ref'],self.root)
+        self.assertEqual(snapshot.read_text(),original)
+        errors=validate_record(record,self.root)
+        self.assertTrue(any('mutated' in e or 'hash mismatch' in e for e in errors))
+
 
 if __name__=='__main__':unittest.main()

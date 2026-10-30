@@ -60,9 +60,11 @@ is not evidence that approval rules exist. Keep inaccessible settings unknown, p
 review/provenance/rebuild controls, and record configuration observation time separately from the
 source revision. Do not modify settings as part of the audit.
 
-Validate a policy claim against maintainer requirements or an approved contract; do not invent a
-mandatory review policy solely because a stronger setting would be preferable. Determine which
-controls are independent and which share the same mutable candidate, token or administrator.
+Validate a policy claim against maintainer requirements, an approved contract or the platform's
+documented security boundary (`platform_spec`, such as GitHub's `pull_request_target` / `workflow_run`
+privilege boundary); do not invent a mandatory review policy solely because a stronger setting would
+be preferable. Determine which controls are independent and which share the same mutable candidate,
+token or administrator.
 
 ## Discriminating cases
 
@@ -73,7 +75,11 @@ observed, statically reconstructed, locally modeled or actually exercised in a d
 |---|---|
 | Successful fork PR with a trusted-looking branch name | Can base-repository/branch-name predicates accept an untrusted head? |
 | Same-repository PR versus trusted push | Does event type change the authorization decision? |
-| Candidate replaces its own release/validation script | Is provenance checked in trusted code before invocation? |
+| Candidate replaces its own release/validation script or scanner instructions | Is provenance checked in trusted code before invocation? |
+| Artifact from untrusted `workflow_run` / PR extracted before verification | Can downloaded artifact contents overwrite scripts or inputs executed under privileged credentials? |
+| Cache key reachable by an untrusted ref restored into a privileged job | Can a lower-trust branch or PR poison a cache key consumed by a release or secret-bearing job? |
+| Step-to-step or post-action state bridge (`GITHUB_ENV`, `GITHUB_PATH`, `GITHUB_OUTPUT`, `GITHUB_STATE`, `needs.*.outputs`) | Can an unprivileged scanner step alter paths, environment variables, shell-interpolated outputs or post-action state consumed by a later privileged step? |
+| Isolated `pull_request_target` / `workflow_run` scanner counterexample | Does the job execute only trusted base-ref code while treating PR diffs/artifacts strictly as inert data? Preserve legitimate fork SARIF/comment workflows as REFUTED when isolated. |
 | Environment reference with absent or unreadable protection | Is the asserted approval established, absent, or unknown? |
 | Stale/moved commit or artifact | Is approval bound to the same immutable revision and effect? |
 | Failure after a write or a helper warning | Does the complete caller repair, compensate, reject or consume the state? |
