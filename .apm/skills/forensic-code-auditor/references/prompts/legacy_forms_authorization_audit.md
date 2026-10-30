@@ -69,6 +69,7 @@ authorization error; an arbitrary SQL/schema/connection failure is NOT proof of 
 Inspect autonomous transactions, explicit commits and external effects separately: rollback alone
 cannot undo them and never makes a shared/live database safe for these tests.
 
-Executable local model: [runtime.py](../../tests/fixtures/authorization/runtime.py).
+Executable local model: `tests/fixtures/authorization/runtime.py` in the skill source checkout
+(source-only; omitted from runtime packages).
 Limitation: no FMB extraction, Oracle runtime, definer/invoker rights or VPD behavior is dynamically
 verified by that model. Report Oracle execution `NOT_VERIFIED` until a faithful isolated schema runs.

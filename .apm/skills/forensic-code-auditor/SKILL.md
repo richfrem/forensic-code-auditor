@@ -3,8 +3,9 @@ name: forensic-code-auditor
 description: >-
   Audit business-logic invariants, wrong authorization-data rows despite correct
   code, obscure Oracle Forms permissions, cross-entrypoint authority, concurrency,
-  tenant isolation, replay and privileged agent tools. Use for forensic source,
-  policy and state-transition reviews across legacy and modern applications.
+  tenant isolation, replay and privileged agent tools. Detect hidden skill behavior,
+  metadata/prompt injection, dormant triggers and memory poisoning through forensic
+  source, policy and state-transition reviews across legacy and modern applications.
 ---
 
 # Forensic Code Auditor
@@ -28,6 +29,8 @@ execution identities, async paths, tenant boundaries and legacy UI/DB access. In
 excluded and dynamic paths explicitly. Run [inventory and path reconstruction](references/cross-entrypoint-authorization.md)
 before deciding which specialists apply. Supplement unsupported executable languages manually; an empty
 extractor result is not an empty attack surface. Never call candidate extraction exhaustive ground truth.
+For agent systems, include ingestion, context/delegation, direct helper execution, memory writes,
+remote updates and independent audit paths; route these through the agent runtime reference below.
 
 ## Workflow
 
@@ -55,6 +58,7 @@ callers and shared identities require joined operation-path analysis, not separa
 | Concurrency/revocation | [TOCTOU](references/prompts/concurrency_toctou_audit.md), [interleaving heuristic](references/game_simulation_rl_auditing.md) |
 | Lifecycle and tenant context | [FSM](references/prompts/state_machine_audit.md), [tenant](references/prompts/multi_tenant_context_audit.md) |
 | CI, release workflows, candidate code and privileged automation | [CI/release authority](references/prompts/ci_release_trust_audit.md) |
+| Hidden skill behavior, metadata/prompt injection, dormant triggers, MCP or memory poisoning | [Agent runtime threats](references/agent-runtime-threats.md) |
 | Replay, perimeter and agent tools | [Replay](references/prompts/idempotency_replay_audit.md), [perimeter](references/prompts/authorization_perimeter_audit.md), [tools](references/prompts/agentic_tool_boundary_audit.md) |
 
 ## Quick start

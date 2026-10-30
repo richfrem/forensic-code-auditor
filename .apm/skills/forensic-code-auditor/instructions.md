@@ -105,6 +105,7 @@ the [CI/release authority prompt](references/prompts/ci_release_trust_audit.md).
 | Legacy Forms/database authority | [Forms/PLSQL](references/prompts/legacy_forms_authorization_audit.md) | Inventory rules plus authorized exports | Navigation/caller graph and unknown bindings |
 | Firewall/gateway/shared account dependencies | [Infrastructure trust](references/infrastructure-trust-dependencies.md) | Configured control graph when supplied | Trust edges, compromise assumptions and scoped effects |
 | Concurrency/revocation | [TOCTOU](references/prompts/concurrency_toctou_audit.md) | Reviewed local reproduction with a post-check hook | Interleaving trace and durable ledger |
+| Agent ingestion, hidden helpers, delegation, mutable assets and memory | [Agent runtime threats](references/agent-runtime-threats.md) | Manual source/context/authority tracing; authorized independent observation | Input-to-effect chain, trigger/defense evidence and telemetry gaps |
 | Workflow/tenant/replay/tool boundaries | Relevant [inspection prompt](references/prompts/) | Candidate rules and discriminating tests | Operation dossier and effect evidence |
 
 Classify with the existing [taxonomy](references/logic_invariants_taxonomy.md). Semgrep and CodeQL

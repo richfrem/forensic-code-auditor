@@ -40,6 +40,10 @@ def test_unauthorized_mcp_tool_execution_blocked():
 
 
 ## 4. Delegation and approval binding
+For metadata carriers, hidden helper execution, dormant triggers, poisoned tool descriptions,
+memory persistence and audit suppression, also follow [Agent runtime threats](../agent-runtime-threats.md).
+Distinguish direct code execution from model-mediated tool selection and verify both authority paths.
+
 Trace user → agent → delegation → tool → backend operation with connection identity and asynchronous
 queue effects. A service account is allowed only under explicit scoped delegation; sanitization alone
 cannot grant authority. Bind approval to exact action, resource, state/version, principal, scope,
