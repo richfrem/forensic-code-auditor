@@ -46,6 +46,17 @@ class BlindTests(unittest.TestCase):
             self.assertEqual(run.returncode,0,run.stderr)
             self.assertTrue(json.loads(run.stdout)['dry_run'])
 
+    def test_contamination_lint_detects_ascii_markers_in_binary_exif_carrier(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            package=root/'package';package.mkdir()
+            keys=root/'keys';keys.mkdir()
+            (keys/'k1.json').write_text(json.dumps({'row_key':'r_inert_secret_99','operation':'op_inert_99'}))
+            (package/'asset.jpg').write_bytes(b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00\x80\xff-- VULNERABLE: INERT_EXIF_MARKER r_inert_secret_99')
+            errors=check(package,keys)
+            self.assertIn('answer marker leaked: asset.jpg',errors)
+            self.assertIn('sealed identifier leaked: asset.jpg',errors)
+
 
 class ScoringTests(unittest.TestCase):
     def score_finding(self,variant,finding):

@@ -147,5 +147,30 @@ class ValidatorV2Tests(unittest.TestCase):
         self.report['artifacts'] = [a for a in self.report['artifacts'] if a['kind'] != 'coverage.json']
         self.assertTrue(self.check())
 
+    def test_mixed_repo_unextracted_workflow_and_zero_input_scanner(self):
+        graph_path = self.root / 'operations.json'
+        graph = json.loads(graph_path.read_text())
+        graph['source_digest'] = 'a' * 64
+        graph['file_status'] = {'target.sql': 'extracted', '.github/workflows/ci.yml': 'manual_required'}
+        new_ref = write_ref(self.root, 'operations.json', graph)
+        self.report['discovery'] = new_ref
+        next(a for a in self.report['artifacts'] if a['kind'] == 'operations.json')['ref'] = new_ref
+        self.assertTrue(any('VERIFIED_SCOPE' in e for e in self.check()))
+        self.report = golden(self.root)
+        f = finding(self.root)
+        f['policy_basis']['class'] = 'platform_spec'
+        self.report['findings'] = [f]
+        self.report['conclusion'] = 'FINDINGS_REPORTED'
+        self.assertEqual(self.check(), [])
+        self.report['tools_executed'] = [{'tool': 'semgrep', 'version': '1.182.1', 'command': ['semgrep'], 'exit_code': 0, 'outcome': 'no_hits', 'output_ref': f['location'], 'files_analyzed': 0}]
+        self.assertTrue(any('zero analyzed files' in e for e in self.check()))
+        self.report['tools_executed'][0]['files_analyzed'] = 3
+        self.report['tools_executed'][0]['inputs_digest'] = 'b' * 64
+        graph['file_status'] = {'target.sql': 'extracted'}
+        new_ref = write_ref(self.root, 'operations.json', graph)
+        self.report['discovery'] = new_ref
+        next(a for a in self.report['artifacts'] if a['kind'] == 'operations.json')['ref'] = new_ref
+        self.assertTrue(any('inputs_digest' in e for e in self.check()))
+
 
 if __name__ == '__main__': unittest.main()

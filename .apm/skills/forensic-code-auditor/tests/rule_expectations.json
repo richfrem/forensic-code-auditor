@@ -49,6 +49,11 @@
     33,
     44
   ],
+  "references/rules/semgrep/inventory/ci-workflow-privileged-trigger.txt|ci-workflow-privileged-trigger": [
+    2,
+    7,
+    9
+  ],
   "references/rules/semgrep/inventory/forms-global-security-attribute.txt|forms-global-security-attribute": [
     2
   ],

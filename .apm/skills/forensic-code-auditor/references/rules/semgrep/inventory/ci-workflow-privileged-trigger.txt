@@ -1,0 +1,11 @@
+// ruleid: ci-workflow-privileged-trigger
+on: pull_request_target
+jobs:
+  scan:
+    steps:
+      // ruleid: ci-workflow-privileged-trigger
+      - run: echo "${{ github.event.pull_request.title }}"
+      // ruleid: ci-workflow-privileged-trigger
+      - run: echo "INERT_MARKER=1" >> "$GITHUB_ENV"
+// ok: ci-workflow-privileged-trigger
+on: pull_request

@@ -21,10 +21,10 @@ Search results identify candidates; generated configuration and externally manag
 
 | Platform | Inspect source and resolved configuration | Request authorized read-only exports |
 |---|---|---|
-| GitHub Actions | `.github/workflows/`, event filters, `pull_request_target`, `workflow_run`, reusable/local actions, permissions, checkout refs | Run/jobs metadata, rulesets and branch protection, environments/reviewers, Actions policy, runner groups and secret scope metadata |
-| GitLab CI | `.gitlab-ci.yml`, includes/components, rules, child/downstream pipelines and resolved configuration | Protected refs/environments, variable protection/scope metadata, job-token access, runner assignment and deployment approvals |
-| Azure Pipelines | Pipeline YAML/templates, checkout, resource triggers and service-connection references | Pipeline resource authorization, approvals/checks, job authorization scope, variable-group metadata, service connections and agent pools |
-| Jenkins | Jenkinsfiles, shared-library revisions, multibranch discovery and job definitions | Folder/job permissions, credential bindings, controller/agent configuration, script approvals and build records |
+| GitHub Actions | `.github/workflows/`, event filters, `pull_request_target`, `workflow_run`, reusable/local actions, permissions, checkout refs, `$GITHUB_ENV`/`$GITHUB_PATH`/`$GITHUB_OUTPUT`/`$GITHUB_STATE` | Run/jobs/artifacts metadata, ruleset details (`bypass_actors`), branch protection, environments/branch policies, OIDC subject template, Actions caches/policy, runner groups and secret scope metadata |
+| GitLab CI | `.gitlab-ci.yml`, protected `include:`/components, rules, `dotenv` artifacts, `id_tokens` claims, child/downstream pipelines and resolved configuration | Protected refs/environments, variable protection/scope metadata, job-token access, runner assignment (`config.toml` isolation) and deployment approvals |
+| Azure Pipelines | Pipeline YAML/templates, required template extends, `##vso[task.setvariable]`/`prependpath`, checkout, resource triggers and service-connection references | Pipeline resource authorization, approvals/checks, job authorization scope, variable-group metadata, workload identity service connections and agent pools |
+| Jenkins | Jenkinsfiles, trusted shared-library revisions, `withEnv`/`env.` mutations, multibranch discovery and job definitions | Folder/job permissions, credential bindings, controller/agent configuration, `scriptApproval.xml` and build fingerprints |
 | CircleCI | `.circleci/config.yml`, resolved orbs, contexts and filters | Context restrictions, project settings, runner assignment and workflow/job records |
 | Tekton / Argo | Pipeline/Task or Workflow/Template resources, referenced bundles/images and parameter expansion | Controller policy, admission controls, namespace RBAC, service-account bindings and execution resources |
 
@@ -100,7 +100,21 @@ issuance conditions, expiry, boundary enforcement and evidence for each transiti
 
 Inspect OIDC issuer, audience, subject and repository/ref/environment restrictions, role-assumption
 conditions and effective permissions. OIDC availability alone does not establish an assumable role.
-Trace which identities can change these conditions or bypass a deployment approval.
+Trace which identities can change these conditions or bypass a deployment approval. For cloud
+federation and secret stores, request authorized read-only exports rather than inferring access:
+
+- **GitHub OIDC subject template:** `gh api 'repos/OWNER/REPO/actions/oidc/customization/sub'` and
+  organization customization; check whether `environment`, `ref` or `job_workflow_ref` is dropped.
+- **Azure Entra ID & Key Vault:** `az ad app federated-credential list --id <app>` (or managed
+  identity federated credentials: verify exact `issuer`, `audience` and `subject` against PR/branch
+  refs), `az role assignment list --scope <vault-id>`, `az keyvault show --name <vault>`
+  (`enableRbacAuthorization`, `networkAcls`), plus `AADServicePrincipalSignInLogs` /
+  `AADManagedIdentitySignInLogs` and `KeyVaultDiagnostics` (`SecretGet` / `AuditEvent`).
+- **AWS IAM & Secrets:** `aws iam get-role --role-name <role>` (`AssumeRolePolicyDocument` conditions
+  on `token.actions.githubusercontent.com:sub` and `:aud`), attached policy documents and CloudTrail
+  `AssumeRoleWithWebIdentity` events.
+- **GCP Workload Identity Federation:** `gcloud iam workload-identity-pools providers describe`
+  (`attributeCondition` and `attributeMapping`), service-account IAM bindings and Cloud Audit Logs.
 
 For Kubernetes, inspect deployment manifests and effective admission/RBAC policy, service accounts,
 cloud workload identity, secret mounts, privileged/host access and mutable configuration. Determine
@@ -129,8 +143,9 @@ to create repositories, start runners or deploy from permission to inspect sourc
 
 Attach results to the canonical dossier without inventing schema fields. Report source review,
 configuration observation, actual run observation and modeled behavior separately. Current limits:
-no built-in workflow taint/inventory rules, non-GitHub provider collection adapter, hosted CI reproduction harness
-or automatic deployment/runtime identity join. Do not claim these gaps were closed by this runbook.
+`ci-workflow-privileged-trigger` provides bounded Semgrep inventory candidates, not full workflow taint
+analysis; non-GitHub provider collection adapters, hosted CI reproduction harnesses and automatic
+deployment/runtime identity joins remain manual. Do not claim these gaps were closed by this runbook.
 
 Additional primary references: [GitHub run API](https://docs.github.com/en/rest/actions/workflow-runs),
 [GitLab pipeline security](https://docs.gitlab.com/ci/pipeline_security/),

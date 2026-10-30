@@ -14,7 +14,7 @@ from evidence import all_references, resolve
 
 ROOT = Path(__file__).resolve().parents[1]
 CATEGORIES = {'ui_entry','menu_node','policy_store','stored_procedure','db_grant','api_route','gateway','queue_consumer','batch_job','scheduler','mcp_tool','db_link','direct_db_access'}
-POLICY_CLASSES = {'owner_signed','regulation','requirement_doc','contract'}
+POLICY_CLASSES = {'owner_signed','regulation','requirement_doc','contract','platform_spec'}
 
 
 def validate(report, *, evidence_root=None):
@@ -42,7 +42,10 @@ def validate(report, *, evidence_root=None):
     ops = {o['id']:o for o in operations}
     if set(required)-set(ops): errors.append('omitted discovered operations: '+','.join(sorted(set(required)-set(ops))))
     if set(ops)-set(required): errors.append('operations lack discovery provenance')
-    incomplete = bool(discovery.get('limitations')) or not operations or any(edge.get('status')!='established' for edge in discovery.get('edges',[]))
+    incomplete = (bool(discovery.get('limitations'))
+                  or not operations
+                  or any(edge.get('status')!='established' for edge in discovery.get('edges',[]))
+                  or any(st in ('manual_required','unreadable','binary_carrier','unsupported','binary_forms') for st in discovery.get('file_status',{}).values()))
     for op in operations:
         if op['class'] != required.get(op['id'],{}).get('class'): errors.append('operation class differs from discovery')
         if op['status']=='deferred':
@@ -131,6 +134,10 @@ def validate(report, *, evidence_root=None):
         elif 'run_record' in f and verification in ('TEST_GENERATED','NOT_VERIFIED'): errors.append('unexecuted verification cannot claim run record')
     for tool in report['tools_executed']:
         if tool['exit_code'] and tool['outcome']!='failed': errors.append('failed scanner cannot report hits/no hits')
+        if tool.get('files_analyzed') == 0 and tool['outcome'] in ('hits','no_hits'):
+            errors.append('scanner with zero analyzed files cannot report hits/no hits')
+        if 'inputs_digest' in tool and discovery.get('source_digest') and tool['inputs_digest'] != discovery['source_digest']:
+            errors.append('tool inputs_digest does not match discovery source_digest')
     return errors
 
 
