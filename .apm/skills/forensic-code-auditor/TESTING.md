@@ -78,6 +78,15 @@ version, prompt, context/time/tool budgets and allowed source visibility identic
 outputs. The supplied scorer separates attributed detections, protected false positives and missing-
 policy calibration, and still needs human evidence adjudication. Paid/blind model runs have NOT RUN.
 
+Positive credit in every variant requires both the expected operation and contributing row. An
+unrelated REFUTED or NON LIQUET finding earns no defense/calibration credit. Schema-v2 defenses
+require declared `proof` and `STATIC_PROVEN` or `DYNAMIC_REPRODUCED` verification; legacy evaluation
+reports use `defense_ref`. Any CONFIRMED/SUSPECTED finding still counts as a protected-target false
+positive and prevents missing-policy calibration, including findings outside the expected operation.
+These counters do not validate artifacts or establish that the submitted reasoning is sound: validate
+canonical reports and adjudicate evidence separately. Unknown target variants are errors. Scorer
+changes require a fresh matched baseline; scores from different scorer versions are not comparable.
+
 Runtime-only staging is available via `scripts/stage_package.py --output WORKSPACE/runtime-skill`;
 check it with `scripts/contamination_lint.py --package-root WORKSPACE/runtime-skill --sealed-keys WORKSPACE/evals-private/keys`.
 The lint checks specified IDs/markers, not every possible semantic leak. Stage excludes source-only

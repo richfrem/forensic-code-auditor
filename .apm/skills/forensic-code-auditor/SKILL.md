@@ -15,7 +15,8 @@ description: >-
 
 ## Constraints
 
-Read [the execution contract](instructions.md) first. Preserve the four evidence levels,
+Read [the execution contract](instructions.md), then apply the required
+[analyst reasoning safeguards](agents/forensic_systems_analyst.md). Preserve the four evidence levels,
 separate verification/assurance/severity, independent policy provenance and safe local reproductions.
 Scanner hits, generated tests and report validity are not proof of vulnerability or safety.
 Syntax/style, dependency-CVE-only scans and generic walkthroughs are outside this skill's scope.
@@ -58,7 +59,7 @@ callers and shared identities require joined operation-path analysis, not separa
 
 ## Quick start
 
-Read `instructions.md`, then run `python3 scripts/inventory_sinks.py --source-root TARGET --evidence-root WORKSPACE --output WORKSPACE/operations.json` on authorized offline inputs. Follow the applicable runbook and retain unsupported paths.
+Load the contract and analyst safeguards above, then run `python3 scripts/inventory_sinks.py --source-root TARGET --evidence-root WORKSPACE --output WORKSPACE/operations.json` on authorized offline inputs. Follow the applicable runbook and retain unsupported paths.
 
 ## Verification and references
 
@@ -67,4 +68,6 @@ Keep unverified critical candidates and assumed semantics visible even when ther
 Use [TESTING.md](TESTING.md) for tests and version pins; source regression fixtures are worked examples,
 not blind accuracy evidence. [Taxonomy](references/logic_invariants_taxonomy.md),
 [Semgrep limits](references/semgrep_logic_rules.md), [CodeQL limits](references/codeql_taint_recipes.md),
-[GHAS reporting](references/ghas-security-reporting.md), [analyst role](agents/forensic_systems_analyst.md).
+[GHAS reporting](references/ghas-security-reporting.md).
+For broader reasoning examples, optionally consult the [first-principles prompt](references/prompts/first_principles_forensic_systems_analysis.md);
+the execution contract remains authoritative for code-audit proof and classifications.

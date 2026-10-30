@@ -1,6 +1,7 @@
 """Execution records must bind reviewed code, actual output and durable observations."""
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -27,6 +28,25 @@ class RunTests(unittest.TestCase):
     def test_unsafe_commands_and_opt_in(self):
         for cmd,environment in [([sys.executable,'probe.py'],'production'),([sys.executable,'probe.py','https://example.test'],'isolated-local-synthetic'),([sys.executable,'-c','print(1)'],'isolated-local-synthetic')]:
             with self.assertRaises(ValueError):run(cmd,root=self.root,environment=environment)
+
+    def test_documented_python3_command_resolves_from_path(self):
+        executable=shutil.which('python3')
+        self.assertIsNotNone(executable)
+        ref=run(['python3','probe.py'],root=self.root,environment='isolated-local-synthetic')
+        record=json.loads(resolve(ref,self.root).read_text())
+        self.assertEqual(record['command'][0],str(Path(executable).resolve()))
+        self.assertEqual(validate_record(record,self.root),[])
+
+    def test_relative_interpreter_is_resolved_under_evidence_root(self):
+        (self.root/'python3').symlink_to(sys.executable)
+        ref=run(['./python3','probe.py'],root=self.root,environment='isolated-local-synthetic')
+        record=json.loads(resolve(ref,self.root).read_text())
+        self.assertEqual(record['command'][0],str(Path(sys.executable).resolve()))
+        self.assertEqual(validate_record(record,self.root),[])
+
+    def test_missing_interpreter_has_actionable_error(self):
+        with self.assertRaisesRegex(ValueError,'interpreter not found'):
+            run(['nonexistent-forensic-python','probe.py'],root=self.root,environment='isolated-local-synthetic')
 
     def test_noop_execution_not_dynamic_evidence(self):
         (self.root/'noop.py').write_text('print("ok")')

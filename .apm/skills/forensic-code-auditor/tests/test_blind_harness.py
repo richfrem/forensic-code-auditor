@@ -47,4 +47,40 @@ class BlindTests(unittest.TestCase):
             self.assertTrue(json.loads(run.stdout)['dry_run'])
 
 
+class ScoringTests(unittest.TestCase):
+    def score_finding(self,variant,finding):
+        return score({'variant':variant,'operation':'approve','row_key':'grant-7'}, {'findings':[finding]})
+
+    def test_legacy_attributed_credit_for_each_variant(self):
+        for variant,verdict,metric in [('vulnerable','CONFIRMED','attributed_detection'),('protected','REFUTED','verified_defense'),('indeterminate','NON LIQUET','calibrated')]:
+            with self.subTest(variant=variant):
+                finding={'operation_id':'approve','row_keys':['grant-7'],'verdict':verdict,'policy_ref':'policy.json','defense_ref':'guard.py'}
+                self.assertTrue(self.score_finding(variant,finding)[metric])
+
+    def test_unrelated_operation_or_row_cannot_earn_credit(self):
+        for variant,verdict,metric in [('vulnerable','CONFIRMED','attributed_detection'),('protected','REFUTED','verified_defense'),('indeterminate','NON LIQUET','calibrated')]:
+            for operation,row in [('other','grant-7'),('approve','other')]:
+                with self.subTest(variant=variant,operation=operation,row=row):
+                    finding={'operation_id':operation,'row_keys':[row],'verdict':verdict,'policy_ref':'policy.json','defense_ref':'guard.py'}
+                    self.assertFalse(self.score_finding(variant,finding)[metric])
+
+    def test_v2_defense_requires_attributed_completed_proof(self):
+        for verification,proof,expected in [('STATIC_PROVEN',[{'path':'guard.py','sha256':'a'*64}],True),('DYNAMIC_REPRODUCED',[{'path':'run.json','sha256':'a'*64}],True),('TEST_GENERATED',[{'path':'probe.py','sha256':'a'*64}],False),('NOT_VERIFIED',[],False),('STATIC_PROVEN',[],False)]:
+            with self.subTest(verification=verification,proof=proof):
+                finding={'operation_id':'approve','contributing_rows':[{'row_key':'grant-7'}],'evidence_status':'REFUTED','verification':verification,'proof':proof}
+                self.assertEqual(self.score_finding('protected',finding)['verified_defense'],expected)
+                finding['operation_id']='other'
+                self.assertFalse(self.score_finding('protected',finding)['verified_defense'])
+
+    def test_actionable_findings_remain_false_positives_and_uncalibrated(self):
+        report={'findings':[{'operation_id':'approve','row_keys':['grant-7'],'verdict':'NON LIQUET'}, {'operation_id':'other','row_keys':['other'],'verdict':'SUSPECTED'}]}
+        answer={'operation':'approve','row_key':'grant-7'}
+        self.assertTrue(score(dict(answer,variant='protected'),report)['false_positive'])
+        self.assertFalse(score(dict(answer,variant='indeterminate'),report)['calibrated'])
+
+    def test_unknown_variant_is_not_treated_as_missing_policy(self):
+        with self.assertRaisesRegex(ValueError,'unknown variant'):
+            self.score_finding('typo',{})
+
+
 if __name__=='__main__':unittest.main()
