@@ -56,6 +56,13 @@ No test here certifies honest authorship of artifacts, independent business appr
 discovery or real Oracle/PostgreSQL locking semantics. Hashes detect changed references, not malicious
 replacement of a report plus all its evidence. The local recorder is not a sandbox.
 
+The [agent runtime threat reference](references/agent-runtime-threats.md) supplies manual discovery,
+source-to-effect tracing and proposed paired cases for metadata injection, dormant behavior,
+delegation, memory and audit boundaries. It does not add automated detectors. A deterministic mock
+of a model's tool choice tests the mock; live model resistance, hidden-trigger coverage and detection
+accuracy require separately authorized behavioral evaluations. Local POC reports are research inputs,
+not independently reproduced results for this skill.
+
 ## Blind evaluation
 
 Scored targets/keys must be generated outside the deployed skill, under ignored temp/evals-private/.

@@ -17,8 +17,9 @@ when evidence supports that chain. Record control assumptions, compromise precon
 references, protected operations and unavailable runtime evidence. Otherwise emit a conditional concern
 or `NON LIQUET`, never an unconditional exploit claim.
 
-[Synthetic trust configurations](../tests/fixtures/specialist-cases.json) include broad shared authority
-and a scoped backend-guarded control. Tests inspect configuration only; no network/password testing.
+Source-only synthetic trust configurations (`tests/fixtures/specialist-cases.json` in the skill
+source checkout) include broad shared authority and a scoped backend-guarded control. Runtime-only
+packages omit these fixtures. Tests inspect configuration only; no network/password testing.
 
 For an explicit capability/edge export, run `scripts/control_dependency.py graph.json --output
 WORKSPACE/control-outcomes.json` using [control-graph.json](../templates/control-graph.json).

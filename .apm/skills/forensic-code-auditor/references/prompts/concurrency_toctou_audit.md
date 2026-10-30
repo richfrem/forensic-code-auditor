@@ -39,6 +39,7 @@ A permitted in-flight request after revocation may be intended. Examine locks, o
 atomic predicates, unique constraints, retry behavior and fencing under the exact DB isolation model.
 Do not recommend REPEATABLE READ or SERIALIZABLE without checking engine-specific semantics.
 
-[Specialist model tests](../../tests/test_specialists.py) force revocation after the check using Events.
+Source-only specialist model tests (`tests/test_specialists.py` in the skill source checkout;
+omitted from runtime packages) force revocation after the check using Events.
 They verify the interleaving protocol and local model only. Real DB concurrency tests require separate
 sessions on a provisioned disposable client-server DB; unavailable runtime is `NOT_VERIFIED`.

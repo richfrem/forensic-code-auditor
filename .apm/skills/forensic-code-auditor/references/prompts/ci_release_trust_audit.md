@@ -20,6 +20,11 @@ Record every executable language and whether the extractor actually handles it. 
 from an unsupported file extension is a discovery failure requiring manual supplementation, not an
 absence of operations. Keep a source snapshot and a separate list of unreviewed candidates.
 
+When agents ingest PR files, artifact metadata, tool results or mutable external resources, also use
+[Agent runtime threats](../agent-runtime-threats.md). Trace extraction through direct helper execution
+and model context to actual runner authority; do not assume a poisoned artifact is inevitably read,
+obeyed or able to access secrets. Include alternate shell/SDK routes around any proposed proxy.
+
 ## Trace identity before execution
 
 Map event → originating actor/repository/ref → triggering workflow → checked-out commit/artifact →
