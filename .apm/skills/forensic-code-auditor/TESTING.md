@@ -125,3 +125,10 @@ Known regression boundary: the pinned Python taint query currently misses the tw
 `get_object_or_404` unscoped/attacker-scope cases. The companion inventory query lists all
 three shortcut variants for manual review. Passing qltests preserves these observed outputs;
 it does not claim those two taint detections succeeded.
+
+## GitHub configuration collector
+
+`tests/test_github_collector.py` uses mocked CLI responses to check fixed GET authority, encoded
+paths, pagination, access denial, timeouts, malformed output and refusal to overwrite evidence.
+These tests do not establish live GitHub configuration, cloud access or resistance to prompt injection.
+Use [GitHub scanner security](references/github-ai-scanner-security.md) for collection scope and limits.

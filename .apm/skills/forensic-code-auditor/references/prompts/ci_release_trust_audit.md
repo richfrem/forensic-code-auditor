@@ -51,6 +51,9 @@ or downstream compromise merely from a contents-write token.
 
 ## Check live gates
 
+For GitHub/Copilot, use [scanner configuration review](../github-ai-scanner-security.md) and its
+read-only collector. Collect administrative evidence independently of the untrusted scanning job.
+
 If a sourced policy depends on environment approval, branch protection, required reviewers, or
 publication restrictions, inspect readable live configuration as well as YAML. A named environment
 is not evidence that approval rules exist. Keep inaccessible settings unknown, preserve actual

@@ -129,9 +129,12 @@ to create repositories, start runners or deploy from permission to inspect sourc
 
 Attach results to the canonical dossier without inventing schema fields. Report source review,
 configuration observation, actual run observation and modeled behavior separately. Current limits:
-no built-in workflow taint/inventory rules, provider collection adapter, hosted CI reproduction harness
+no built-in workflow taint/inventory rules, non-GitHub provider collection adapter, hosted CI reproduction harness
 or automatic deployment/runtime identity join. Do not claim these gaps were closed by this runbook.
 
 Additional primary references: [GitHub run API](https://docs.github.com/en/rest/actions/workflow-runs),
 [GitLab pipeline security](https://docs.gitlab.com/ci/pipeline_security/),
 [Azure Pipelines security](https://learn.microsoft.com/en-us/azure/devops/pipelines/security/overview?view=azure-devops).
+
+For bounded GitHub configuration collection and AI scanner containment, use
+[GitHub scanner security](github-ai-scanner-security.md) and `scripts/collect_github_security.py`.
