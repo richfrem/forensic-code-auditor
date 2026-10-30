@@ -10,6 +10,9 @@
 
 ## Scope and source inventory
 
+Use the [deployment evidence runbook](../cicd-deployment-evidence.md) for cross-platform inventory,
+read-only configuration collection, provenance verification and deployment-to-runtime identity tracing.
+
 For agent extensions, developer tools and CI repositories, protected operations include checkout of
 executable content, installation, credentialed tool startup, hook/config writes, artifact publication,
 version tags and distribution branches. Do not wait for an application database or HTTP route to
