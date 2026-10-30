@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import uuid
@@ -33,7 +34,11 @@ def run(command, *, root, environment, runtime='local-python', timeout=30):
         raise ValueError('use a reviewed local script, not inline code or an opaque module')
     script=(root/command[1]).resolve()
     if not script.is_relative_to(root) or not script.is_file(): raise ValueError('reproduction script must be under evidence root')
-    executable=Path(command[0]).resolve()
+    # Bare names follow PATH; explicit relative paths follow the reproduction cwd.
+    requested=command[0]
+    located=shutil.which(requested if Path(requested).name==requested else str(root/requested))
+    if located is None: raise ValueError(f'Python interpreter not found or not executable: {requested}')
+    executable=Path(located).resolve()
     if executable.name not in ('python','python3','python3.11','python3.12','python3.13','python3.14'):
         raise ValueError('only a reviewed Python reproduction is currently supported')
     started=now()

@@ -3,6 +3,7 @@
 ## Contents
 
 - [Verdict contract](#verdict-contract)
+- [Conflicting evidence and revision](#conflicting-evidence-and-revision)
 - [Phases and the seven-step method](#phases-and-the-seven-step-method)
 - [Routing](#routing)
 - [Structured reports and evidence](#structured-reports-and-evidence)
@@ -48,6 +49,27 @@ an unqualified verified/clean conclusion. Never claim the whole system is SECURE
 Treat software as state machines bounded by resource, informational and runtime constraints. Vendor
 certifications, tradition, common patterns and clean scanner output do not prove safety. Official
 platform specifications may establish mechanics, but verify that the target actually uses them.
+
+## Conflicting evidence and revision
+
+Apply the [analyst safeguards](agents/forensic_systems_analyst.md) throughout the audit. In each
+operation dossier, distinguish observations, deductions and assumptions. Record the strongest
+evidence for the failure hypothesis and the strongest relevant defense or counterexample, with
+their source/version and applicability. Repeated claims derived from one source are not independent
+corroboration. A scanner miss, missing log or unsuccessful search counts against a hypothesis only
+when the method could reliably have detected the predicted evidence.
+
+When evidence conflicts, identify the exact disputed premise or path and a discriminating check.
+Do not discard contradictory evidence because it challenges the user, a vendor, common practice or
+an earlier answer. Conversely, disagreement alone does not make alternatives equally supported.
+Update the dossier's classification and rationale when evidence changes; retain what changed and
+why, and reconcile the final report. Current advisories and platform claims require dated primary
+sources applicable to the target snapshot; inability to verify is an explicit limit, not a refutation.
+
+Bound uncertainty to the unresolved claim. Preserve established facts and rank competing models
+when evidence supports a ranking; otherwise explain what prevents it. Do not invent probabilities
+or relax policy/proof requirements to avoid NON LIQUET. A recommendation to withhold reliance on an
+unverified control is a precautionary action, not proof of a flaw or of an alternative's correctness.
 
 ## Phases and the seven-step method
 
@@ -114,6 +136,10 @@ Only use explicitly sourced evaluator adapters. NULL/wildcard meanings, inherita
 conflict precedence and acceptance-time vs execution-time authority are application-specific. A
 modeled grant is not runtime-enforced behavior. Differential checks can compare a reviewed local
 evaluator, but do not execute imported SQL or untrusted application code to load policy exports.
+
+The recorder resolves a bare interpreter such as `python3` through PATH and records its resolved
+path. Explicit relative interpreter and script paths are relative to the evidence root. Review the
+selected interpreter and script before execution; name/path resolution does not establish trust.
 
 V2 checks reference existence/integrity, source locations, declared categories, discovered candidate
 accounting and proof metadata. It cannot certify policy authority, truth of static reasoning, honest
