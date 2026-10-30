@@ -58,6 +58,7 @@ callers and shared identities require joined operation-path analysis, not separa
 | Concurrency/revocation | [TOCTOU](references/prompts/concurrency_toctou_audit.md), [interleaving heuristic](references/game_simulation_rl_auditing.md) |
 | Lifecycle and tenant context | [FSM](references/prompts/state_machine_audit.md), [tenant](references/prompts/multi_tenant_context_audit.md) |
 | CI, releases, artifact provenance and deployment/runtime identity | [CI/release authority](references/prompts/ci_release_trust_audit.md), [deployment evidence](references/cicd-deployment-evidence.md) |
+| GitHub/Copilot scanner permissions and repository configuration | [GitHub scanner security](references/github-ai-scanner-security.md) |
 | Hidden skill behavior, metadata/prompt injection, dormant triggers, MCP or memory poisoning | [Agent runtime threats](references/agent-runtime-threats.md) |
 | Replay, perimeter and agent tools | [Replay](references/prompts/idempotency_replay_audit.md), [perimeter](references/prompts/authorization_perimeter_audit.md), [tools](references/prompts/agentic_tool_boundary_audit.md) |
 
