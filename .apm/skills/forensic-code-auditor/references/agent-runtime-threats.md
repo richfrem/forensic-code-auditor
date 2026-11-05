@@ -117,10 +117,13 @@ Assess existing controls and accept equivalent mechanisms that demonstrably pres
    Record complete effects and enforced cost/time/recursion limits. Establish telemetry gaps and
    observer privileges; merely naming a file “audit” or signing agent-authored content is insufficient.
 
-For CI, also use [CI/release authority](prompts/ci_release_trust_audit.md). Establish actual event,
+For CI, also use [CI/release authority](prompts/ci-release-trust-audit.md). Establish actual event,
 originating repository, checked-out revision, token permissions, accessible secrets, mounts and
 egress. PR processing does not automatically expose deployment secrets or enable repository writes.
-For tool permissions, use [delegation and approval binding](prompts/agentic_tool_boundary_audit.md).
+For tool permissions, use [delegation and approval binding](prompts/agentic-tool-boundary-audit.md).
+That procedure separates authorized capability from intentional action and compares validated arguments
+with the consumed object and authenticated MCP connection. For shared spend, detached work, quota
+identity and cancellation, load [resource budgets](auditing-resource-budgets.md).
 
 ## Safe discriminating cases
 

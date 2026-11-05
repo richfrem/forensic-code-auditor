@@ -5,6 +5,7 @@
 - [Verdict contract](#verdict-contract)
 - [Conflicting evidence and revision](#conflicting-evidence-and-revision)
 - [Phases and the seven-step method](#phases-and-the-seven-step-method)
+- [Review modes](#review-modes)
 - [Routing](#routing)
 - [Structured reports and evidence](#structured-reports-and-evidence)
 - [Safety and limits](#safety-and-limits)
@@ -53,7 +54,7 @@ platform specifications may establish mechanics, but verify that the target actu
 
 ## Conflicting evidence and revision
 
-Apply the [analyst safeguards](agents/forensic_systems_analyst.md) throughout the audit. In each
+Apply the [analyst safeguards](agents/forensic-systems-analyst.md) throughout the audit. In each
 operation dossier, distinguish observations, deductions and assumptions. Record the strongest
 evidence for the failure hypothesis and the strongest relevant defense or counterexample, with
 their source/version and applicability. Repeated claims derived from one source are not independent
@@ -91,26 +92,48 @@ discriminating proof, classification and coverage. Unresolved items identify the
 a deferred operation identifies its reason and caps assurance. Do not let an unreviewed candidate
 disappear when context is compressed or analysis is delegated.
 
+## Review modes
+
+The default is a full audit of the declared scope. Focused operation review limits that scope to a
+named operation, boundary or source change; discover its callers, defenses and effects before routing.
+Record discovered exclusions/deferred operations and missing dependencies explicitly. A focused pass
+does not establish whole-system coverage. Do not omit unresolved items to obtain VERIFIED_SCOPE.
+
+For prior reports or changed snapshots, use [incremental revalidation](references/revalidating-audits.md).
+For a second pass over claims and coverage, use [independent challenge review](references/reviewing-audit-evidence.md).
+Modes change scope or review purpose, never the evidence bar, nine-item dossier or Step 0 plus seven
+steps. Additional agents still require user authorization. Record reviewer independence separately
+from evidence status, verification, severity and assurance.
+
+Bound work by the user-authorized scope and resources. Reserve time for proof, candidate accounting
+and reporting before expanding discovery. If a limit is reached, preserve evidence and reasons for
+unresolved/deferred items, reconcile the partial report and cap assurance. A budget stop is neither
+a refutation nor evidence that the unreviewed paths are safe. Do not invent quantitative coverage.
+
 ## Routing
 
 Run lightweight discovery first. Candidate extraction is bounded and is never an exhaustive denominator
 for languages/features it cannot resolve. Unknown surfaces must survive into the report. For developer
 tooling, inventory installation, configuration, hooks, credentialed execution and release writes as
 protected operations; prioritize transitions into stronger authority. Route CI/release paths through
-the [CI/release authority prompt](references/prompts/ci_release_trust_audit.md).
+the [CI/release authority prompt](references/prompts/ci-release-trust-audit.md).
 
 | Discovered surface | Reference | Tool | Artifact |
 |---|---|---|---|
 | State-changing procedures/routes and alternate callers | [Cross-entrypoint authorization](references/cross-entrypoint-authorization.md) | `inventory_sinks.py`, `build_operation_graph.py` | `operations.json` |
 | Permission stores, wrong effective rows or obscure menu branches | [Authorization data integrity](references/authorization-data-integrity.md) | `authz_effective.py` | `matrix.csv`, `coverage.json`, `diff.json`, `owner_questions.json` |
-| Legacy Forms/database authority | [Forms/PLSQL](references/prompts/legacy_forms_authorization_audit.md) | Inventory rules plus authorized exports | Navigation/caller graph and unknown bindings |
+| Legacy Forms/database authority | [Forms/PLSQL](references/prompts/legacy-forms-authorization-audit.md) | Inventory rules plus authorized exports | Navigation/caller graph and unknown bindings |
 | Firewall/gateway/shared account dependencies | [Infrastructure trust](references/infrastructure-trust-dependencies.md) | Configured control graph when supplied | Trust edges, compromise assumptions and scoped effects |
-| Concurrency/revocation | [TOCTOU](references/prompts/concurrency_toctou_audit.md) | Reviewed local reproduction with a post-check hook | Interleaving trace and durable ledger |
+| Concurrency/revocation | [TOCTOU](references/prompts/concurrency-toctou-audit.md) | Reviewed local reproduction with a post-check hook | Interleaving trace and durable ledger |
 | GitHub/Copilot scanner containment and repository settings | [GitHub scanner security](references/github-ai-scanner-security.md) | `collect_github_security.py` (authorized GETs only) | Private snapshots, endpoint status and collection gaps |
 | Agent ingestion, hidden helpers, delegation, mutable assets and memory | [Agent runtime threats](references/agent-runtime-threats.md) | Manual source/context/authority tracing; authorized independent observation | Input-to-effect chain, trigger/defense evidence and telemetry gaps |
+| Derived stores, exports, deletion, migration and restore | [Data lifecycles](references/auditing-data-lifecycles.md) | Manual copy/reader/lifecycle tracing | Copy graph, current policy and stale-state evidence |
+| Shared cost, quotas, cancellation and recovery | [Resource budgets](references/auditing-resource-budgets.md) | Static cost/bound analysis; authorized bounded local counters | Input/resource/bound table and recovery trace |
+| RPC, queues, streams and callbacks | [Message authority](references/auditing-message-authority.md) | Manual producer/consumer and interpretation tracing | Peer/application identity, delivery semantics and effects |
+| Local IPC, helpers, deep links and webviews | [Local authority](references/auditing-local-authority.md) | Manual peer/packaging/final-object tracing | Peer/operation matrix and unavailable OS controls |
 | Workflow/tenant/replay/tool boundaries | Relevant [inspection prompt](references/prompts/) | Candidate rules and discriminating tests | Operation dossier and effect evidence |
 
-Classify with the existing [taxonomy](references/logic_invariants_taxonomy.md). Semgrep and CodeQL
+Classify with the existing [taxonomy](references/logic-invariants-taxonomy.md). Semgrep and CodeQL
 outputs remain candidates, including protected code requiring defense review. Preserve tool versions,
 exit codes and outputs; a failed scanner is not a zero-hit scan.
 
@@ -152,6 +175,10 @@ consistency and proof metadata. It cannot certify policy authority, truth of sta
 initial discovery, or evidence authenticity against an author who can replace all artifacts/hashes.
 A valid run record binds reviewed code and captured observations; inspect the assertions themselves.
 Legacy `validate_report_v1.py` remains available for schema-v1 compatibility and is structural only.
+
+Attach lifecycle, resource, message, local-authority, revalidation and challenge-review artifacts
+through the existing dossier evidence/coverage references; do not add undeclared schema-v2 fields.
+These manual procedures are not automatically checked for semantic completeness by the validator.
 
 ## Safety and limits
 

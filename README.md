@@ -42,6 +42,16 @@ Only authored source belongs in `.apm/`; make changes there and install through 
 The former skill/package name was `code-logic-auditor`. See the migration instructions in
 [INSTALL.md](INSTALL.md). Existing CodeQL pack names and original query IDs remain stable for consumers.
 
+## Acknowledgments
+
+The data-lifecycle, resource-budget, messaging and local-authority procedures, incremental revalidation
+and challenge-review improvements draw on [Cloudflare's security-audit-skill](https://github.com/cloudflare/security-audit-skill),
+reviewed at commit `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8`. They are adapted to this skill's
+operation dossiers, independent policy provenance and evidence/verification/assurance contract.
+This comparison does not establish a measured detection improvement or imply Cloudflare endorsement.
+Cloudflare's MIT copyright and permission notice are preserved in [LICENSE](LICENSE) and the
+[notice shipped with the skill](.apm/skills/forensic-code-auditor/assets/cloudflare-security-audit-skill.LICENSE).
+
 ## License
 
 Licensed under the [MIT License](LICENSE). Copyright © 2026 Richard Fremmerlid.

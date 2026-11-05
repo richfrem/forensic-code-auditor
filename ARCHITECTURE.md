@@ -29,18 +29,30 @@ competing reconstructions; degradation; trust dynamics; failure mapping; discrim
 Discovery precedes conditional specialist routing so the auditor need not recognize a defect before
 loading the procedure that could discover it.
 
+Focused operation review, incremental revalidation and independent challenge review preserve the same
+method and evidence bar. Revalidation retains prior attempts and checks current source/policy/runtime
+dependencies; challenge review examines both claims and coverage. Additional agents require user
+authorization. New procedures are manual references, not an automatic orchestration engine.
+
 ## Responsibility boundaries
 
 | Component | Responsibility |
 |---|---|
 | `SKILL.md` | Trigger, discovery gate, progressive disclosure and concise workflow |
 | `instructions.md` | Canonical doctrine, evidence/assurance meanings and operation completion |
-| `agents/forensic_systems_analyst.md` | Analyst role and operation-centric execution discipline |
+| `agents/forensic-systems-analyst.md` | Analyst role and operation-centric execution discipline |
 | `references/` | Authorization-data reconstruction, cross-entrypoint tracing, infrastructure trust, taxonomy and specialist prompts |
 | `templates/` | Report schema, operation coverage, permission matrix and assurance skeleton |
 | `scripts/` | Report validation, local demo and reproducible scanner testing |
 | `tests/` | Vulnerable/protected synthetic models and negative report-contract cases |
 | `evals/` | Preserved routing and behavior tasks; these are not automatically executed LLM evaluations |
+
+Reference and analyst Markdown filenames use kebab-case. Python module filenames retain underscores.
+Specialist references extend operation tracing to derived data/deletion/restore, resource budgets and
+cancellation, message/stream identity and local IPC/helpers. `SKILL.md` links directly to each procedure;
+the execution contract remains authoritative. Supplemental artifacts use existing dossier references,
+with no schema-v2 enum or field changes. Manual cross-run mappings and reviewer independence require
+analyst review; report validation does not certify them.
 
 ## Authorization reconstruction
 
@@ -67,7 +79,7 @@ proof and unsupported assurance. It validates artifact availability/integrity an
 
 ## Detection and test boundaries
 
-The Semgrep catalog contains 30 candidate/inventory rule IDs in 24 rule files with paired positive/negative
+The Semgrep catalog contains 31 candidate/inventory rule IDs in 25 rule files with paired positive/negative
 fixtures. Inventory hits feed a bounded operation graph; its limitations remain part of coverage. Two CodeQL packs now contain three queries: the original Python tenant and JavaScript FSM
 queries plus a Python scope-provenance/raw/bulk inventory query. Original scanner identifiers stay stable.
 The revised queries compile and pass five pinned qltests (including extraction counts) with CodeQL 2.23.3.

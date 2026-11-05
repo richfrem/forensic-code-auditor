@@ -7,7 +7,7 @@
 - [Report the residual authority](#report-the-residual-authority)
 
 Use when Copilot or another AI reviewer reads repository content inside GitHub Actions or another
-GitHub-connected execution environment. Follow [CI/release authority](prompts/ci_release_trust_audit.md),
+GitHub-connected execution environment. Follow [CI/release authority](prompts/ci-release-trust-audit.md),
 [deployment evidence](cicd-deployment-evidence.md) and [agent runtime threats](agent-runtime-threats.md).
 Establish which Copilot execution environment is used; product names alone do not establish isolation.
 

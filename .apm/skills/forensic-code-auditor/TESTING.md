@@ -61,6 +61,13 @@ No test here certifies honest authorship of artifacts, independent business appr
 discovery or real Oracle/PostgreSQL locking semantics. Hashes detect changed references, not malicious
 replacement of a report plus all its evidence. The local recorder is not a sandbox.
 
+The data-lifecycle, resource-budget, message/local-authority, incremental revalidation and challenge
+review references add manual procedures. They do not add scanner rules, automatic lineage, cross-run
+identity validation or autonomous reviewers. Routing/behavior cases for these procedures are authored
+expectations; no matched model run or measured detection gain is claimed. See the bundled
+[Cloudflare source notice](assets/cloudflare-security-audit-skill.LICENSE) for attribution. New runbooks
+use existing schema-v2 dossier evidence references; no schema migration is required.
+
 The [agent runtime threat reference](references/agent-runtime-threats.md) supplies manual discovery,
 source-to-effect tracing and proposed paired cases for metadata injection, dormant behavior,
 delegation, memory and audit boundaries. It does not add automated detectors. A deterministic mock

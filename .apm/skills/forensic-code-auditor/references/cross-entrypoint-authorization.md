@@ -27,6 +27,18 @@ to find missed sinks. Persist candidates independently of findings before select
    unit has no recognized authz call, `authz_check: none` describes the inspected body only; external
    middleware/grants/triggers and delegated authority are still competing defenses to examine.
 
+When a well-supported material candidate reveals a reusable mechanism, search within authorized scope
+for lexical, structural and logical variants across other operations. Independently establish each
+variant's invariant, reachability, defenses and effects; add new candidates to discovery and record
+deferred/out-of-scope variants. Do not transfer the original verdict or count occurrences as separate
+root causes without establishing that distinction.
+
 Artifacts: operations.json caller/entry graph, effective permission matrix, per-path decision rationale,
 source/export provenance and durable observations. Observed runtime behavior stays separate from static
 configuration models. Read [the contract](../instructions.md) for proof, evidence and assurance gates.
+
+When discovery finds RPC/streams, local helpers or derived data, apply the directly routed specialist
+for [messages](auditing-message-authority.md), [local authority](auditing-local-authority.md) or
+[data lifecycles](auditing-data-lifecycles.md). Extractor support remains bounded: manually add the
+operation candidates and unresolved edges before coverage reconciliation. For changed snapshots use
+[revalidation](revalidating-audits.md); a prior inventory is not the current discovery denominator.
