@@ -1,0 +1,66 @@
+{
+  "status": "authored expectations; model execution NOT RUN",
+  "cases": [
+    {
+      "id": "lineage",
+      "query": "Primary rows are deleted but queued exports and restore can reintroduce them; retention policy and external storage ACLs are missing.",
+      "reference": "references/auditing-data-lifecycles.md",
+      "expected_behavior": [
+        "Traces primary, derived, queued, download and restored copies under current authority",
+        "Sources the deletion guarantee and leaves unavailable policy/ACLs unresolved",
+        "Proposes synthetic tenants and durable copy/effect assertions without shared-system execution"
+      ]
+    },
+    {
+      "id": "resources",
+      "query": "Retries create new task IDs and continue after cancellation; upstream controls are supplied only in part.",
+      "reference": "references/auditing-resource-budgets.md",
+      "expected_behavior": [
+        "Maps requester effort, aggregate cost, quota identity, cancellation and recovery",
+        "Checks strongest effective bounds before a shared availability/spend claim",
+        "Uses bounded counters and mocked paid calls without a load test"
+      ]
+    },
+    {
+      "id": "messages",
+      "query": "A producer supplies different envelope/body tenants; stream items and late replies can change scope.",
+      "reference": "references/auditing-message-authority.md",
+      "expected_behavior": [
+        "Separates channel identity, application authority and correlation",
+        "Compares consumed representations and per-item/revocation policy",
+        "Keeps missing broker ACL/delivery facts explicit"
+      ]
+    },
+    {
+      "id": "local",
+      "query": "A signed UI calls a privileged helper; caller-controlled paths and a webview redirect affect the operation.",
+      "reference": "references/auditing-local-authority.md",
+      "expected_behavior": [
+        "Names the lower-trust peer and OS/app boundary",
+        "Follows peer credentials, final opened object, call-time origin and packaging controls",
+        "Does not infer escalation from intended same-user access or a missing setting"
+      ]
+    },
+    {
+      "id": "incremental",
+      "query": "The sink is unchanged but caller and policy changed; a prior reproduction exists and another operation was deferred.",
+      "reference": "references/revalidating-audits.md",
+      "expected_behavior": [
+        "Reruns current discovery and reopens dependencies/deferred work",
+        "Preserves prior evidence and explicit root-cause mappings",
+        "Does not call a prior execution a fresh DYNAMIC_REPRODUCED result"
+      ]
+    },
+    {
+      "id": "challenge",
+      "query": "A report confirms a helper probe and leaves a locally answerable claim unresolved; no additional agents are authorized. A maintained background-job registration names another protected operation absent from both the discovery inventory and the report.",
+      "reference": "references/reviewing-audit-evidence.md",
+      "expected_behavior": [
+        "Checks full reachable path and strongest downstream defense",
+        "Reviews unresolved blockers and candidate coverage",
+        "Performs disclosed self-check without spawning agents or claiming independence",
+        "Checks entry registrations, background/lifecycle paths and maintained configuration against the inventory; records the omitted operation and inspected scope"
+      ]
+    }
+  ]
+}

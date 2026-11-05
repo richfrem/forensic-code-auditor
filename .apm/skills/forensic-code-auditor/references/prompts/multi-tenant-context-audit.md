@@ -42,3 +42,8 @@ Test A checks out/returns a connection, B reuses it with missing context, then A
 assert durable tenant-specific writes and absence of cross-tenant/queued effects. An unset context must
 follow sourced policy; inspect RLS/VPD and privileged bypass grants rather than assume ORM protection.
 The HTTP example above also needs persisted-state and external-effect assertions for mutation paths.
+
+For search/cache/index copies, exports, signed links, retention, deletion, migrations and restore,
+load [data lifecycles](../auditing-data-lifecycles.md). Trace current ACL and lifecycle rules through
+every copy and final download, including queued work that can recreate deleted data. A protected
+primary query does not establish authorization of a derived reader or restored record.

@@ -27,5 +27,13 @@
   {"id": "n11", "should_trigger": false, "query": "Configure Nginx reverse proxy headers for TLS termination."},
   {"id": "n12", "should_trigger": false, "query": "Write an MCP tool JSON schema definition for a search tool."},
   {"id": "n13", "should_trigger": false, "query": "How do I install Oracle Forms 12c builder on Windows?"},
-  {"id": "n14", "should_trigger": false, "query": "What is the syntax for a PL/SQL FOR loop over a cursor?"}
+  {"id": "n14", "should_trigger": false, "query": "What is the syntax for a PL/SQL FOR loop over a cursor?"},
+  {"id": "r15", "should_trigger": true, "query": "Review whether deleting a tenant record also revokes search copies, export downloads and restored backup data."},
+  {"id": "r16", "should_trigger": true, "query": "Audit whether canceled jobs keep consuming shared paid API spend and whether retries bypass tenant quotas."},
+  {"id": "r17", "should_trigger": true, "query": "Review this RPC stream for envelope/body tenant disagreement, stale authorization and reply correlation."},
+  {"id": "r18", "should_trigger": true, "query": "Audit our privileged local helper and webview bridge for peer identity, normalized path and account-switch authority gaps."},
+  {"id": "r19", "should_trigger": true, "query": "Revalidate our prior forensic report against current source, policy exports and changed downstream defenses."},
+  {"id": "r20", "should_trigger": true, "query": "Challenge this forensic audit report against the strongest defenses and check whether unresolved blockers are decisive."},
+  {"id": "r21", "should_trigger": true, "query": "Audit this MCP dispatcher: the user is authorized but retrieved content substitutes an action never approved."},
+  {"id": "r22", "should_trigger": true, "query": "Review only the refund operation and alternate callers; disclose exclusions rather than claiming whole-system coverage."}
 ]

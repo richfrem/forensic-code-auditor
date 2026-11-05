@@ -46,3 +46,8 @@ external effect but before DB commit, and after outbox commit but before deliver
 A unique DB key alone does not prove exactly-once external execution. Assert committed business state,
 outbox/inbox rows and external mock ledger, including retries after each crash. A protected fixture
 needs an idempotent mock receiver and reconciliation; an outbox alone still delivers at least once.
+
+For envelope/body identity, stream revocation, reply correlation, broker namespaces and schema-version
+disagreement, load [message authority](../auditing-message-authority.md). A correct deduplication key
+does not authorize the producer, tenant or affected resource. Preserve delivery and commit semantics
+separately from the channel's authenticated identity.

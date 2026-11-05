@@ -8,7 +8,7 @@
 - [Join deployment and runtime authority](#join-deployment-and-runtime-authority)
 - [Bound conclusions and reproduction](#bound-conclusions-and-reproduction)
 
-Use with [CI/release authority](prompts/ci_release_trust_audit.md). Preserve the canonical operation
+Use with [CI/release authority](prompts/ci-release-trust-audit.md). Preserve the canonical operation
 dossier, independently sourced policy and evidence/verification/assurance distinctions. This is a
 manual collection procedure; workflow candidate extraction and live verification are not automated.
 

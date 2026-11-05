@@ -92,6 +92,10 @@ These mechanisms are investigative examples. Verify independently sourced invari
 - Oracle: Unclosed ref cursors (`OPEN ... FOR`) in persistent sessions causing ORA-01000.
 - ADO.NET: Connections and `SqlDataReader` handles omitted from `using` blocks exhausting pool.
 - Locks, leases, or reservations acquired without guaranteed release across all error and exception branches.
+- Shared resource budgets: accepted input exceeds sourced CPU/memory/queue/worker/spend bounds through
+  amplification, quota-scope confusion, retained work or failed cancellation/recovery. Establish the
+  affected shared principal/resource and strongest effective limits; a missing cap alone is not a flaw.
+  Use [resource budgets](auditing-resource-budgets.md) for tracing and bounded proof.
 
 ---
 

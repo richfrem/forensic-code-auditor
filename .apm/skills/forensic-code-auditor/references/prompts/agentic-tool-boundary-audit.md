@@ -1,5 +1,13 @@
 # Inspection Prompt: Agentic Tool Boundary & MCP Execution Audit
 
+## Contents
+
+- [Dispatch and invocation](#1-tool-dispatch--invocation-lifecycle)
+- [Invariant checklist](#2-invariant-checklist)
+- [Discriminating test](#3-discriminating-test-vector)
+- [Delegation and approval](#4-delegation-and-approval-binding)
+- [Intent and representation](#5-intent-representation-and-connection-binding)
+
 Execute this inspection to evaluate Model Context Protocol (MCP) server endpoints, autonomous agent tool dispatchers, tool-call authorization boundaries, and secondary prompt injection propagation.
 
 ## 1. Tool Dispatch & Invocation Lifecycle
@@ -11,8 +19,8 @@ Execute this inspection to evaluate Model Context Protocol (MCP) server endpoint
 ## 2. Invariant Checklist
 - [ ] **Caller Authorization Bound**: Does every MCP tool handler independently enforce caller identity and RBAC/ABAC permissions before executing side-effects, rather than assuming upstream agent authorization?
 - [ ] **Ambient Identity Rejection**: Does the tool runner execute actions with the caller's delegated permissions, rather than running as a high-privileged service account with unrestricted system access?
-- [ ] **Dual-Execution Atomicity**: When an agent executes a multi-step sequence (e.g., `create_branch` -> `commit_code` -> `open_pr`), does a failure in step 3 roll back steps 1 and 2, or does the repository retain partial state?
-- [ ] **Tool Result Taint & Injection Boundary**: Are tool output strings parsed and sanitized before being fed into downstream execution contexts to prevent indirect prompt injection from weaponized ticket content or repo files?
+- [ ] **Multi-Step Completion**: For sequences such as `create_branch` -> `commit_code` -> `open_pr`, does partial failure follow independently sourced completion/compensation policy? Retained partial state is not automatically a violation.
+- [ ] **Tool Result Trust Boundary**: Do returned strings remain untrusted data through downstream processing, with authorization and action binding at the final sink? Sanitization alone does not grant authority or establish containment.
 - [ ] **Human-in-the-Loop (HITL) Gate Integrity**: If a tool requires explicit human approval (destructive file write, production deploy, external network egress), can the agent bypass the gate via parameter aliasing or alternative tool routing?
 
 ## 3. Discriminating Test Vector
@@ -51,3 +59,18 @@ expiry and single-use nonce. Test resource substitution, expired/replayed approv
 instructions and alternate routing. Verify persisted state and queued/external mock effects, not merely
 an error string. The example records committed state and mock effects; add action/resource/state/nonce substitution cases for the actual approval store. Do not assume rollback compensates
 remote effects; inspect per-step compensation and report partial completion.
+
+## 5. Intent, representation and connection binding
+Separate resource authorization from action binding. A principal may be permitted to perform an
+operation while hostile retrieved content causes an action that principal never requested. Compare
+the intentional request or normalized approved action with the final action/resource/arguments used
+by the handler. A generic confirmation or valid user credential does not establish that binding.
+
+Follow defaults, coercion, aliases, duplicate fields and validation/dispatch conversions. Record the
+validated object and consumed object; demonstrate a meaningful difference before reporting a schema
+disagreement. For MCP, bind server/tool/resource namespaces and outstanding request IDs to the actual
+authenticated connection across reconnects. Claimed server names or tool descriptions are not identity.
+
+Pair authorized-but-unrequested action with intentionally requested action, substituted final arguments
+and a mismatched connection/reply. Static tracing may prove a deterministic binding failure; a mock
+model choice does not establish live model compliance. Preserve execution authorization and proof limits.
